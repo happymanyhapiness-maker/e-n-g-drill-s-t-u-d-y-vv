@@ -31,8 +31,10 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .q-text{font-size:1.1rem;font-weight:700;line-height:1.7;margin-bottom:5px;}
 .q-hint{font-size:.8rem;color:var(--muted);margin-bottom:16px;}
 .choices{display:flex;flex-direction:column;gap:9px;}
-.choice{padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);background:var(--surface);color:#fff;font-size:.95rem;cursor:pointer;text-align:left;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:10px;font-weight:500;transition:all .15s;}
-.choice:hover:not([disabled]){border-color:var(--accent);background:rgba(79,142,247,.1);}
+.choice:focus{outline:none;}
+.choice:focus-visible{outline:none;}
+.choice{padding:12px 15px;border-radius:13px;border:1.5px solid var(--border);background:var(--surface);color:#fff;font-size:.95rem;cursor:pointer;text-align:left;font-family:'Noto Sans JP',sans-serif;display:flex;align-items:center;gap:10px;font-weight:500;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+@media(hover:hover){.choice:hover{border-color:var(--accent);background:rgba(79,142,247,.1);}}
 .choice.correct{border-color:var(--green);background:rgba(61,214,140,.15);color:var(--green);}
 .choice.wrong{border-color:var(--red);background:rgba(255,92,106,.15);color:var(--red);}
 .badge{width:25px;height:25px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;}
@@ -102,12 +104,20 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .retry-btn{padding:12px 20px;background:var(--surface);border:1.5px solid var(--red);border-radius:13px;color:var(--red);font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 /* vocab */
 .vocab-wrap{width:100%;max-width:700px;animation:fadeUp .3s ease;}
-.vocab-grid{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:12px;}
-.vocab-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;}
-.vocab-en{font-size:.95rem;font-weight:700;color:#fff;margin-bottom:3px;}
-.vocab-jp{font-size:.8rem;color:var(--muted);}
-.vocab-cat{font-size:.68rem;color:var(--accent2);margin-bottom:4px;}
-.vocab-ex{font-size:.75rem;color:var(--muted);margin-top:5px;border-top:1px solid var(--border);padding-top:5px;line-height:1.5;}
+.vocab-mode-row{display:flex;gap:8px;margin-bottom:14px;}
+.vocab-mode-btn{flex:1;padding:10px;border-radius:11px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
+.vocab-mode-btn.active{border-color:var(--accent);background:rgba(79,142,247,.12);color:var(--accent);}
+.vquiz-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:12px;animation:fadeUp .3s ease;}
+.vquiz-q{font-size:.82rem;color:var(--muted);margin-bottom:6px;}
+.vquiz-en{font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:4px;line-height:1.4;}
+.vquiz-cat{font-size:.72rem;color:var(--accent2);margin-bottom:16px;}
+.vocab-list-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:12px;background:var(--surface);margin-bottom:7px;border:1px solid var(--border);}
+.vocab-list-en{font-size:.88rem;font-weight:700;color:#fff;}
+.vocab-list-jp{font-size:.78rem;color:var(--muted);margin-top:2px;}
+.vocab-badge{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-left:8px;}
+.vocab-badge.master{background:rgba(61,214,140,.15);color:var(--green);border:1px solid var(--green);}
+.vocab-badge.review{background:rgba(255,92,106,.15);color:var(--red);border:1px solid var(--red);}
+.vocab-badge.unseen{background:var(--border);color:var(--muted);}
 /* stats tab */
 .stats-wrap{width:100%;max-width:700px;animation:fadeUp .3s ease;}
 .stat-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
@@ -218,8 +228,8 @@ var Q=[
 {id:81,cat:'不定詞',tag:'⚠️ひっかけ：stopの後',type:'choice',text:'He stopped （　） suddenly.',hint:'stopの後はingかtoか？',choices:['to run','run','ran','running'],answer:3,words:['running'],exp:'stop＋ing = 〜するのをやめる。<b>stop running</b>。<br>stop to run = 走るために立ち止まる（別の意味）',gram:'stop + ing = 〜するのをやめる',adv:'⚠️ 超頻出ひっかけ！stop runningとstop to runは意味が全然違う😲'},
 {id:82,cat:'不定詞',tag:'It is...to〜構文',type:'choice',text:'（　） is fun to play soccer.',hint:'「〜することは楽しい」の主語は？',choices:['Soccer','That','It','This'],answer:2,words:['It','to'],exp:'「〜することは楽しい」= <b>It is 形容詞 to＋原形</b>。Itが仮主語。',gram:'It is + 形容詞 + to + 動詞の原形',adv:'Itが仮の主語！本当の意味の主語はto以下です🌟'},
 {id:83,cat:'不定詞',tag:'too〜to構文',type:'choice',text:'He is too tired （　） walk.',hint:'too〜toの構文は？',choices:['and','for','to','so'],answer:2,words:['too','to'],exp:'too〜to = <b>〜すぎて…できない</b>。too tired to walk。',gram:'too + 形容詞/副詞 + to + 動詞の原形',adv:'too〜toは超頻出構文！「疲れすぎて歩けない」はtoo tired to walk😴'},
-{id:84,cat:'不定詞',tag:'tell+人+to〜',type:'choice',text:'She told me （　） study more.',hint:'tell + 人 + の後は？',choices:['study','studied','to study','studying'],answer:2,words:['to','study'],exp:'tell＋人＋<b>to＋原形</b>（〜するよう伝える）。',gram:'tell/ask/want + 人 + to + 動詞の原形',adv:'tell me to〜の形！ask me to〜/ want me to〜も同じ形📣'},
-{id:85,cat:'動名詞',tag:'動名詞の基本',type:'choice',text:'I like （　） songs.',hint:'likeの後は？',choices:['sing','sings','to sing','singing'],answer:3,words:['singing'],exp:'likeの後は動名詞(ing)またはto不定詞どちらも可。<b>singing</b>',gram:'動名詞: 動詞ing（〜すること）',adv:'動名詞はingで「〜すること」を表す🎵'},
+{id:84,cat:'不定詞',tag:'tell+人+to〜',type:'choice',text:'She told me （　） more.「彼女はもっと勉強するよう伝えた」',hint:'tell + 人 + の後は？',choices:['study','studied','to study','studying'],answer:2,words:['to','study'],exp:'tell＋人＋<b>to＋原形</b>（〜するよう伝える）。told me <b>to study</b> more.',gram:'tell/ask/want + 人 + to + 動詞の原形',adv:'tell me to〜の形！ask me to〜/ want me to〜も同じ形📣'},
+{id:85,cat:'動名詞',tag:'動名詞の基本',type:'choice',text:'I like （　） songs.「歌を歌うことが好きです」',hint:'likeの後はingとto不定詞どちらも使える！',choices:['sing','sings','to sing','singing'],answer:3,words:['singing'],exp:'likeの後は<b>singing（動名詞）</b>でも<b>to sing（to不定詞）</b>でも、どちらも正解！<br>この問題では singing が模範解答ですが、to singも正しい英語です。<br>※ enjoy/finish/stopの後はingのみ。',gram:'like + ing / like + to不定詞（どちらも可）',adv:'likeはingとtoどちらも使えます🎵 でもenjoyはingのみ！"enjoy to sing"は間違いなので注意！'},
 {id:86,cat:'動名詞',tag:'動名詞が主語',type:'choice',text:'（　） English is important.',hint:'「〜すること」が主語になるとき',choices:['Study','Studies','To studying','Studying'],answer:3,words:['Studying'],exp:'動名詞が主語になれる。<b>Studying</b> English is important.',gram:'動名詞(主語): 動詞ing + is/was(単数扱い)',adv:'動名詞が主語のとき動詞はis（単数扱い）！📚'},
 {id:87,cat:'動名詞',tag:'⚠️ひっかけ：enjoyの後',type:'choice',text:'I enjoy （　） music.',hint:'enjoyの後はingかtoか？',choices:['to listen','listen','listens','listening'],answer:3,words:['listening'],exp:'enjoyの後は<b>動名詞(ing)のみ</b>！to listen は不可。',gram:'enjoy/finish/stop/mind + 動名詞(ing)のみ',adv:'⚠️ enjoyの後はingだけ！enjoy to listenは間違い🎵'},
 {id:88,cat:'動名詞',tag:'⚠️ひっかけ：前置詞の後はing',type:'choice',text:'I am good at （　） pictures.',hint:'前置詞atの後は？',choices:['draw','drew','to draw','drawing'],answer:3,words:['drawing'],exp:'前置詞の後には<b>動名詞(ing)</b>。good at <b>drawing</b>',gram:'前置詞 + 動名詞: good at〜ing / thank you for〜ing',adv:'⚠️ 前置詞の後は必ずing！to不定詞は置けない'},
@@ -278,7 +288,7 @@ var VOCAB=[
   {en:'could',jp:'〜できた（canの過去形）',cat:'助動詞',ex:'I could swim when I was five.'},
   {en:'must + 動詞の原形',jp:'〜しなければならない',cat:'助動詞',ex:'You must study harder.'},
   {en:'should + 動詞の原形',jp:'〜すべき・〜した方がいい',cat:'助動詞',ex:'You should see a doctor.'},
-  {en:"don't have to",jp:'〜しなくていい（must notとは違う！）',cat:'助動詞',ex:"You don't have to come."},
+  {en:"don't have to",jp:'〜しなくていい（不必要）',cat:'助動詞',ex:"You don't have to come. / must not = してはいけない（禁止）、don't have to = しなくていい（禁止ではない）"},
   {en:'be going to + 動詞の原形',jp:'〜するつもり・〜しそう（根拠がある）',cat:'未来',ex:'She is going to study English.'},
   {en:'taller / tallest',jp:'より背が高い / 一番背が高い',cat:'比較',ex:'She is taller than me.'},
   {en:'better / best',jp:'より良い / 最も良い（goodの変化）',cat:'比較',ex:'He is the best student.'},
@@ -288,7 +298,7 @@ var VOCAB=[
   {en:'to + 動詞の原形（不定詞）',jp:'〜すること・〜するために・〜するための',cat:'不定詞',ex:'I want to become a doctor.'},
   {en:'too 〜 to ...',jp:'〜すぎて...できない（超頻出！）',cat:'不定詞構文',ex:'He is too tired to walk.'},
   {en:'It is 形容詞 to 〜',jp:'〜することは...だ（仮主語のIt）',cat:'不定詞構文',ex:'It is fun to play soccer.'},
-  {en:'stop -ing',jp:'〜するのをやめる（stop to〜とは違う！）',cat:'動名詞',ex:'He stopped running.'},
+  {en:'stop -ing',jp:'〜するのをやめる',cat:'動名詞',ex:"He stopped running.（走るのをやめた）/ stop to run = 走るために立ち止まった（意味が全然違う！）"},
   {en:'enjoy -ing',jp:'〜することを楽しむ（toは使えない！）',cat:'動名詞',ex:'I enjoy listening to music.'},
   {en:'finish -ing',jp:'〜し終える（toは使えない！）',cat:'動名詞',ex:"Have you finished doing your homework?"},
   {en:'be動詞 + 過去分詞（受動態）',jp:'〜される・〜されている',cat:'受動態',ex:'English is spoken in many countries.'},
@@ -321,7 +331,14 @@ var state={
   vocabCat:'all'
 };
 
-function shuffle(a){return a.slice().sort(function(){return Math.random()-.5;});}
+function shuffle(a){
+  var arr=a.slice();
+  for(var i=arr.length-1;i>0;i--){
+    var j=Math.floor(Math.random()*(i+1));
+    var tmp=arr[i];arr[i]=arr[j];arr[j]=tmp;
+  }
+  return arr;
+}
 function buildQueue(cat,mode){
   var pool;
   if(mode==='retry'){
@@ -330,7 +347,17 @@ function buildQueue(cat,mode){
   } else {
     pool=cat==='all'?Q:Q.filter(function(q){return q.cat===cat;});
   }
-  return shuffle(pool).slice(0,Math.min(15,pool.length));
+  var shuffled=shuffle(pool);
+  // 直前のセッションと被りにくくするため、前回出た問題を後ろに回す
+  if(state.lastQueueIds&&state.lastQueueIds.length>0){
+    var prev=state.lastQueueIds;
+    var fresh=shuffled.filter(function(q){return prev.indexOf(q.id)<0;});
+    var old=shuffled.filter(function(q){return prev.indexOf(q.id)>=0;});
+    shuffled=fresh.concat(old);
+  }
+  var result=shuffled.slice(0,Math.min(15,shuffled.length));
+  state.lastQueueIds=result.map(function(q){return q.id;});
+  return result;
 }
 function fmt(s){var m=Math.floor(s/60),sec=s%60;return m+':'+(sec<10?'0':'')+sec;}
 function updateStreak(){
@@ -420,7 +447,7 @@ function renderQuiz(){
     for(var i=0;i<q.choices.length;i++){
       var cls='choice';
       if(state.answered){if(i===q.answer)cls+=' correct';else if(i===state.selected)cls+=' wrong';}
-      qHTML+='<button class="'+cls+'" '+(state.answered?'disabled':'')+' onclick="answerChoice('+i+')"><span class="badge">'+labels[i]+'</span>'+q.choices[i]+'</button>';
+      qHTML+='<button type="button" class="'+cls+'" '+(state.answered?'disabled':'')+' onclick="answerChoice('+i+');this.blur()"><span class="badge">'+labels[i]+'</span>'+q.choices[i]+'</button>';
     }
     qHTML+='</div>';
   } else {
@@ -550,26 +577,210 @@ function renderResult(){
   '</div>';
 }
 
+// ── Vocab state ──
+function loadVocabStats(){try{return JSON.parse(localStorage.getItem('eng10_vocab')||'{}');}catch(e){return{};}}
+function saveVocabStats(s){try{localStorage.setItem('eng10_vocab',JSON.stringify(s));}catch(e){}}
+// vocabStats[en] = {correct:N, wrong:N, mastered:bool}
+
+var vState={
+  mode:'quiz',   // quiz | review | list
+  catFilter:'all',
+  quizList:[],quizIdx:0,quizAnswered:false,quizSelected:-1,quizCorrect:0,quizDone:false,
+  vocabStats:loadVocabStats()
+};
+
+function getVocabPool(mode){
+  var cf=vState.catFilter;
+  var base=cf==='all'?VOCAB:VOCAB.filter(function(v){return v.cat===cf;});
+  if(mode==='review') return base.filter(function(v){
+    var s=vState.vocabStats[v.en];return s&&s.wrong>0&&!s.mastered;
+  });
+  if(mode==='unseen') return base.filter(function(v){return !vState.vocabStats[v.en];});
+  return base;
+}
+
 function renderVocab(){
-  var cf=state.vocabCat||'all';
   var cats=['all'].concat(VOCAB.map(function(v){return v.cat;}).filter(function(v,i,a){return a.indexOf(v)===i;}));
-  var cbHTML=cats.map(function(c){return '<button class="cat-btn'+(cf===c?' active':'')+'" onclick="setVocabCat(\''+c+'\')">'+(c==='all'?'すべて':c)+'</button>';}).join('');
-  var filtered=cf==='all'?VOCAB:VOCAB.filter(function(v){return v.cat===cf;});
-  var cards=filtered.map(function(v){
-    return '<div class="vocab-card">'+
-      '<div class="vocab-cat">'+v.cat+'</div>'+
-      '<div class="vocab-en">'+v.en+'</div>'+
-      '<div class="vocab-jp">'+v.jp+'</div>'+
-      '<div class="vocab-ex">例: '+v.ex+'</div>'+
+  var cbHTML=cats.map(function(c){return '<button class="cat-btn'+(vState.catFilter===c?' active':'')+'" onclick="setVocabCat(\''+c+'\')">'+(c==='all'?'すべて':c)+'</button>';}).join('');
+
+  // 統計集計
+  var all=vState.catFilter==='all'?VOCAB:VOCAB.filter(function(v){return v.cat===vState.catFilter;});
+  var masterCnt=all.filter(function(v){var s=vState.vocabStats[v.en];return s&&s.mastered;}).length;
+  var reviewCnt=all.filter(function(v){var s=vState.vocabStats[v.en];return s&&s.wrong>0&&!s.mastered;}).length;
+  var unseenCnt=all.filter(function(v){return !vState.vocabStats[v.en];}).length;
+
+  var modeHTML='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(vState.mode==='quiz'?' active':'')+'" onclick="setVocabMode(\'quiz\')">📝 全単語クイズ</button>'+
+    '<button class="vocab-mode-btn'+(vState.mode==='review'?' active':'')+'" onclick="setVocabMode(\'review\')">🔁 要復習（'+reviewCnt+'）</button>'+
+    '<button class="vocab-mode-btn'+(vState.mode==='list'?' active':'')+'" onclick="setVocabMode(\'list\')">📋 一覧</button>'+
+  '</div>';
+
+  var statsBar='<div style="display:flex;gap:8px;margin-bottom:14px;">'+
+    '<div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px;text-align:center;">'+
+      '<div style="font-family:Nunito,sans-serif;font-size:1.3rem;font-weight:900;color:var(--green);">'+masterCnt+'</div>'+
+      '<div style="font-size:.72rem;color:var(--muted);">マスター✅</div>'+
+    '</div>'+
+    '<div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px;text-align:center;">'+
+      '<div style="font-family:Nunito,sans-serif;font-size:1.3rem;font-weight:900;color:var(--red);">'+reviewCnt+'</div>'+
+      '<div style="font-size:.72rem;color:var(--muted);">要復習🔁</div>'+
+    '</div>'+
+    '<div style="flex:1;background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:10px;text-align:center;">'+
+      '<div style="font-family:Nunito,sans-serif;font-size:1.3rem;font-weight:900;color:var(--muted);">'+unseenCnt+'</div>'+
+      '<div style="font-size:.72rem;color:var(--muted);">未挑戦</div>'+
+    '</div>'+
+  '</div>';
+
+  var header='<div class="vocab-wrap">'+
+    '<div style="font-size:.97rem;font-weight:700;margin-bottom:12px;">📖 単語帳（'+all.length+'件）</div>'+
+    statsBar+modeHTML+
+    '<div class="cats">'+cbHTML+'</div>';
+
+  if(vState.mode==='list') app.innerHTML=header+renderVocabList(all)+'</div>';
+  else app.innerHTML=header+renderVQuiz(vState.mode)+'</div>';
+}
+
+function renderVocabList(list){
+  if(list.length===0)return '<div style="color:var(--muted);text-align:center;padding:20px;">単語がありません</div>';
+  var items=list.map(function(v){
+    var s=vState.vocabStats[v.en];
+    var badge='';
+    if(s&&s.mastered) badge='<span class="vocab-badge master">✅ マスター</span>';
+    else if(s&&s.wrong>0) badge='<span class="vocab-badge review">🔁 要復習</span>';
+    else if(s) badge='<span class="vocab-badge unseen">挑戦済</span>';
+    else badge='<span class="vocab-badge unseen">未挑戦</span>';
+    return '<div class="vocab-list-item">'+
+      '<div>'+
+        '<div class="vocab-list-en">'+v.en+'</div>'+
+        '<div class="vocab-list-jp">'+v.jp+'</div>'+
+        '<div style="font-size:.7rem;color:var(--accent2);margin-top:2px;">'+v.cat+'</div>'+
+      '</div>'+badge+
     '</div>';
   }).join('');
-  app.innerHTML='<div class="vocab-wrap">'+
-    '<div style="font-size:.97rem;font-weight:700;margin-bottom:12px;">📖 覚えるべき単語・表現（'+filtered.length+'件）</div>'+
-    '<div class="cats">'+cbHTML+'</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:9px;">'+cards+'</div>'+
-  '</div>';
+  return '<div>'+items+'</div>';
 }
-function setVocabCat(c){state.vocabCat=c;renderVocab();}
+
+function renderVQuiz(mode){
+  var pool=getVocabPool(mode);
+  if(pool.length===0){
+    var msg=mode==='review'?'要復習の単語はありません！全部マスターしてる🎉':'単語がありません';
+    return '<div style="text-align:center;padding:28px;color:var(--muted);">'+msg+'</div>';
+  }
+
+  // 初期化
+  if(!vState.quizList||vState.quizList.length===0){
+    vState.quizList=shuffle(pool);
+    vState.quizIdx=0;vState.quizCorrect=0;vState.quizAnswered=false;vState.quizSelected=-1;vState.quizDone=false;
+  }
+
+  if(vState.quizDone){
+    var pct=Math.round(vState.quizCorrect/vState.quizList.length*100);
+    var emoji=pct>=80?'🎉':pct>=60?'💪':'😤';
+    var msg2=pct>=80?'完璧！':pct>=60?'いい調子！':'要復習で繰り返そう！';
+    return '<div class="vquiz-card" style="text-align:center;">'+
+      '<div style="font-size:2.5rem;margin-bottom:8px;">'+emoji+'</div>'+
+      '<div style="font-family:Nunito,sans-serif;font-size:1.5rem;font-weight:900;margin-bottom:4px;">'+pct+'%  '+msg2+'</div>'+
+      '<div style="color:var(--muted);font-size:.88rem;margin-bottom:20px;">'+vState.quizCorrect+' / '+vState.quizList.length+' 正解</div>'+
+      '<div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">'+
+        '<button onclick="restartVQuiz()" style="padding:11px 24px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-size:.9rem;font-weight:800;cursor:pointer;">もう一度</button>'+
+        '<button onclick="setVocabMode(\'review\')" style="padding:11px 20px;background:var(--surface);border:1.5px solid var(--red);border-radius:12px;color:var(--red);font-size:.88rem;font-weight:700;cursor:pointer;">要復習だけやる🔁</button>'+
+      '</div>'+
+    '</div>';
+  }
+
+  var qi=Math.min(vState.quizIdx,vState.quizList.length-1);
+  var v=vState.quizList[qi];
+  var s=vState.vocabStats[v.en];
+  var statusBadge=s&&s.mastered?'<span style="font-size:.7rem;color:var(--green);margin-left:6px;">✅ マスター済</span>':
+    s&&s.wrong>0?'<span style="font-size:.7rem;color:var(--red);margin-left:6px;">🔁 要復習</span>':'';
+
+  // 選択肢生成：初回だけ生成してstateに保存（renderのたびに変わらないよう固定）
+  var allVocab=vState.catFilter==='all'?VOCAB:VOCAB.filter(function(x){return x.cat===vState.catFilter;});
+  if(!vState.currentOpts||vState.currentOptsIdx!==qi){
+    var others=shuffle(allVocab.filter(function(x){return x.en!==v.en;})).slice(0,3);
+    vState.currentOpts=shuffle([v].concat(others));
+    vState.currentCorrectIdx=vState.currentOpts.indexOf(v);
+    vState.currentOptsIdx=qi;
+  }
+  var opts=vState.currentOpts;
+  var correctIdx=vState.currentCorrectIdx;
+
+  var optHTML=opts.map(function(o,i){
+    var border,bg,color,badgeBg,badgeColor;
+    if(vState.quizAnswered){
+      if(i===correctIdx){
+        border='1.5px solid #3dd68c';bg='rgba(61,214,140,.15)';color='#3dd68c';badgeBg='#3dd68c';badgeColor='#fff';
+      } else if(i===vState.quizSelected){
+        border='1.5px solid #ff5c6a';bg='rgba(255,92,106,.15)';color='#ff5c6a';badgeBg='#ff5c6a';badgeColor='#fff';
+      } else {
+        border='1.5px solid #2d3150';bg='#1a1d27';color='#8b90a7';badgeBg='#2d3150';badgeColor='#8b90a7';
+      }
+    } else {
+      border='1.5px solid #2d3150';bg='#1a1d27';color='#fff';badgeBg='#2d3150';badgeColor='#fff';
+    }
+    var labels=['A','B','C','D'];
+    var onclick=!vState.quizAnswered?'onclick="answerVQuiz('+i+')"':'';
+    return '<div '+onclick+' style="padding:12px 15px;border-radius:13px;border:'+border+';background:'+bg+';color:'+color+';font-size:.95rem;text-align:left;font-family:Noto Sans JP,sans-serif;display:flex;align-items:center;gap:10px;font-weight:500;margin-bottom:9px;cursor:'+(vState.quizAnswered?'default':'pointer')+';">'+
+      '<span style="width:25px;height:25px;border-radius:50%;background:'+badgeBg+';color:'+badgeColor+';display:flex;align-items:center;justify-content:center;font-size:.72rem;font-weight:800;flex-shrink:0;">'+labels[i]+'</span>'+
+      o.jp+'</div>';
+  }).join('');
+
+  var feedHTML='';
+  if(vState.quizAnswered){
+    var ok=vState.quizSelected===correctIdx;
+    var sNow=vState.vocabStats[v.en]||{correct:0,wrong:0};
+    var isMastered=sNow.mastered;
+    feedHTML='<div class="feedback '+(ok?'ok':'ng')+'">'+
+      '<div class="fb-title">'+(ok?'✅ 正解！':'❌ 不正解')+'</div>'+
+      '<div class="fb-body">'+
+        '<b>'+v.en+'</b> = '+v.jp+'<br>'+
+        '<span style="font-size:.82rem;opacity:.85;">例: '+v.ex+'</span>'+
+        (isMastered?'<div style="margin-top:8px;font-size:.82rem;color:var(--green);">🌟 マスター達成！</div>':'')+
+      '</div>'+
+    '</div>'+
+    '<div class="action-row"><button class="next-btn" onclick="nextVQuiz()">'+(qi>=vState.quizList.length-1?'結果を見る 🎉':'次の単語 →')+'</button></div>';
+  }
+
+  var pBar=Math.round((qi/vState.quizList.length)*100);
+  return '<div style="margin-bottom:10px;">'+
+      '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'+
+        '<div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;">'+
+          '<div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div>'+
+        '</div>'+
+        '<div style="font-size:.78rem;color:var(--muted);white-space:nowrap;">'+(qi+1)+'/'+vState.quizList.length+'</div>'+
+      '</div>'+
+    '</div>'+
+    '<div class="vquiz-card">'+
+      '<div class="vquiz-q">次の英語・表現の意味は？'+statusBadge+'</div>'+
+      '<div class="vquiz-en">'+v.en+'</div>'+
+      '<div class="vquiz-cat">'+v.cat+'</div>'+
+      '<div class="choices">'+optHTML+'</div>'+
+    '</div>'+feedHTML;
+}
+
+function answerVQuiz(i){
+  if(vState.quizAnswered)return;
+  var correct=vState.currentCorrectIdx;
+  vState.quizSelected=i;vState.quizAnswered=true;
+  var v=vState.quizList[vState.quizIdx];
+  var ok=i===correct;
+  // 記録更新
+  var s=vState.vocabStats[v.en]||{correct:0,wrong:0,mastered:false};
+  if(ok){s.correct++;if(s.correct>=3&&s.wrong===0)s.mastered=true;}
+  else{s.wrong++;}
+  vState.vocabStats[v.en]=s;
+  saveVocabStats(vState.vocabStats);
+  if(ok)vState.quizCorrect++;
+  renderVocab();
+}
+function nextVQuiz(){
+  if(vState.quizIdx>=vState.quizList.length-1){vState.quizDone=true;}
+  else{vState.quizIdx++;vState.quizAnswered=false;vState.quizSelected=-1;}
+  vState.currentOpts=null;vState.currentOptsIdx=-1;
+  renderVocab();
+}
+function restartVQuiz(){vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
+function setVocabCat(c){vState.catFilter=c;vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
+function setVocabMode(m){vState.mode=m;vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
 
 function renderStatsTab(){
   var rows=CATS.filter(function(c){return c!=='all';}).map(function(c){
@@ -622,7 +833,9 @@ window.setCategory=setCategory;window.setMode=setMode;window.changeCat=changeCat
 window.answerChoice=answerChoice;window.answerInput=answerInput;window.nextQuestion=nextQuestion;
 window.finishQuiz=finishQuiz;window.startQuiz=startQuiz;window.restartQuiz=restartQuiz;
 window.retryMistakes=retryMistakes;window.switchTab=switchTab;
-window.setVocabCat=setVocabCat;window.resetStats=resetStats;
+window.setVocabCat=setVocabCat;window.setVocabMode=setVocabMode;
+window.answerVQuiz=answerVQuiz;window.nextVQuiz=nextVQuiz;window.restartVQuiz=restartVQuiz;
+window.resetStats=resetStats;
 render();
 </script>
 </body>
