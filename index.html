@@ -229,7 +229,7 @@ var Q=[
 {id:82,cat:'不定詞',tag:'It is...to〜構文',type:'choice',text:'（　） is fun to play soccer.',hint:'「〜することは楽しい」の主語は？',choices:['Soccer','That','It','This'],answer:2,words:['It','to'],exp:'「〜することは楽しい」= <b>It is 形容詞 to＋原形</b>。Itが仮主語。',gram:'It is + 形容詞 + to + 動詞の原形',adv:'Itが仮の主語！本当の意味の主語はto以下です🌟'},
 {id:83,cat:'不定詞',tag:'too〜to構文',type:'choice',text:'He is too tired （　） walk.',hint:'too〜toの構文は？',choices:['and','for','to','so'],answer:2,words:['too','to'],exp:'too〜to = <b>〜すぎて…できない</b>。too tired to walk。',gram:'too + 形容詞/副詞 + to + 動詞の原形',adv:'too〜toは超頻出構文！「疲れすぎて歩けない」はtoo tired to walk😴'},
 {id:84,cat:'不定詞',tag:'tell+人+to〜',type:'choice',text:'She told me （　） more.「彼女はもっと勉強するよう伝えた」',hint:'tell + 人 + の後は？',choices:['study','studied','to study','studying'],answer:2,words:['to','study'],exp:'tell＋人＋<b>to＋原形</b>（〜するよう伝える）。told me <b>to study</b> more.',gram:'tell/ask/want + 人 + to + 動詞の原形',adv:'tell me to〜の形！ask me to〜/ want me to〜も同じ形📣'},
-{id:85,cat:'動名詞',tag:'動名詞の基本',type:'choice',text:'I like （　） songs.「歌を歌うことが好きです」',hint:'likeの後はingとto不定詞どちらも使える！',choices:['sing','sings','to sing','singing'],answer:3,words:['singing'],exp:'likeの後は<b>singing（動名詞）</b>でも<b>to sing（to不定詞）</b>でも、どちらも正解！<br>この問題では singing が模範解答ですが、to singも正しい英語です。<br>※ enjoy/finish/stopの後はingのみ。',gram:'like + ing / like + to不定詞（どちらも可）',adv:'likeはingとtoどちらも使えます🎵 でもenjoyはingのみ！"enjoy to sing"は間違いなので注意！'},
+{id:85,cat:'動名詞',tag:'動名詞の基本',type:'choice',text:'I like （　） songs.「歌を歌うことが好きです」',hint:'likeの後はingとto不定詞どちらも使える！',choices:['sing','sings','sang','singing'],answer:3,words:['singing'],exp:'likeの後は<b>singing（動名詞）</b>でも<b>to sing（to不定詞）</b>でも、どちらも正解！<br>この問題では singing が模範解答ですが、to singも正しい英語です。<br>※ enjoy/finish/stopの後はingのみ。',gram:'like + ing / like + to不定詞（どちらも可）',adv:'likeはingとtoどちらも使えます🎵 でもenjoyはingのみ！"enjoy to sing"は間違いなので注意！'},
 {id:86,cat:'動名詞',tag:'動名詞が主語',type:'choice',text:'（　） English is important.',hint:'「〜すること」が主語になるとき',choices:['Study','Studies','To studying','Studying'],answer:3,words:['Studying'],exp:'動名詞が主語になれる。<b>Studying</b> English is important.',gram:'動名詞(主語): 動詞ing + is/was(単数扱い)',adv:'動名詞が主語のとき動詞はis（単数扱い）！📚'},
 {id:87,cat:'動名詞',tag:'⚠️ひっかけ：enjoyの後',type:'choice',text:'I enjoy （　） music.',hint:'enjoyの後はingかtoか？',choices:['to listen','listen','listens','listening'],answer:3,words:['listening'],exp:'enjoyの後は<b>動名詞(ing)のみ</b>！to listen は不可。',gram:'enjoy/finish/stop/mind + 動名詞(ing)のみ',adv:'⚠️ enjoyの後はingだけ！enjoy to listenは間違い🎵'},
 {id:88,cat:'動名詞',tag:'⚠️ひっかけ：前置詞の後はing',type:'choice',text:'I am good at （　） pictures.',hint:'前置詞atの後は？',choices:['draw','drew','to draw','drawing'],answer:3,words:['drawing'],exp:'前置詞の後には<b>動名詞(ing)</b>。good at <b>drawing</b>',gram:'前置詞 + 動名詞: good at〜ing / thank you for〜ing',adv:'⚠️ 前置詞の後は必ずing！to不定詞は置けない'},
@@ -440,13 +440,26 @@ function renderQuiz(){
   var total=state.queue.length;
   var pct=Math.round((state.idx/total)*100);
   var labels=['A','B','C','D'];
-  var isTrap=q.tag.indexOf('ひっかけ')>=0;
+
+  // ✅ ひっかけ表記削除（タグ文字だけ整形）
+  var cleanTag = q.tag
+    .replace('⚠️ひっかけ：','')
+    .replace('⚠️ひっかけ','');
+
+  // ✅ 問題文のヒント完全除去
+  var cleanText = q.text
+    .replace(/<strong[^>]*>.*?<\/strong>/g, '')   // strongタグ削除
+    .replace(/（.*?：.*?）/g, '');                // （現在完了：never）等
+
   var qHTML='';
   if(q.type==='choice'){
     qHTML='<div class="choices">';
     for(var i=0;i<q.choices.length;i++){
       var cls='choice';
-      if(state.answered){if(i===q.answer)cls+=' correct';else if(i===state.selected)cls+=' wrong';}
+      if(state.answered){
+        if(i===q.answer) cls+=' correct';
+        else if(i===state.selected) cls+=' wrong';
+      }
       qHTML+='<button type="button" class="'+cls+'" '+(state.answered?'disabled':'')+' onclick="answerChoice('+i+');this.blur()"><span class="badge">'+labels[i]+'</span>'+q.choices[i]+'</button>';
     }
     qHTML+='</div>';
@@ -457,20 +470,31 @@ function renderQuiz(){
       (!state.answered?'<button class="submit-btn" onclick="answerInput()">答える</button>':'')+
     '</div>';
   }
+
   var tc='timer'+(state.timerSec<60?' urgent':'');
+
+  // ✅ ヒント行・ひっかけ表示は完全削除済み
   app.innerHTML=
     '<div class="cats">'+catBtnsHTML('changeCat')+'</div>'+
     '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="progress-label">'+(state.idx+1)+'/'+total+'</div></div>'+
     '<div class="timer-row"><div class="'+tc+'" id="timerEl">⏱ '+fmt(state.timerSec)+'</div></div>'+
     '<div class="card">'+
-      '<span class="q-tag'+(isTrap?' trap':'')+'">'+(isTrap?'⚠️ ':'')+q.tag+'</span>'+
-      '<div class="q-text">'+q.text+'</div>'+
-      '<div class="q-hint">💡 '+q.hint+'</div>'+
+      '<div class="q-text">'+cleanText+'</div>'+
       qHTML+
     '</div>'+
     '<div id="fbArea"></div><div id="wbArea"></div><div id="advArea"></div><div id="actArea"></div>';
-  if(!state.answered&&q.type==='input'){setTimeout(function(){var el=document.getElementById('qi');if(el){el.value=state.inputVal;el.focus();}},30);}
-  if(state.answered)renderFeedback(q);
+
+  if(!state.answered && q.type==='input'){
+    setTimeout(function(){
+      var el=document.getElementById('qi');
+      if(el){
+        el.value=state.inputVal;
+        el.focus();
+      }
+    },30);
+  }
+
+  if(state.answered) renderFeedback(q);
 }
 
 function renderFeedback(q){
