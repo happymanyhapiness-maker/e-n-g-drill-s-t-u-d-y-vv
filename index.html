@@ -130,6 +130,27 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:center;gap:4px;padding:8px 14px 10px;z-index:100;}
 .bb-btn{flex:1;max-width:150px;padding:8px 4px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 .bb-btn.active{background:rgba(79,142,247,.15);color:var(--accent);}
+/* read (文型タグ音読) */
+.read-prompt{font-size:.84rem;color:var(--muted);margin-bottom:10px;text-align:center;line-height:1.6;}
+.read-sentence{font-size:1.22rem;font-weight:700;line-height:2.6;text-align:center;padding:6px 2px;}
+.read-word{display:inline-block;margin:3px 4px;padding:2px 1px;cursor:pointer;border-bottom:2px solid transparent;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;}
+@media(hover:hover){.read-word:hover{border-bottom-color:var(--border);}}
+.read-word.miss{animation:shake .3s;}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.read-chunk{display:inline-flex;flex-direction:column;align-items:center;margin:7px 6px;vertical-align:top;}
+.read-chunk-label{font-size:.62rem;font-weight:800;padding:1px 7px;border-radius:7px;margin-bottom:4px;color:#fff;letter-spacing:.02em;}
+.read-chunk-text{font-size:1.18rem;font-weight:700;padding-bottom:3px;border-bottom:3px solid;}
+.role-S .read-chunk-label{background:var(--accent);} .role-S .read-chunk-text{border-color:var(--accent);color:var(--accent);}
+.role-V .read-chunk-label{background:var(--green);} .role-V .read-chunk-text{border-color:var(--green);color:var(--green);}
+.role-O .read-chunk-label{background:var(--yellow);color:#1a1d27;} .role-O .read-chunk-text{border-color:var(--yellow);color:var(--yellow);}
+.role-O1 .read-chunk-label{background:var(--yellow);color:#1a1d27;} .role-O1 .read-chunk-text{border-color:var(--yellow);color:var(--yellow);}
+.role-O2 .read-chunk-label{background:#ffa454;color:#1a1d27;} .role-O2 .read-chunk-text{border-color:#ffa454;color:#ffa454;}
+.role-C .read-chunk-label{background:var(--accent2);} .role-C .read-chunk-text{border-color:var(--accent2);color:var(--accent2);}
+.role-M .read-chunk-label{background:var(--border);color:var(--muted);} .role-M .read-chunk-text{border-color:var(--border);color:var(--muted);font-weight:500;font-size:1rem;}
+.read-pattern-badge{display:block;text-align:center;font-size:.8rem;font-weight:800;padding:5px 14px;border-radius:20px;background:rgba(79,142,247,.15);color:var(--accent);margin:0 auto 10px;width:fit-content;}
+.read-jp{font-size:.85rem;color:var(--muted);text-align:center;margin-top:6px;}
+.read-chunk-note{font-size:.62rem;color:var(--muted);font-style:italic;margin-top:3px;max-width:160px;text-align:center;line-height:1.3;}
+.jp-toggle-btn{display:block;margin:10px auto 0;padding:6px 16px;background:transparent;border:1px solid var(--border);border-radius:14px;color:var(--muted);font-size:.76rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 </style>
 </head>
 <body>
@@ -142,6 +163,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <button class="bb-btn active" id="bb0" onclick="switchTab('drill')">📝 ドリル</button>
   <button class="bb-btn" id="bb1" onclick="switchTab('vocab')">📖 単語帳</button>
   <button class="bb-btn" id="bb2" onclick="switchTab('stats')">📊 苦手分析</button>
+  <button class="bb-btn" id="bb3" onclick="switchTab('read')">🗣️ 音読</button>
 </div>
 <script>
 var Q=[
@@ -313,6 +335,66 @@ var VOCAB=[
 
 var CATS=['all','be動詞','一般動詞','現在進行形','過去形','未来','助動詞','疑問詞','名詞・冠詞','比較','不定詞','動名詞','受動態','現在完了','代名詞','前置詞'];
 
+// ── 文型タグ音読 (read) 用データ ──
+var READ_PATTERNS=['SV','SVC','SVO','SVOO','SVOC'];
+var PATTERN_JP={SV:'主語+動詞',SVC:'主語+動詞+補語',SVO:'主語+動詞+目的語',SVOO:'主語+動詞+目的語+目的語',SVOC:'主語+動詞+目的語+補語'};
+var READ=[
+{id:1,pattern:'SV',jp:'私は毎朝走る。',chunks:[{t:'I',r:'S'},{t:'run',r:'V'},{t:'every morning.',r:'M'}]},
+{id:2,pattern:'SV',jp:'鳥は朝に歌う。',chunks:[{t:'Birds',r:'S'},{t:'sing',r:'V'},{t:'in the morning.',r:'M'}]},
+{id:3,pattern:'SV',jp:'私の犬はソファで眠る。',chunks:[{t:'My dog',r:'S'},{t:'sleeps',r:'V'},{t:'on the sofa.',r:'M'}]},
+{id:4,pattern:'SV',jp:'太陽は東から昇る。',chunks:[{t:'The sun',r:'S'},{t:'rises',r:'V'},{t:'in the east.',r:'M'}]},
+{id:5,pattern:'SV',jp:'彼女は駅に着いた。',chunks:[{t:'She',r:'S'},{t:'arrived',r:'V'},{t:'at the station.',r:'M'}]},
+{id:6,pattern:'SV',jp:'私たちは学校まで歩いた。',chunks:[{t:'We',r:'S'},{t:'walked',r:'V'},{t:'to school.',r:'M'}]},
+{id:7,pattern:'SVC',jp:'彼女は教師だ。',chunks:[{t:'She',r:'S'},{t:'is',r:'V'},{t:'a teacher.',r:'C'}]},
+{id:8,pattern:'SVC',jp:'彼は疲れているように見える。',chunks:[{t:'He',r:'S'},{t:'looks',r:'V'},{t:'tired.',r:'C'}]},
+{id:9,pattern:'SVC',jp:'そのスープはいい匂いがする。',chunks:[{t:'The soup',r:'S'},{t:'smells',r:'V'},{t:'good.',r:'C'}]},
+{id:10,pattern:'SVC',jp:'私の姉は医者になった。',chunks:[{t:'My sister',r:'S'},{t:'became',r:'V'},{t:'a doctor.',r:'C'}]},
+{id:11,pattern:'SVC',jp:'この話は面白そうに聞こえる。',chunks:[{t:'This story',r:'S'},{t:'sounds',r:'V'},{t:'interesting.',r:'C'}]},
+{id:12,pattern:'SVC',jp:'葉が赤くなった。',chunks:[{t:'The leaves',r:'S'},{t:'turned',r:'V'},{t:'red.',r:'C'}]},
+{id:13,pattern:'SVO',jp:'私はサッカーが好きだ。',chunks:[{t:'I',r:'S'},{t:'like',r:'V'},{t:'soccer.',r:'O'}]},
+{id:14,pattern:'SVO',jp:'彼女はピアノを弾く。',chunks:[{t:'She',r:'S'},{t:'plays',r:'V'},{t:'the piano.',r:'O'}]},
+{id:15,pattern:'SVO',jp:'私たちは映画を見た。',chunks:[{t:'We',r:'S'},{t:'watched',r:'V'},{t:'a movie.',r:'O'}]},
+{id:16,pattern:'SVO',jp:'彼は手紙を書いた。',chunks:[{t:'He',r:'S'},{t:'wrote',r:'V'},{t:'a letter.',r:'O'}]},
+{id:17,pattern:'SVO',jp:'彼らは去年京都を訪れた。',chunks:[{t:'They',r:'S'},{t:'visited',r:'V'},{t:'Kyoto',r:'O'},{t:'last year.',r:'M'}]},
+{id:18,pattern:'SVO',jp:'私の父は車を運転する。',chunks:[{t:'My father',r:'S'},{t:'drives',r:'V'},{t:'a car.',r:'O'}]},
+{id:19,pattern:'SVOO',jp:'私は彼にプレゼントをあげた。',chunks:[{t:'I',r:'S'},{t:'gave',r:'V'},{t:'him',r:'O1'},{t:'a present.',r:'O2'}]},
+{id:20,pattern:'SVOO',jp:'彼女は私に彼女の写真を見せた。',chunks:[{t:'She',r:'S'},{t:'showed',r:'V'},{t:'me',r:'O1'},{t:'her picture.',r:'O2'}]},
+{id:21,pattern:'SVOO',jp:'私の母は私にケーキを作ってくれた。',chunks:[{t:'My mother',r:'S'},{t:'made',r:'V'},{t:'me',r:'O1'},{t:'a cake.',r:'O2'}]},
+{id:22,pattern:'SVOO',jp:'彼は私たちに面白い話をしてくれた。',chunks:[{t:'He',r:'S'},{t:'told',r:'V'},{t:'us',r:'O1'},{t:'an interesting story.',r:'O2'}]},
+{id:23,pattern:'SVOO',jp:'先生は生徒たちに宿題を出した。',chunks:[{t:'The teacher',r:'S'},{t:'gave',r:'V'},{t:'the students',r:'O1'},{t:'some homework.',r:'O2'}]},
+{id:24,pattern:'SVOO',jp:'私は彼女に手紙を送った。',chunks:[{t:'I',r:'S'},{t:'sent',r:'V'},{t:'her',r:'O1'},{t:'a letter.',r:'O2'}]},
+{id:25,pattern:'SVOC',jp:'私たちは彼をケンと呼ぶ。',chunks:[{t:'We',r:'S'},{t:'call',r:'V'},{t:'him',r:'O'},{t:'Ken.',r:'C'}]},
+{id:26,pattern:'SVOC',jp:'彼らは犬をポチと名付けた。',chunks:[{t:'They',r:'S'},{t:'named',r:'V'},{t:'their dog',r:'O'},{t:'Pochi.',r:'C'}]},
+{id:27,pattern:'SVOC',jp:'その知らせは彼女を喜ばせた。',chunks:[{t:'The news',r:'S'},{t:'made',r:'V'},{t:'her',r:'O'},{t:'happy.',r:'C'}]},
+{id:28,pattern:'SVOC',jp:'私はその本が面白いと感じた。',chunks:[{t:'I',r:'S'},{t:'found',r:'V'},{t:'the book',r:'O'},{t:'interesting.',r:'C'}]},
+{id:29,pattern:'SVOC',jp:'私の両親は部屋をきれいに保つ。',chunks:[{t:'My parents',r:'S'},{t:'keep',r:'V'},{t:'the room',r:'O'},{t:'clean.',r:'C'}]},
+{id:30,pattern:'SVOC',jp:'その映画は私たちを興奮させた。',chunks:[{t:'The movie',r:'S'},{t:'made',r:'V'},{t:'us',r:'O'},{t:'excited.',r:'C'}]}
+];
+
+// ── 高校入門レベル(複文)用データ ──
+var HS_GRAMMARS=['rel','part','that'];
+var GRAMMAR_JP={rel:'関係代名詞（後ろから名詞を修飾）',part:'分詞の後置修飾（-ing/-ed）',that:'that節（〜ということ）'};
+var READ_HS=[
+{id:101,grammar:'rel',jp:'隣に住んでいる男性は医者だ。',chunks:[{t:'The man who lives next door',r:'S',note:'※関係代名詞節が名詞を修飾'},{t:'is',r:'V'},{t:'a doctor.',r:'C'}]},
+{id:102,grammar:'rel',jp:'私はフランス語を話せる友人がいる。',chunks:[{t:'I',r:'S'},{t:'have',r:'V'},{t:'a friend who can speak French.',r:'O',note:'※関係代名詞節が名詞を修飾'}]},
+{id:103,grammar:'rel',jp:'私が昨日買った本は面白かった。',chunks:[{t:'The book which I bought yesterday',r:'S',note:'※関係代名詞節が名詞を修飾'},{t:'was',r:'V'},{t:'interesting.',r:'C'}]},
+{id:104,grammar:'rel',jp:'彼女はコンテストで優勝した女の子だ。',chunks:[{t:'She',r:'S'},{t:'is',r:'V'},{t:'the girl that won the contest.',r:'C',note:'※関係代名詞節が名詞を修飾'}]},
+{id:105,grammar:'rel',jp:'私たちは美しい湖がある町を訪れた。',chunks:[{t:'We',r:'S'},{t:'visited',r:'V'},{t:'a town which has a beautiful lake.',r:'O',note:'※関係代名詞節が名詞を修飾'}]},
+{id:106,grammar:'rel',jp:'私たちに数学を教えてくれた先生は別の学校に移った。',chunks:[{t:'The teacher who taught us math',r:'S',note:'※関係代名詞節が名詞を修飾'},{t:'moved',r:'V'},{t:'to another school.',r:'M'}]},
+{id:107,grammar:'part',jp:'サッカーをしている男の子は私の弟だ。',chunks:[{t:'The boy playing soccer',r:'S',note:'※分詞句(-ing)が名詞を修飾'},{t:'is',r:'V'},{t:'my brother.',r:'C'}]},
+{id:108,grammar:'part',jp:'母が作ったケーキはおいしかった。',chunks:[{t:'The cake made by my mother',r:'S',note:'※分詞句(-ed)が名詞を修飾'},{t:'was',r:'V'},{t:'delicious.',r:'C'}]},
+{id:109,grammar:'part',jp:'私はあそこに立っている女の子を知っている。',chunks:[{t:'I',r:'S'},{t:'know',r:'V'},{t:'the girl standing over there.',r:'O',note:'※分詞句(-ing)が名詞を修飾'}]},
+{id:110,grammar:'part',jp:'ブラジルで話されている言語はポルトガル語だ。',chunks:[{t:'The language spoken in Brazil',r:'S',note:'※分詞句(-ed)が名詞を修飾'},{t:'is',r:'V'},{t:'Portuguese.',r:'C'}]},
+{id:111,grammar:'part',jp:'私たちは道に落ちている財布を見つけた。',chunks:[{t:'We',r:'S'},{t:'found',r:'V'},{t:'a wallet lying on the road.',r:'O',note:'※分詞句(-ing)が名詞を修飾'}]},
+{id:112,grammar:'part',jp:'赤い帽子をかぶっている男性は私たちの新しいコーチだ。',chunks:[{t:'The man wearing a red cap',r:'S',note:'※分詞句(-ing)が名詞を修飾'},{t:'is',r:'V'},{t:'our new coach.',r:'C'}]},
+{id:113,grammar:'that',jp:'私は彼が正直だと思う。',chunks:[{t:'I',r:'S'},{t:'think',r:'V'},{t:'that he is honest.',r:'O',note:'※that節がVの目的語'}]},
+{id:114,grammar:'that',jp:'彼女はそのテストが難しくなると知っている。',chunks:[{t:'She',r:'S'},{t:'knows',r:'V'},{t:'that the test will be difficult.',r:'O',note:'※that節がVの目的語'}]},
+{id:115,grammar:'that',jp:'あなたがその旅行を楽しんでくれるといいなと思う。',chunks:[{t:'I',r:'S'},{t:'hope',r:'V'},{t:'that you will enjoy the trip.',r:'O',note:'※that節がVの目的語'}]},
+{id:116,grammar:'that',jp:'私たちは電車が遅れていると聞いた。',chunks:[{t:'We',r:'S'},{t:'heard',r:'V'},{t:'that the train was delayed.',r:'O',note:'※that節がVの目的語'}]},
+{id:117,grammar:'that',jp:'彼は努力は報われると信じている。',chunks:[{t:'He',r:'S'},{t:'believes',r:'V'},{t:'that hard work pays off.',r:'O',note:'※that節がVの目的語'}]},
+{id:118,grammar:'that',jp:'彼らはこのレストランが人気だと言う。',chunks:[{t:'They',r:'S'},{t:'say',r:'V'},{t:'that this restaurant is popular.',r:'O',note:'※that節がVの目的語'}]}
+];
+
 function loadStats(){try{return JSON.parse(localStorage.getItem('eng10_stats')||'{}');}catch(e){return{};}}
 function saveStats(s){try{localStorage.setItem('eng10_stats',JSON.stringify(s));}catch(e){}}
 function loadMistakes(){try{return JSON.parse(localStorage.getItem('eng10_mistakes')||'[]');}catch(e){return[];}}
@@ -389,12 +471,13 @@ function render(){
   updateBBTabs();
   if(state.tab==='vocab'){renderVocab();return;}
   if(state.tab==='stats'){renderStatsTab();return;}
+  if(state.tab==='read'){renderRead();return;}
   if(state.screen==='start')renderStart();
   else if(state.screen==='quiz')renderQuiz();
   else renderResult();
 }
 function updateBBTabs(){
-  var tabs=['drill','vocab','stats'];
+  var tabs=['drill','vocab','stats','read'];
   tabs.forEach(function(t,i){
     var el=document.getElementById('bb'+i);
     if(el)el.className='bb-btn'+(state.tab===t?' active':'');
@@ -853,6 +936,169 @@ function startQuiz(){
 function restartQuiz(){clearInterval(state.timerHandle);state.screen='start';render();}
 function retryMistakes(){state.mode='retry';clearInterval(state.timerHandle);state.screen='start';render();}
 
+// ── 文型タグ音読 (read) ──
+function loadPatternStats(){try{return JSON.parse(localStorage.getItem('eng10_patternstats')||'{}');}catch(e){return{};}}
+function savePatternStats(s){try{localStorage.setItem('eng10_patternstats',JSON.stringify(s));}catch(e){}}
+function loadHsStats(){try{return JSON.parse(localStorage.getItem('eng10_hsstats')||'{}');}catch(e){return{};}}
+function saveHsStats(s){try{localStorage.setItem('eng10_hsstats',JSON.stringify(s));}catch(e){}}
+// patternStats[pattern] / hsStats[grammar] = {seen:N, miss:N}（missは「1問の中で1回以上動詞タップを外した」回数）
+
+var rState={
+  screen:'start',   // start | quiz | result
+  level:'basic',    // basic(中学/基本5文型) | hs(高校入門/複文)
+  cat:'all',
+  queue:[],idx:0,
+  revealed:false,missThis:0,showJp:false,
+  patternStats:loadPatternStats(),
+  hsStats:loadHsStats()
+};
+
+function buildReadQueue(){
+  if(rState.level==='hs'){
+    var poolH=rState.cat==='all'?READ_HS:READ_HS.filter(function(s){return s.grammar===rState.cat;});
+    return shuffle(poolH).slice(0,Math.min(5,poolH.length));
+  }
+  var pool=rState.cat==='all'?READ:READ.filter(function(s){return s.pattern===rState.cat;});
+  return shuffle(pool).slice(0,Math.min(5,pool.length));
+}
+function startReadSession(cat){
+  rState.cat=cat;
+  rState.queue=buildReadQueue();
+  rState.idx=0;rState.revealed=false;rState.missThis=0;rState.showJp=false;
+  rState.screen='quiz';
+  render();
+}
+function setReadCat(c){rState.cat=c;renderReadStart();}
+function setReadLevel(lv){rState.level=lv;rState.cat='all';renderReadStart();}
+
+function renderRead(){
+  if(rState.screen==='start')renderReadStart();
+  else if(rState.screen==='quiz')renderReadQuiz();
+  else renderReadResult();
+}
+
+function renderReadStart(){
+  var cats=rState.level==='hs'?['all'].concat(HS_GRAMMARS):['all'].concat(READ_PATTERNS);
+  var cbHTML=cats.map(function(c){
+    var label=c==='all'?'すべて':c;
+    return '<button class="cat-btn'+(rState.cat===c?' active':'')+'" onclick="setReadCat(\''+c+'\')">'+label+'</button>';
+  }).join('');
+  var levelHTML='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(rState.level==='basic'?' active':'')+'" onclick="setReadLevel(\'basic\')">📘 中学（基本5文型）</button>'+
+    '<button class="vocab-mode-btn'+(rState.level==='hs'?' active':'')+'" onclick="setReadLevel(\'hs\')">📗 高校入門（複文）</button>'+
+  '</div>';
+  app.innerHTML='<div class="start-wrap">'+
+    '<div class="start-title">🗣️ 文型タグ音読</div>'+
+    '<div class="start-sub">動詞を見つけてタップ→S・O・Cが浮き上がる→声に出して読もう。採点もテストもなし、気楽にどうぞ。</div>'+
+    levelHTML+
+    '<div class="cats" style="justify-content:center;">'+cbHTML+'</div>'+
+    '<button class="start-btn" onclick="startReadSession(rState.cat)">音読スタート →</button>'+
+  '</div>';
+}
+
+function renderReadQuiz(){
+  var item=rState.queue[rState.idx];
+  if(!item){rState.screen='start';renderReadStart();return;}
+  var total=rState.queue.length;
+  var pBar=Math.round((rState.idx/total)*100);
+  var progressHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'+
+      '<div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;">'+
+        '<div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div>'+
+      '</div>'+
+      '<div style="font-size:.78rem;color:var(--muted);white-space:nowrap;">'+(rState.idx+1)+'/'+total+'</div>'+
+    '</div>';
+
+  var body;
+  if(!rState.revealed){
+    var words=item.chunks.map(function(c){return c.t;}).join(' ').split(' ');
+    var wHTML=words.map(function(w,i){
+      return '<span class="read-word" onclick="tapReadWord('+i+')">'+w+'</span>';
+    }).join('');
+    var promptTxt=rState.level==='hs'?
+      '💭 文の中に動詞が複数あるかも。<b>メインの動詞</b>(節の中のものじゃなく)を見つけてタップ！':
+      '💭 これ何文型かな？少し考えてみて。決まったら<b>動詞</b>をタップ！';
+    body='<div class="read-prompt">'+promptTxt+'</div>'+
+      '<div class="vquiz-card"><div class="read-sentence" id="readSentence">'+wHTML+'</div></div>';
+  } else {
+    var chunkHTML=item.chunks.map(function(c){
+      return '<span class="read-chunk role-'+c.r+'"><span class="read-chunk-label">'+c.r+'</span><span class="read-chunk-text">'+c.t+'</span>'+(c.note?'<span class="read-chunk-note">'+c.note+'</span>':'')+'</span>';
+    }).join('');
+    var badgeTxt=rState.level==='hs'?(item.grammar+'（'+GRAMMAR_JP[item.grammar]+'）'):(item.pattern+'（'+PATTERN_JP[item.pattern]+'）');
+    body='<div class="read-pattern-badge">'+badgeTxt+'</div>'+
+      '<div class="vquiz-card">'+
+        '<div class="read-sentence">'+chunkHTML+'</div>'+
+        (rState.showJp?'<div class="read-jp">'+item.jp+'</div>':'')+
+      '</div>'+
+      (rState.showJp?'':'<button class="jp-toggle-btn" onclick="toggleReadJp()">日本語訳を見る</button>')+
+      '<div class="action-row" style="margin-top:14px;"><button class="next-btn" onclick="nextReadItem()">🔊 音読した → 次へ</button></div>';
+  }
+  app.innerHTML=progressHTML+body;
+}
+
+function tapReadWord(i){
+  var item=rState.queue[rState.idx];
+  if(rState.revealed)return;
+  var words=item.chunks.map(function(c){return c.t;}).join(' ').split(' ');
+  var w=words[i].replace(/[.,]/g,'').toLowerCase();
+  var verb=item.chunks.filter(function(c){return c.r==='V';})[0].t.toLowerCase();
+  if(w===verb){
+    rState.revealed=true;render();
+  } else {
+    rState.missThis++;
+    var el=document.querySelectorAll('#readSentence .read-word')[i];
+    if(el){el.classList.add('miss');setTimeout(function(){el.classList.remove('miss');},300);}
+  }
+}
+function toggleReadJp(){rState.showJp=true;render();}
+
+function nextReadItem(){
+  var item=rState.queue[rState.idx];
+  if(rState.level==='hs'){
+    var g=item.grammar;
+    var gs=rState.hsStats[g]||{seen:0,miss:0};
+    gs.seen++;
+    if(rState.missThis>0)gs.miss++;
+    rState.hsStats[g]=gs;
+    saveHsStats(rState.hsStats);
+  } else {
+    var p=item.pattern;
+    var ps=rState.patternStats[p]||{seen:0,miss:0};
+    ps.seen++;
+    if(rState.missThis>0)ps.miss++;
+    rState.patternStats[p]=ps;
+    savePatternStats(rState.patternStats);
+  }
+
+  if(rState.idx>=rState.queue.length-1){rState.screen='result';}
+  else{rState.idx++;rState.revealed=false;rState.missThis=0;rState.showJp=false;}
+  render();
+}
+
+function renderReadResult(){
+  var labels=rState.level==='hs'?HS_GRAMMARS:READ_PATTERNS;
+  var jpMap=rState.level==='hs'?GRAMMAR_JP:PATTERN_JP;
+  var statSrc=rState.level==='hs'?rState.hsStats:rState.patternStats;
+  var weak=labels.filter(function(p){
+    var s=statSrc[p];
+    return s&&s.seen>=3&&(s.miss/s.seen)>=0.4;
+  });
+  var weakHTML=weak.length>0?
+    '<div class="word-box"><div class="word-label">⚠️ 苦手かもしれない文型・構文</div><div class="word-list">'+
+      weak.map(function(p){return '<span class="word-chip"><b>'+p+'</b>（'+jpMap[p]+'）</span>';}).join('')+
+    '</div></div>'
+    : '<div style="color:var(--muted);font-size:.85rem;text-align:center;margin-bottom:14px;">今のところ苦手な文型・構文はなし👍</div>';
+  app.innerHTML='<div class="result-wrap" style="text-align:center;">'+
+    '<div class="result-emoji">🎉</div>'+
+    '<div class="result-title">お疲れさま！</div>'+
+    '<div class="result-sub">'+rState.queue.length+'文、音読完了</div>'+
+    weakHTML+
+    '<div class="action-btns">'+
+      '<button class="restart-btn" onclick="startReadSession(rState.cat)">もう一度</button>'+
+      '<button class="retry-btn" style="border-color:var(--accent);color:var(--accent);" onclick="rState.screen=\'start\';render();">パターンを変える</button>'+
+    '</div>'+
+  '</div>';
+}
+
 window.setCategory=setCategory;window.setMode=setMode;window.changeCat=changeCat;
 window.answerChoice=answerChoice;window.answerInput=answerInput;window.nextQuestion=nextQuestion;
 window.finishQuiz=finishQuiz;window.startQuiz=startQuiz;window.restartQuiz=restartQuiz;
@@ -860,6 +1106,8 @@ window.retryMistakes=retryMistakes;window.switchTab=switchTab;
 window.setVocabCat=setVocabCat;window.setVocabMode=setVocabMode;
 window.answerVQuiz=answerVQuiz;window.nextVQuiz=nextVQuiz;window.restartVQuiz=restartVQuiz;
 window.resetStats=resetStats;
+window.setReadCat=setReadCat;window.startReadSession=startReadSession;window.tapReadWord=tapReadWord;
+window.toggleReadJp=toggleReadJp;window.nextReadItem=nextReadItem;window.setReadLevel=setReadLevel;
 render();
 </script>
 </body>
