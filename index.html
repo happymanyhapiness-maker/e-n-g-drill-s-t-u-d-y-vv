@@ -149,6 +149,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .role-M .read-chunk-label{background:var(--border);color:var(--muted);} .role-M .read-chunk-text{border-color:var(--border);color:var(--muted);font-weight:500;font-size:1rem;}
 .read-pattern-badge{display:block;text-align:center;font-size:.8rem;font-weight:800;padding:5px 14px;border-radius:20px;background:rgba(79,142,247,.15);color:var(--accent);margin:0 auto 10px;width:fit-content;}
 .read-jp{font-size:.85rem;color:var(--muted);text-align:center;margin-top:6px;}
+.speak-btn{display:block;margin:0 auto 14px;padding:8px 18px;background:var(--surface);border:1.5px solid var(--accent);color:var(--accent);border-radius:20px;font-size:.82rem;font-weight:700;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.speak-btn:active{opacity:.65;}
 .read-chunk-note{font-size:.62rem;color:var(--muted);font-style:italic;margin-top:3px;max-width:160px;text-align:center;line-height:1.3;}
 .jp-toggle-btn{display:block;margin:10px auto 0;padding:6px 16px;background:transparent;border:1px solid var(--border);border-radius:14px;color:var(--muted);font-size:.76rem;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 </style>
@@ -483,7 +485,7 @@ function updateBBTabs(){
     if(el)el.className='bb-btn'+(state.tab===t?' active':'');
   });
 }
-function switchTab(tab){state.tab=tab;if(tab==='drill'&&state.screen==='quiz'){renderQuiz();updateBBTabs();return;}render();}
+function switchTab(tab){try{window.speechSynthesis.cancel();}catch(e){}state.tab=tab;if(tab==='drill'&&state.screen==='quiz'){renderQuiz();updateBBTabs();return;}render();}
 
 function catBtnsHTML(onclick){
   return CATS.map(function(c){
@@ -962,6 +964,7 @@ function buildReadQueue(){
   return shuffle(pool).slice(0,Math.min(5,pool.length));
 }
 function startReadSession(cat){
+  try{window.speechSynthesis.cancel();}catch(e){}
   rState.cat=cat;
   rState.queue=buildReadQueue();
   rState.idx=0;rState.revealed=false;rState.missThis=0;rState.showJp=false;
@@ -970,6 +973,23 @@ function startReadSession(cat){
 }
 function setReadCat(c){rState.cat=c;renderReadStart();}
 function setReadLevel(lv){rState.level=lv;rState.cat='all';renderReadStart();}
+
+var _readUtter=null; // Safari対策: utteranceがGCされると再生が止まることがあるのでグローバル保持
+function speakSentence(text){
+  try{
+    if(!('speechSynthesis' in window))return;
+    window.speechSynthesis.cancel();
+    _readUtter=new SpeechSynthesisUtterance(text);
+    _readUtter.lang='en-US';
+    _readUtter.rate=0.9;
+    window.speechSynthesis.speak(_readUtter);
+  }catch(e){}
+}
+function speakCurrentRead(){
+  var item=rState.queue[rState.idx];
+  if(!item)return;
+  speakSentence(item.chunks.map(function(c){return c.t;}).join(' '));
+}
 
 function renderRead(){
   if(rState.screen==='start')renderReadStart();
@@ -1018,7 +1038,10 @@ function renderReadQuiz(){
       '💭 文の中に動詞が複数あるかも。<b>メインの動詞</b>(節の中のものじゃなく)を見つけてタップ！':
       '💭 これ何文型かな？少し考えてみて。決まったら<b>動詞</b>をタップ！';
     body='<div class="read-prompt">'+promptTxt+'</div>'+
-      '<div class="vquiz-card"><div class="read-sentence" id="readSentence">'+wHTML+'</div></div>';
+      '<div class="vquiz-card">'+
+        '<button class="speak-btn" onclick="speakCurrentRead()">🔊 音声で聞く</button>'+
+        '<div class="read-sentence" id="readSentence">'+wHTML+'</div>'+
+      '</div>';
   } else {
     var chunkHTML=item.chunks.map(function(c){
       return '<span class="read-chunk role-'+c.r+'"><span class="read-chunk-label">'+c.r+'</span><span class="read-chunk-text">'+c.t+'</span>'+(c.note?'<span class="read-chunk-note">'+c.note+'</span>':'')+'</span>';
@@ -1026,6 +1049,7 @@ function renderReadQuiz(){
     var badgeTxt=rState.level==='hs'?(item.grammar+'（'+GRAMMAR_JP[item.grammar]+'）'):(item.pattern+'（'+PATTERN_JP[item.pattern]+'）');
     body='<div class="read-pattern-badge">'+badgeTxt+'</div>'+
       '<div class="vquiz-card">'+
+        '<button class="speak-btn" onclick="speakCurrentRead()">🔊 音声で聞く</button>'+
         '<div class="read-sentence">'+chunkHTML+'</div>'+
         (rState.showJp?'<div class="read-jp">'+item.jp+'</div>':'')+
       '</div>'+
@@ -1052,6 +1076,7 @@ function tapReadWord(i){
 function toggleReadJp(){rState.showJp=true;render();}
 
 function nextReadItem(){
+  try{window.speechSynthesis.cancel();}catch(e){}
   var item=rState.queue[rState.idx];
   if(rState.level==='hs'){
     var g=item.grammar;
@@ -1108,6 +1133,7 @@ window.answerVQuiz=answerVQuiz;window.nextVQuiz=nextVQuiz;window.restartVQuiz=re
 window.resetStats=resetStats;
 window.setReadCat=setReadCat;window.startReadSession=startReadSession;window.tapReadWord=tapReadWord;
 window.toggleReadJp=toggleReadJp;window.nextReadItem=nextReadItem;window.setReadLevel=setReadLevel;
+window.speakCurrentRead=speakCurrentRead;
 render();
 </script>
 </body>
