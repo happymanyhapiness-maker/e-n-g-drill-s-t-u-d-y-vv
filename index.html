@@ -3,19 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>英語トレーニング｜毎日10分</title>
+<title>10min English Lab</title>
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap');
-:root{--bg:#F7F3EC;--surface:#F0EAE0;--card:#FBF9F5;--accent:#B08A6C;--accent2:#B08A6C;--green:#3E7A5C;--red:#B85C6B;--yellow:#8A8A8A;--text:#1A1A1A;--muted:#8A8A8A;--border:#E5E5E5;}
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;900&family=Noto+Sans+JP:wght@400;500;700&display=swap');
+:root{--bg:#F7F3EC;--surface:#F0EAE0;--card:#FBF9F5;--accent:#B08A6C;--accent2:#B08A6C;--green:#3E7A5C;--red:#B85C6B;--text:#1A1A1A;--muted:#8A8A8A;--border:#E5E5E5;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 14px 70px;}
 .header{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);}
-.logo{font-family:'Nunito',sans-serif;font-weight:700;font-size:1.2rem;color:var(--accent);letter-spacing:.02em;}
-.streak{background:var(--surface);border:1px solid var(--border);padding:5px 13px;border-radius:20px;font-size:.83rem;font-weight:700;color:var(--yellow);}
-.cats{width:100%;max-width:700px;display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.cat-btn{padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--surface);color:var(--muted);font-size:.78rem;font-weight:600;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.cat-btn.active{background:var(--accent);border-color:var(--accent);color:#fff;}
-.cat-btn.weak{border-color:var(--red);color:var(--red);}
+.logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.logo-num{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:var(--accent);line-height:1;}
+.logo-divider{width:1px;height:20px;background:var(--border);}
+.logo-text{display:flex;flex-direction:column;line-height:1.05;}
+.logo-text b{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.02rem;color:var(--text);}
+.logo-text span{font-family:'Noto Sans JP',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:.12em;}
+.streak{background:var(--surface);border:1px solid var(--border);padding:5px 13px;border-radius:20px;font-size:.83rem;font-weight:700;color:var(--muted);}
+.cat-select{width:100%;max-width:700px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:.88rem;font-weight:600;font-family:'Noto Sans JP',sans-serif;margin-bottom:14px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%238A8A8A'%3E%3Cpath d='M5.5 7.5l4.5 5 4.5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px;}
+.cat-select:focus{outline:none;border-color:var(--accent);}
 .progress-wrap{width:100%;max-width:700px;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .progress-bar{flex:1;height:7px;background:var(--surface);border-radius:4px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s;}
@@ -64,13 +67,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .next-btn{padding:11px 26px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:13px;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
 /* start */
 .start-wrap{width:100%;max-width:700px;text-align:center;animation:fadeUp .4s ease;}
-.start-title{font-family:'Nunito',sans-serif;font-size:2rem;font-weight:900;line-height:1.25;margin-bottom:10px;}
+.start-title{font-family:'Baloo 2',sans-serif;font-size:2rem;font-weight:800;line-height:1.25;margin-bottom:10px;}
 .start-sub{color:var(--muted);font-size:.9rem;line-height:1.8;margin-bottom:20px;}
-.feature-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px;}
-.feature{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:14px;text-align:left;}
-.fi{font-size:1.4rem;margin-bottom:5px;}
-.ft{font-size:.84rem;font-weight:700;margin-bottom:3px;}
-.fd{font-size:.75rem;color:var(--muted);}
 .mode-row{display:flex;gap:10px;margin-bottom:14px;}
 .mode-btn{flex:1;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 .mode-btn.selected{border-color:var(--accent);background:rgba(176,138,108,.1);color:var(--accent);}
@@ -142,8 +140,8 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .read-chunk-text{font-size:1.18rem;font-weight:700;padding-bottom:3px;border-bottom:3px solid;}
 .role-S .read-chunk-label{background:var(--accent);} .role-S .read-chunk-text{border-color:var(--accent);color:var(--accent);}
 .role-V .read-chunk-label{background:var(--green);} .role-V .read-chunk-text{border-color:var(--green);color:var(--green);}
-.role-O .read-chunk-label{background:var(--yellow);color:#fff;} .role-O .read-chunk-text{border-color:var(--yellow);color:var(--yellow);}
-.role-O1 .read-chunk-label{background:var(--yellow);color:#fff;} .role-O1 .read-chunk-text{border-color:var(--yellow);color:var(--yellow);}
+.role-O .read-chunk-label{background:var(--muted);color:#fff;} .role-O .read-chunk-text{border-color:var(--muted);color:var(--muted);}
+.role-O1 .read-chunk-label{background:var(--muted);color:#fff;} .role-O1 .read-chunk-text{border-color:var(--muted);color:var(--muted);}
 .role-O2 .read-chunk-label{background:#C98A4A;color:#fff;} .role-O2 .read-chunk-text{border-color:#C98A4A;color:#C98A4A;}
 .role-C .read-chunk-label{background:var(--accent2);} .role-C .read-chunk-text{border-color:var(--accent2);color:var(--accent2);}
 .role-M .read-chunk-label{background:var(--border);color:var(--muted);} .role-M .read-chunk-text{border-color:var(--border);color:var(--muted);font-weight:500;font-size:1rem;}
@@ -157,7 +155,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 </head>
 <body>
 <div class="header">
-  <div class="logo" onclick="goHome()" style="cursor:pointer;">ENG10</div>
+  <div class="logo" onclick="goHome()">
+    <span class="logo-num">10</span>
+    <span class="logo-divider"></span>
+    <span class="logo-text"><b>English Lab</b><span>MINUTES A DAY</span></span>
+  </div>
   <div class="streak" id="streakBadge">🔥 0日連続</div>
 </div>
 <div id="app"></div>
@@ -488,33 +490,31 @@ function updateBBTabs(){
 function switchTab(tab){try{window.speechSynthesis.cancel();}catch(e){}state.tab=tab;if(tab==='drill'&&state.screen==='quiz'){renderQuiz();updateBBTabs();return;}render();}
 function goHome(){try{window.speechSynthesis.cancel();}catch(e){}clearInterval(state.timerHandle);state.tab='drill';state.screen='start';render();}
 
-function catBtnsHTML(onclick){
-  return CATS.map(function(c){
-    var s=state.catStats[c];
-    var pct=s&&s.total>0?Math.round(s.correct/s.total*100):-1;
-    var weak=pct>=0&&pct<60;
-    return '<button class="cat-btn'+(state.category===c?' active':'')+(weak?' weak':'')+'" onclick="'+onclick+'(\''+c+'\')">'+(c==='all'?'すべて':c)+(weak?' ⚠️':'')+'</button>';
+function catSelectHTML(cats,current,onchange,showWeak){
+  var opts=cats.map(function(c){
+    var label=c==='all'?'すべて':c;
+    if(showWeak){
+      var s=state.catStats[c];
+      var pct=s&&s.total>0?Math.round(s.correct/s.total*100):-1;
+      if(pct>=0&&pct<60)label='⚠️ '+label;
+    }
+    return '<option value="'+c+'"'+(current===c?' selected':'')+'>'+label+'</option>';
   }).join('');
+  return '<select class="cat-select" onchange="'+onchange+'(this.value)">'+opts+'</select>';
 }
 
 function renderStart(){
   var mc=state.mistakes.length;
   app.innerHTML='<div class="start-wrap">'+
-    '<div class="start-title">毎日10分で<br>英語を取り戻せ！</div>'+
-    '<div class="start-sub">中学英語の基礎〜応用まで全118問。<br>苦手分析・単語帳・間違い直しつき。</div>'+
-    '<div class="feature-grid">'+
-      '<div class="feature"><div class="fi">📚</div><div class="ft">118問収録</div><div class="fd">中学英語全範囲をカバー</div></div>'+
-      '<div class="feature"><div class="fi">🎯</div><div class="ft">苦手分析</div><div class="fd">カテゴリ別正答率を表示</div></div>'+
-      '<div class="feature"><div class="fi">🔁</div><div class="ft">間違い直し</div><div class="fd">間違えた問題だけ復習</div></div>'+
-      '<div class="feature"><div class="fi">📖</div><div class="ft">単語帳</div><div class="fd">覚えるべき単語・表現43件</div></div>'+
-    '</div>'+
+    '<div class="start-title">10min <span style="color:var(--accent);">English Lab</span></div>'+
+    '<div class="start-sub">中学英語 全118問。苦手分析・単語帳・間違い直しつき。</div>'+
     '<div style="font-size:.83rem;color:var(--muted);margin-bottom:8px;text-align:left;">モードを選ぶ</div>'+
     '<div class="mode-row">'+
       '<button class="mode-btn'+(state.mode==='normal'?' selected':'')+'" onclick="setMode(\'normal\')">📝 通常モード<br><span style="font-size:.73rem;font-weight:400">ランダム15問</span></button>'+
       '<button class="mode-btn'+(state.mode==='retry'?' selected':'')+'" onclick="setMode(\'retry\')">🔁 間違い直し<br><span style="font-size:.73rem;font-weight:400">'+mc+'問</span></button>'+
     '</div>'+
     '<div style="font-size:.83rem;color:var(--muted);margin-bottom:8px;text-align:left;">カテゴリ（⚠️は苦手）</div>'+
-    '<div class="cats">'+catBtnsHTML('setCategory')+'</div>'+
+    catSelectHTML(CATS,state.category,'setCategory',true)+
     '<button class="start-btn" onclick="startQuiz()">トレーニング開始 →</button>'+
   '</div>';
 }
@@ -561,7 +561,7 @@ function renderQuiz(){
 
   // ✅ ヒント行・ひっかけ表示は完全削除済み
   app.innerHTML=
-    '<div class="cats">'+catBtnsHTML('changeCat')+'</div>'+
+    catSelectHTML(CATS,state.category,'changeCat',true)+
     '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="progress-label">'+(state.idx+1)+'/'+total+'</div></div>'+
     '<div class="timer-row"><div class="'+tc+'" id="timerEl">⏱ '+fmt(state.timerSec)+'</div></div>'+
     '<div class="card">'+
@@ -589,7 +589,7 @@ function renderFeedback(q){
   if(fb)fb.innerHTML='<div class="feedback '+(isC?'ok':'ng')+'">'+
     '<div class="fb-title">'+(isC?'✅ 正解！':'❌ 不正解')+'</div>'+
     '<div class="fb-body">'+
-      (!isC&&q.type!=='choice'?'<div style="margin-bottom:6px;">正しい答え: <b style="color:var(--yellow)">'+q.answer+'</b></div>':'')+
+      (!isC&&q.type!=='choice'?'<div style="margin-bottom:6px;">正しい答え: <b style="color:var(--muted)">'+q.answer+'</b></div>':'')+
       q.exp+
       '<div class="grammar-box">📌 文法ポイント: '+q.gram+'</div>'+
     '</div></div>';
@@ -657,7 +657,7 @@ function renderResult(){
       '<span style="color:'+(res.correct?'var(--green)':'var(--red)')+';">'+(res.correct?'✅':'❌')+'</span> '+
       '<span style="color:var(--muted);margin-left:3px;">['+res.q.cat+']</span> '+
       res.q.text.replace(/<[^>]+>/g,'').substring(0,28)+'…'+
-      (!res.correct?'<div style="margin-top:3px;padding-left:16px;color:var(--muted);">正解: <span style="color:var(--yellow);">'+ca+'</span></div>':'')+
+      (!res.correct?'<div style="margin-top:3px;padding-left:16px;color:var(--muted);">正解: <span style="color:var(--muted);">'+ca+'</span></div>':'')+
     '</div>';
   });
   rev+='</div>';
@@ -675,7 +675,7 @@ function renderResult(){
         '<div class="stat"><div class="sv" style="color:var(--green)">'+state.correct+'</div><div class="sl">正解</div></div>'+
         '<div class="stat"><div class="sv" style="color:var(--red)">'+state.wrong+'</div><div class="sl">不正解</div></div>'+
         '<div class="stat"><div class="sv">'+fmt(timeUsed)+'</div><div class="sl">タイム</div></div>'+
-        '<div class="stat"><div class="sv" style="color:var(--yellow)">'+state.streak+'</div><div class="sl">連続日数</div></div>'+
+        '<div class="stat"><div class="sv" style="color:var(--muted)">'+state.streak+'</div><div class="sl">連続日数</div></div>'+
         '<div class="stat"><div class="sv" style="color:var(--red)">'+state.mistakes.length+'</div><div class="sl">要復習</div></div>'+
       '</div>'+
     '</div>'+
@@ -711,7 +711,7 @@ function getVocabPool(mode){
 
 function renderVocab(){
   var cats=['all'].concat(VOCAB.map(function(v){return v.cat;}).filter(function(v,i,a){return a.indexOf(v)===i;}));
-  var cbHTML=cats.map(function(c){return '<button class="cat-btn'+(vState.catFilter===c?' active':'')+'" onclick="setVocabCat(\''+c+'\')">'+(c==='all'?'すべて':c)+'</button>';}).join('');
+  var cbHTML=catSelectHTML(cats,vState.catFilter,'setVocabCat',false);
 
   // 統計集計
   var all=vState.catFilter==='all'?VOCAB:VOCAB.filter(function(v){return v.cat===vState.catFilter;});
@@ -742,8 +742,7 @@ function renderVocab(){
 
   var header='<div class="vocab-wrap">'+
     '<div style="font-size:.97rem;font-weight:700;margin-bottom:12px;">📖 単語帳（'+all.length+'件）</div>'+
-    statsBar+modeHTML+
-    '<div class="cats">'+cbHTML+'</div>';
+    statsBar+modeHTML+cbHTML;
 
   if(vState.mode==='list') app.innerHTML=header+renderVocabList(all)+'</div>';
   else app.innerHTML=header+renderVQuiz(vState.mode)+'</div>';
@@ -897,7 +896,7 @@ function renderStatsTab(){
     var s=state.catStats[c];
     if(!s||s.total===0)return '<div class="stat-row"><div class="stat-cat">'+c+'</div><div style="font-size:.78rem;color:var(--muted)">未挑戦</div></div>';
     var pct=Math.round(s.correct/s.total*100);
-    var color=pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)';
+    var color=pct>=80?'var(--green)':pct>=60?'var(--muted)':'var(--red)';
     return '<div class="stat-row">'+
       '<div class="stat-cat">'+(pct<60?'⚠️ ':'')+c+'</div>'+
       '<div class="stat-right">'+
@@ -1000,10 +999,7 @@ function renderRead(){
 
 function renderReadStart(){
   var cats=rState.level==='hs'?['all'].concat(HS_GRAMMARS):['all'].concat(READ_PATTERNS);
-  var cbHTML=cats.map(function(c){
-    var label=c==='all'?'すべて':c;
-    return '<button class="cat-btn'+(rState.cat===c?' active':'')+'" onclick="setReadCat(\''+c+'\')">'+label+'</button>';
-  }).join('');
+  var cbHTML=catSelectHTML(cats,rState.cat,'setReadCat',false);
   var levelHTML='<div class="vocab-mode-row">'+
     '<button class="vocab-mode-btn'+(rState.level==='basic'?' active':'')+'" onclick="setReadLevel(\'basic\')">📘 中学（基本5文型）</button>'+
     '<button class="vocab-mode-btn'+(rState.level==='hs'?' active':'')+'" onclick="setReadLevel(\'hs\')">📗 高校入門（複文）</button>'+
@@ -1011,8 +1007,7 @@ function renderReadStart(){
   app.innerHTML='<div class="start-wrap">'+
     '<div class="start-title">🗣️ 文型タグ音読</div>'+
     '<div class="start-sub">動詞を見つけてタップ→S・O・Cが浮き上がる→声に出して読もう。採点もテストもなし、気楽にどうぞ。</div>'+
-    levelHTML+
-    '<div class="cats" style="justify-content:center;">'+cbHTML+'</div>'+
+    levelHTML+cbHTML+
     '<button class="start-btn" onclick="startReadSession(rState.cat)">音読スタート →</button>'+
   '</div>';
 }
