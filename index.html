@@ -8,9 +8,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Nunito:wght@700;900&family=Klee+One:wght@600&family=Noto+Sans+JP:wght@400;500;700&display=swap');
 :root{--bg:#F7F3EC;--surface:#F0EAE0;--card:#FBF9F5;--accent:#B08A6C;--accent2:#B08A6C;--green:#3E7A5C;--red:#B85C6B;--text:#1A1A1A;--muted:#8A8A8A;--border:#E5E5E5;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:16px 14px 70px;}
-#app{width:100%;}
-.header{width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:16px 14px 70px;}
+.header{width:100%;max-width:700px;display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:14px;border-bottom:1px solid var(--border);}
 .logo{display:flex;align-items:center;gap:10px;cursor:pointer;}
 .logo-num{font-family:'Baloo 2',sans-serif;font-weight:800;font-size:1.7rem;color:var(--accent);line-height:1;}
 .logo-divider{width:1px;height:20px;background:var(--border);}
@@ -18,11 +17,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .logo-text b{font-family:'Baloo 2',sans-serif;font-weight:700;font-size:1.02rem;color:var(--text);}
 .logo-text span{font-family:'Noto Sans JP',sans-serif;font-size:.6rem;font-weight:700;color:var(--muted);letter-spacing:.12em;}
 .streak{background:var(--surface);border:1px solid var(--border);padding:5px 13px;border-radius:20px;font-size:.83rem;font-weight:700;color:var(--muted);}
-.cat-select{width:100%;max-width:700px;margin:0 auto;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:.88rem;font-weight:600;font-family:'Noto Sans JP',sans-serif;margin-bottom:14px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%238A8A8A'%3E%3Cpath d='M5.5 7.5l4.5 5 4.5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px;}
+.cat-select{width:100%;max-width:700px;padding:12px 14px;border-radius:12px;border:1.5px solid var(--border);background:var(--surface);color:var(--text);font-size:.88rem;font-weight:600;font-family:'Noto Sans JP',sans-serif;margin-bottom:14px;cursor:pointer;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%238A8A8A'%3E%3Cpath d='M5.5 7.5l4.5 5 4.5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;background-size:16px;}
 .cat-select:focus{outline:none;border-color:var(--accent);}
 .cat-random-row{display:flex;justify-content:flex-end;margin-bottom:10px;}
 .cat-random-btn{background:none;border:none;color:var(--accent);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;padding:4px;}
-.cat-card-list{width:100%;max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
+.cat-card-list{width:100%;max-width:700px;background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden;margin-bottom:16px;}
 .cat-card-row{display:flex;align-items:center;gap:13px;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;-webkit-tap-highlight-color:transparent;}
 .cat-card-row:last-child{border-bottom:none;}
 @media(hover:hover){.cat-card-row:hover{background:var(--surface);}}
@@ -37,15 +36,15 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .cat-card-pct{font-size:.78rem;color:var(--muted);font-weight:700;width:34px;text-align:right;flex-shrink:0;}
 .cat-card-arrow{color:var(--border);font-size:1.1rem;flex-shrink:0;}
 .cat-more-btn{display:block;width:100%;padding:13px;background:var(--surface);border:none;border-top:1px solid var(--border);color:var(--accent);font-size:.85rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.progress-wrap{width:100%;max-width:700px;margin:0 auto;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.progress-wrap{width:100%;max-width:700px;display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .progress-bar{flex:1;height:7px;background:var(--surface);border-radius:4px;overflow:hidden;}
 .progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .5s;}
 .progress-label{font-size:.78rem;color:var(--muted);white-space:nowrap;}
-.timer-row{width:100%;max-width:700px;margin:0 auto;display:flex;justify-content:flex-end;margin-bottom:6px;}
+.timer-row{width:100%;max-width:700px;display:flex;justify-content:flex-end;margin-bottom:6px;}
 .timer{font-family:'Nunito',sans-serif;font-size:.97rem;font-weight:800;color:var(--muted);}
 .timer.urgent{color:var(--red);animation:pulse 1s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.card{width:100%;max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:12px;animation:fadeUp .3s ease;}
+.card{width:100%;max-width:700px;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:12px;animation:fadeUp .3s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
 .q-tag{display:inline-block;font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:10px;margin-bottom:10px;background:rgba(176,138,108,.15);color:var(--accent);}
 .q-tag.trap{background:rgba(184,92,107,.15);color:var(--red);}
@@ -67,24 +66,24 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .q-input.ok{border-color:var(--green);}
 .q-input.ng{border-color:var(--red);}
 .submit-btn{align-self:flex-start;padding:10px 24px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:12px;color:#fff;font-size:.95rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
-.feedback{width:100%;max-width:700px;margin:0 auto;border-radius:15px;padding:16px 18px;margin-bottom:10px;border:2px solid;animation:fadeUp .3s ease;}
+.feedback{width:100%;max-width:700px;border-radius:15px;padding:16px 18px;margin-bottom:10px;border:2px solid;animation:fadeUp .3s ease;}
 .feedback.ok{background:#EFF6F1;border-color:#3E7A5C;box-shadow:none;}
 .feedback.ng{background:#FAEEF0;border-color:#B85C6B;box-shadow:none;}
 .fb-title{font-size:1rem;font-weight:800;margin-bottom:7px;color:var(--text);}
 .fb-body{font-size:.88rem;line-height:1.85;color:var(--text);}
 .grammar-box{margin-top:10px;padding:9px 13px;background:#F0EAE0;border-radius:10px;font-size:.82rem;color:var(--text);border-left:3px solid var(--accent);}
-.advice-box{width:100%;max-width:700px;margin:0 auto;background:#F0EAE0;border:1px solid var(--accent2);border-radius:14px;padding:16px 18px;margin-bottom:10px;}
+.advice-box{width:100%;max-width:700px;background:#F0EAE0;border:1px solid var(--accent2);border-radius:14px;padding:16px 18px;margin-bottom:10px;}
 .advice-label{font-size:.7rem;font-weight:700;letter-spacing:.1em;color:var(--accent2);text-transform:uppercase;margin-bottom:7px;}
 .advice-text{font-size:.88rem;line-height:1.85;color:var(--text);}
-.word-box{width:100%;max-width:700px;margin:0 auto;background:rgba(176,138,108,.08);border:1px solid rgba(176,138,108,.3);border-radius:13px;padding:13px 16px;margin-bottom:10px;}
+.word-box{width:100%;max-width:700px;background:rgba(176,138,108,.08);border:1px solid rgba(176,138,108,.3);border-radius:13px;padding:13px 16px;margin-bottom:10px;}
 .word-label{font-size:.7rem;font-weight:700;letter-spacing:.08em;color:var(--accent2);margin-bottom:8px;}
 .word-list{display:flex;flex-wrap:wrap;gap:7px;}
 .word-chip{background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:5px 11px;font-size:.82rem;color:var(--text);}
 .word-chip b{color:var(--accent);}
-.action-row{width:100%;max-width:700px;margin:0 auto;display:flex;justify-content:flex-end;margin-bottom:10px;}
+.action-row{width:100%;max-width:700px;display:flex;justify-content:flex-end;margin-bottom:10px;}
 .next-btn{padding:11px 26px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:13px;color:#fff;font-size:.95rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
 /* start */
-.start-wrap{width:100%;max-width:700px;margin:0 auto;text-align:center;animation:fadeUp .4s ease;}
+.start-wrap{width:100%;max-width:700px;text-align:center;animation:fadeUp .4s ease;}
 .start-title{font-family:'Baloo 2',sans-serif;font-size:2rem;font-weight:800;line-height:1.25;margin-bottom:10px;}
 .start-sub{color:var(--muted);font-size:.9rem;line-height:1.8;margin-bottom:20px;}
 .mode-row{display:flex;gap:10px;margin-bottom:14px;}
@@ -92,7 +91,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .mode-btn.selected{border-color:var(--accent);background:rgba(176,138,108,.1);color:var(--accent);}
 .start-btn{padding:14px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:13px;color:#fff;font-size:1rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;width:100%;}
 /* result */
-.result-wrap{width:100%;max-width:700px;margin:0 auto;animation:fadeUp .4s ease;}
+.result-wrap{width:100%;max-width:700px;animation:fadeUp .4s ease;}
 .result-top{text-align:center;margin-bottom:18px;}
 .result-emoji{font-size:3rem;margin-bottom:10px;}
 .result-title{font-family:'Nunito',sans-serif;font-size:1.7rem;font-weight:900;margin-bottom:5px;}
@@ -119,11 +118,11 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .restart-btn{padding:12px 26px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;border-radius:13px;color:#fff;font-size:.93rem;font-weight:800;cursor:pointer;font-family:'Nunito',sans-serif;}
 .retry-btn{padding:12px 20px;background:var(--surface);border:1.5px solid var(--red);border-radius:13px;color:var(--red);font-size:.88rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 /* vocab */
-.vocab-wrap{width:100%;max-width:700px;margin:0 auto;animation:fadeUp .3s ease;}
+.vocab-wrap{width:100%;max-width:700px;animation:fadeUp .3s ease;}
 .vocab-mode-row{display:flex;gap:8px;margin-bottom:14px;}
 .vocab-mode-btn{flex:1;padding:10px;border-radius:11px;border:1.5px solid var(--border);background:var(--surface);color:var(--muted);font-size:.82rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
 .vocab-mode-btn.active{border-color:var(--accent);background:rgba(176,138,108,.12);color:var(--accent);}
-.vquiz-card{width:100%;max-width:700px;margin:0 auto;background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:12px;animation:fadeUp .3s ease;}
+.vquiz-card{background:var(--card);border:1px solid var(--border);border-radius:18px;padding:22px;margin-bottom:12px;animation:fadeUp .3s ease;}
 .vquiz-q{font-size:.82rem;color:var(--muted);margin-bottom:6px;}
 .vquiz-en{font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:4px;line-height:1.4;}
 .vquiz-cat{font-size:.72rem;color:var(--accent2);margin-bottom:16px;}
@@ -135,7 +134,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .vocab-badge.review{background:rgba(184,92,107,.15);color:var(--red);border:1px solid var(--red);}
 .vocab-badge.unseen{background:var(--border);color:var(--muted);}
 /* stats tab */
-.stats-wrap{width:100%;max-width:700px;margin:0 auto;animation:fadeUp .3s ease;}
+.stats-wrap{width:100%;max-width:700px;animation:fadeUp .3s ease;}
 .stat-row{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--border);}
 .stat-cat{font-size:.86rem;font-weight:600;}
 .stat-right{display:flex;align-items:center;gap:8px;}
@@ -207,7 +206,7 @@ var Q=[
 {id:16,cat:'一般動詞',tag:'⚠️ひっかけ：studyの三単現',type:'choice',text:'She （　） math every day.',hint:'studyの三単現はどうなる？',choices:['studys','study','studies','studing'],answer:2,words:['studies'],exp:'子音+yで終わる→yをiに変えてes。study→<b>studies</b>',gram:'子音+y → ies（study→studies / try→tries）',adv:'⚠️ studysは間違い！yをiに変えてesにします📚'},
 {id:17,cat:'一般動詞',tag:'三単現：watchのes',type:'choice',text:'He （　） TV every evening.',hint:'watchの三単現は？',choices:['watchs','watch','watched','watches'],answer:3,words:['watches'],exp:'ch/sh/s/xで終わる → -es。watch→<b>watches</b>',gram:'語尾がch/sh/s/x → es（watch→watches）',adv:'watchesのようにchで終まる動詞はesをつける！'},
 {id:18,cat:'一般動詞',tag:'haveの三単現',type:'choice',text:'She （　） a dog.',hint:'haveの三単現は？',choices:['is','has','have','does'],answer:1,words:['has'],exp:'have（持つ）の三単現は<b>has</b>（不規則）。',gram:'have → has（三単現）',adv:'haveだけはhavesではなくhasになる不規則な三単現です🐕'},
-{id:19,cat:'一般動詞',tag:'過去疑問文',type:'choice',text:'（　） you eat breakfast today?',hint:'過去の疑問文は？',choices:['Do','Does','Did','Were'],answer:2,words:['Did'],exp:'過去の疑問文 → <b>Did</b>＋主語＋動詞の原形。',gram:'Did + 主語 + 動詞の原形?',adv:'⚠️ Didのあとは動詞の原形！Did you ate〜は間違い'},
+{id:19,cat:'一般動詞',tag:'過去疑問文',type:'choice',text:'（　） you eat breakfast yesterday?',hint:'過去の疑問文は？',choices:['Do','Does','Did','Were'],answer:2,words:['Did'],exp:'過去の疑問文 → <b>Did</b>＋主語＋動詞の原形。',gram:'Did + 主語 + 動詞の原形?',adv:'⚠️ Didのあとは動詞の原形！Did you ate〜は間違い'},
 {id:20,cat:'一般動詞',tag:'一般動詞：過去の否定',type:'choice',text:'I （　） to the party last night.',hint:'過去の否定は？',choices:["don't go","didn't go","wasn't go","not went"],answer:1,words:["didn't",'go'],exp:'過去の否定 → <b>didn\'t＋動詞の原形</b>。',gram:"didn't + 動詞の原形",adv:"didn'tの後は原形！didn't wentは間違いです🚫"},
 {id:21,cat:'現在進行形',tag:'現在進行形の基本',type:'choice',text:'I （　） TV now.',hint:'「〜しています」',choices:['watch','am watching','am watch','watches'],answer:1,words:['am','watching'],exp:'現在進行形 = <b>be動詞＋動詞ing</b>。am watching',gram:'am/is/are + 動詞ing',adv:'be動詞＋ingのセット！どちらかだけではダメ🎬'},
 {id:22,cat:'現在進行形',tag:'進行形の否定',type:'choice',text:'She （　） now.「彼女は今勉強していません」',hint:'進行形の否定は？',choices:['is not studying','does not studying','not is studying','is studying not'],answer:0,words:["isn't",'studying'],exp:'進行形の否定 = <b>be動詞＋not＋動詞ing</b>。',gram:"is not studying = isn't studying",adv:'進行形の否定はbe動詞の後にnotを置くだけ🙅'},
