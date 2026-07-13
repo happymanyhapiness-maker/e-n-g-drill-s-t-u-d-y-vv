@@ -128,7 +128,7 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .vquiz-en{font-size:1.2rem;font-weight:800;color:var(--accent);margin-bottom:4px;line-height:1.4;}
 .vquiz-cat{font-size:.72rem;color:var(--accent2);margin-bottom:16px;}
 .vocab-list-item{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-radius:12px;background:var(--surface);margin-bottom:7px;border:1px solid var(--border);}
-.vocab-list-en{font-size:.88rem;font-weight:700;color:#fff;}
+.vocab-list-en{font-size:.88rem;font-weight:700;color:var(--text);}
 .vocab-list-jp{font-size:.78rem;color:var(--muted);margin-top:2px;}
 .vocab-badge{font-size:.7rem;font-weight:700;padding:3px 9px;border-radius:8px;white-space:nowrap;flex-shrink:0;margin-left:8px;}
 .vocab-badge.master{background:rgba(62,122,92,.15);color:var(--green);border:1px solid var(--green);}
@@ -142,6 +142,31 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
 .stat-pct-bar{width:70px;height:5px;background:var(--border);border-radius:3px;overflow:hidden;}
 .stat-pct-fill{height:100%;border-radius:3px;}
 .stat-pct-num{font-size:.82rem;font-weight:700;width:34px;text-align:right;}
+.cal-wrap{width:100%;max-width:700px;margin:0 auto 18px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px 18px;}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.cal-nav-btn{background:var(--surface);border:1px solid var(--border);border-radius:8px;width:30px;height:30px;font-size:1rem;color:var(--accent);cursor:pointer;}
+.cal-month-label{font-weight:800;font-size:.95rem;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+.cal-dow{text-align:center;font-size:.68rem;color:var(--muted);font-weight:700;padding-bottom:4px;}
+.cal-cell{aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;font-size:.75rem;color:var(--muted);background:var(--surface);}
+.cal-cell.empty{background:transparent;}
+.cal-cell.lvl1{background:rgba(176,138,108,.28);color:var(--text);}
+.cal-cell.lvl2{background:rgba(176,138,108,.55);color:#fff;font-weight:700;}
+.cal-cell.lvl3{background:var(--accent);color:#fff;font-weight:800;}
+.cal-cell.today{border:2px solid var(--accent2);}
+.cal-legend{display:flex;align-items:center;gap:6px;justify-content:flex-end;margin-top:10px;font-size:.68rem;color:var(--muted);}
+.cal-legend-dot{width:11px;height:11px;border-radius:3px;display:inline-block;}
+.lr-passage-row{display:flex;align-items:center;gap:12px;padding:15px 18px;border-bottom:1px solid var(--border);cursor:pointer;background:var(--card);}
+.lr-passage-row:last-child{border-bottom:none;}
+@media(hover:hover){.lr-passage-row:hover{background:var(--surface);}}
+.lr-passage-title{font-weight:700;font-size:.92rem;margin-bottom:4px;}
+.lr-passage-meta{font-size:.72rem;color:var(--muted);}
+.lr-text-card{width:100%;max-width:700px;margin:0 auto 14px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:20px;line-height:2;font-size:.95rem;}
+.lr-text-card .sent-num{color:var(--accent);font-weight:700;font-size:.72rem;margin-right:4px;}
+.lr-title{font-size:1.05rem;font-weight:800;margin-bottom:10px;}
+.abort-row{width:100%;max-width:700px;margin:0 auto 8px;display:flex;justify-content:flex-end;}
+.abort-btn{background:transparent;border:1px solid var(--border);border-radius:14px;padding:6px 14px;color:var(--muted);font-size:.76rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;-webkit-tap-highlight-color:transparent;}
+.abort-btn:active{opacity:.6;}
 /* bottom nav */
 .bottom-bar{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;justify-content:center;gap:4px;padding:8px 14px 10px;z-index:100;}
 .bb-btn{flex:1;max-width:150px;padding:8px 4px;border-radius:10px;border:none;background:transparent;color:var(--muted);font-size:.75rem;font-weight:700;cursor:pointer;font-family:'Noto Sans JP',sans-serif;}
@@ -186,176 +211,490 @@ body{font-family:'Noto Sans JP',sans-serif;background:var(--bg);color:var(--text
   <button class="bb-btn" id="bb1" onclick="switchTab('vocab')">📖 単語帳</button>
   <button class="bb-btn" id="bb2" onclick="switchTab('stats')">📊 苦手分析</button>
   <button class="bb-btn" id="bb3" onclick="switchTab('read')">🗣️ 音読</button>
+  <button class="bb-btn" id="bb4" onclick="switchTab('longread')">📚 長文</button>
 </div>
 <script>
 var Q=[
-{id:1,cat:'be動詞',tag:'be動詞の基本',type:'choice',text:'（　）am a student.',hint:'主語は「私」',choices:['I','You','He','We'],answer:0,words:['am'],exp:'「私は生徒です」→ <b>I am a student.</b> amはI専用のbe動詞。',gram:'am(I)/is(he,she,it)/are(you,we,they)',adv:'be動詞はまずam・is・areを主語とセットで覚えよう！🌟'},
-{id:2,cat:'be動詞',tag:'be動詞の否定',type:'choice',text:'She （　） a doctor.「彼女は医者ではない」',hint:'否定文',choices:["isn't","aren't","wasn't","not is"],answer:0,words:["isn't"],exp:'is not = <b>isn\'t</b>。be動詞の後にnotをつける。',gram:"isn't=is not / aren't=are not",adv:"否定文はbe動詞の後にnotを置くだけ😊"},
-{id:3,cat:'be動詞',tag:'be動詞の疑問文',type:'choice',text:'（　） he a student?',hint:'be動詞を文頭に出す',choices:['Is','Are','Am','Does'],answer:0,words:['Is'],exp:'be動詞の疑問文は<b>Is/Are/Am</b>を文頭に出す。',gram:'疑問文: Is/Are + 主語 + 〜?',adv:'be動詞の疑問文はbe動詞を前に出すだけ❓'},
-{id:4,cat:'be動詞',tag:'be動詞の過去形',type:'choice',text:'We （　） very tired yesterday.',hint:'WeのBe動詞過去形は？',choices:['am','are','was','were'],answer:3,words:['were'],exp:'We/You/Theyの過去be動詞は<b>were</b>。',gram:'過去: I/He/She/It→was / We/You/They→were',adv:'wasとwereの2種類だけ！複数・youならwere📝'},
-{id:5,cat:'be動詞',tag:'⚠️ひっかけ：複数主語',type:'choice',text:'My parents （　） teachers.',hint:'parentsは何人？',choices:['is','am','are','be'],answer:2,words:['parents','are'],exp:'parents（両親=2人）は複数 → <b>are</b>。',gram:'複数の主語 → are',adv:'⚠️ parentsは複数！主語の数を確認する習慣をつけよう！'},
+{id:1,cat:'be動詞',tag:'be動詞の基本',type:'choice',text:'（　）am a diligent student.',hint:'主語は「私」',choices:['I','You','He','We'],answer:0,words:['am'],exp:'「私は真面目な生徒です」→ <b>I am a diligent student.</b> amはI専用のbe動詞。',gram:'am(I)/is(he,she,it)/are(you,we,they)',adv:'be動詞はまずam・is・areを主語とセットで覚えよう！🌟'},
+{id:4,cat:'be動詞',tag:'be動詞の過去形',type:'choice',text:'We （　） utterly exhausted yesterday.',hint:'WeのBe動詞過去形は？',choices:['am','are','was','were'],answer:3,words:['were'],exp:'We/You/Theyの過去be動詞は<b>were</b>。',gram:'過去: I/He/She/It→was / We/You/They→were',adv:'wasとwereの2種類だけ！複数・youならwere📝'},
+{id:5,cat:'be動詞',tag:'⚠️ひっかけ：複数主語',type:'choice',text:'My parents （　） educators.',hint:'parentsは何人？',choices:['is','am','are','be'],answer:2,words:['parents','are'],exp:'parents（両親=2人）は複数 → <b>are</b>。',gram:'複数の主語 → are',adv:'⚠️ parentsは複数！主語の数を確認する習慣をつけよう！'},
 {id:6,cat:'be動詞',tag:'⚠️ひっかけ：There is/are',type:'choice',text:'There （　） two cats in the room.',hint:'後ろの名詞に合わせる',choices:['is','am','be','are'],answer:3,words:['There','are'],exp:'two cats（複数）→ There <b>are</b>。後ろの名詞の数に合わせる。',gram:'There is + 単数 / There are + 複数',adv:'⚠️ Thereが主語ではなく後ろの名詞が主語！'},
-{id:7,cat:'be動詞',tag:'be動詞：場所を表す',type:'choice',text:'The book （　） on the desk.',hint:'「〜にある」もbe動詞',choices:['has','is','are','does'],answer:1,words:['is'],exp:'「〜にある・いる」は<b>is/are</b>で表す。',gram:'be動詞 = 〜です / 〜にある・いる',adv:'be動詞は「〜です」だけじゃなく「〜にある」も表せる🌟'},
-{id:8,cat:'be動詞',tag:'be動詞：過去の否定',type:'choice',text:'I （　） home last night.',hint:'過去の否定は？',choices:["wasn't","aren't","isn't","didn't"],answer:0,words:["wasn't"],exp:'was not = <b>wasn\'t</b>（過去の否定）',gram:"wasn't=was not / weren't=were not",adv:"過去の否定はwasn't/weren'tです📝"},
 {id:9,cat:'be動詞',tag:'⚠️ひっかけ：天気の主語',type:'choice',text:'（　） is rainy today.',hint:'天気の主語は？',choices:['He','She','They','It'],answer:3,words:['It'],exp:'天気・時刻の主語は<b>It</b>（意味のないit）。',gram:'天気・時刻・距離の主語 → It',adv:'⚠️ 天気はItが主語！"It is sunny."のように使う☔'},
-{id:10,cat:'be動詞',tag:'集合名詞のbe動詞',type:'choice',text:'My family （　） large.',hint:'familyは単数？複数？',choices:['am','are','were','is'],answer:3,words:['is'],exp:'family（家族全体）は単数扱い → <b>is</b>。',gram:'集合名詞: family/team/class → 単数扱い',adv:'familyは全体を1つとして単数扱い！My parents are〜との違いに注意👨‍👩‍👧'},
-{id:11,cat:'一般動詞',tag:'三単現のs',type:'choice',text:'He （　） soccer every day.',hint:'主語がHeのとき',choices:['play','plays','playing','played'],answer:1,words:['plays'],exp:'he/she/itが主語 → 動詞に<b>-s</b>。play→<b>plays</b>',gram:'三単現: he/she/it + 動詞s',adv:'三単現のsは最もうっかりミスが多い！He/She/Itのときだけsをつける💡'},
 {id:12,cat:'一般動詞',tag:'一般動詞の疑問文',type:'choice',text:'（　） you like music?',hint:'一般動詞の疑問文は？',choices:['Are','Do','Does','Is'],answer:1,words:['Do'],exp:'一般動詞の疑問文 → <b>Do/Does</b>を文頭に。',gram:'Do/Does + 主語 + 動詞の原形?',adv:'be動詞→前に出す、一般動詞→Do/Doesを前に置く✨'},
-{id:13,cat:'一般動詞',tag:'一般動詞の否定文',type:'choice',text:'I （　） like natto.',hint:'一般動詞の否定は？',choices:["don't","doesn't","isn't","aren't"],answer:0,words:["don't"],exp:'I/Youの否定 → <b>don\'t</b>＋動詞の原形。',gram:"don't=do not / doesn't=does not",adv:"主語がhe/she/itのときはdoesn't、それ以外はdon't🙅"},
-{id:14,cat:'一般動詞',tag:'⚠️ひっかけ：doesの後は原形',type:'choice',text:'She does not （　） English.',hint:'does notの後の動詞の形は？',choices:['speaks','speaking','spoken','speak'],answer:3,words:['speak'],exp:'does notの後は<b>動詞の原形</b>！× speaks → ○<b>speak</b>',gram:"doesn't + 動詞の原形（sをつけない！）",adv:'⚠️ doesn\'tを使ったらsはいらない！二重に三単現にしないで'},
-{id:15,cat:'一般動詞',tag:'Doesの疑問文',type:'choice',text:'（　） she play the piano?',hint:'主語がsheの疑問文は？',choices:['Do','Does','Is','Did'],answer:1,words:['Does'],exp:'sheが主語 → <b>Does</b> she play...? 動詞は原形のまま。',gram:'Does + he/she/it + 動詞の原形?',adv:'DoesのあとはPlayのまま！Playsにしないように注意🎹'},
+{id:14,cat:'一般動詞',tag:'⚠️ひっかけ：doesの後は原形',type:'choice',text:'She does not （　） English.',hint:'does notの後の動詞の形は？',choices:['speaks','speaking','spoken','speak'],answer:3,words:['speak'],exp:'does notの後は<b>動詞の原形</b>！× speaks → ○<b>speak</b>',gram:'doesn\'t + 動詞の原形（sをつけない！）',adv:'⚠️ doesn\'tを使ったらsはいらない！二重に三単現にしないで'},
 {id:16,cat:'一般動詞',tag:'⚠️ひっかけ：studyの三単現',type:'choice',text:'She （　） math every day.',hint:'studyの三単現はどうなる？',choices:['studys','study','studies','studing'],answer:2,words:['studies'],exp:'子音+yで終わる→yをiに変えてes。study→<b>studies</b>',gram:'子音+y → ies（study→studies / try→tries）',adv:'⚠️ studysは間違い！yをiに変えてesにします📚'},
-{id:17,cat:'一般動詞',tag:'三単現：watchのes',type:'choice',text:'He （　） TV every evening.',hint:'watchの三単現は？',choices:['watchs','watch','watched','watches'],answer:3,words:['watches'],exp:'ch/sh/s/xで終わる → -es。watch→<b>watches</b>',gram:'語尾がch/sh/s/x → es（watch→watches）',adv:'watchesのようにchで終まる動詞はesをつける！'},
 {id:18,cat:'一般動詞',tag:'haveの三単現',type:'choice',text:'She （　） a dog.',hint:'haveの三単現は？',choices:['is','has','have','does'],answer:1,words:['has'],exp:'have（持つ）の三単現は<b>has</b>（不規則）。',gram:'have → has（三単現）',adv:'haveだけはhavesではなくhasになる不規則な三単現です🐕'},
 {id:19,cat:'一般動詞',tag:'過去疑問文',type:'choice',text:'（　） you eat breakfast yesterday?',hint:'過去の疑問文は？',choices:['Do','Does','Did','Were'],answer:2,words:['Did'],exp:'過去の疑問文 → <b>Did</b>＋主語＋動詞の原形。',gram:'Did + 主語 + 動詞の原形?',adv:'⚠️ Didのあとは動詞の原形！Did you ate〜は間違い'},
-{id:20,cat:'一般動詞',tag:'一般動詞：過去の否定',type:'choice',text:'I （　） to the party last night.',hint:'過去の否定は？',choices:["don't go","didn't go","wasn't go","not went"],answer:1,words:["didn't",'go'],exp:'過去の否定 → <b>didn\'t＋動詞の原形</b>。',gram:"didn't + 動詞の原形",adv:"didn'tの後は原形！didn't wentは間違いです🚫"},
 {id:21,cat:'現在進行形',tag:'現在進行形の基本',type:'choice',text:'I （　） TV now.',hint:'「〜しています」',choices:['watch','am watching','am watch','watches'],answer:1,words:['am','watching'],exp:'現在進行形 = <b>be動詞＋動詞ing</b>。am watching',gram:'am/is/are + 動詞ing',adv:'be動詞＋ingのセット！どちらかだけではダメ🎬'},
-{id:22,cat:'現在進行形',tag:'進行形の否定',type:'choice',text:'She （　） now.「彼女は今勉強していません」',hint:'進行形の否定は？',choices:['is not studying','does not studying','not is studying','is studying not'],answer:0,words:["isn't",'studying'],exp:'進行形の否定 = <b>be動詞＋not＋動詞ing</b>。',gram:"is not studying = isn't studying",adv:'進行形の否定はbe動詞の後にnotを置くだけ🙅'},
 {id:23,cat:'現在進行形',tag:'進行形の疑問文',type:'choice',text:'（　） you studying English now?',hint:'進行形の疑問文は？',choices:['Do','Does','Are','Did'],answer:2,words:['Are'],exp:'進行形の疑問文 → <b>be動詞</b>を文頭に出す。',gram:'Are/Is + 主語 + 動詞ing?',adv:'進行形の疑問文はbe動詞を前に！Doは使わない❓'},
 {id:24,cat:'現在進行形',tag:'⚠️ひっかけ：writeのing',type:'choice',text:'She is （　） a letter.',hint:'writeのing形は？',choices:['writeing','writing','writting','writes'],answer:1,words:['writing'],exp:'eで終わる語はeを取ってing。write→<b>writing</b>',gram:'eで終わる動詞: eを取ってing（make→making）',adv:'⚠️ writingはeをとってingです！writeing は間違い'},
 {id:25,cat:'現在進行形',tag:'⚠️ひっかけ：swimのing',type:'choice',text:'He is （　） in the pool.',hint:'swimのing形は？',choices:['swiming','swimming','swimmed','swims'],answer:1,words:['swimming'],exp:'短母音＋子音で終わる語は子音を重ねてing。swim→<b>swimming</b>',gram:'子音重ね: run→running / swim→swimming',adv:'⚠️ 子音を重ねてswimming！swiming は間違い'},
-{id:26,cat:'現在進行形',tag:'⚠️ひっかけ：cutのing',type:'choice',text:'He is （　） the paper.',hint:'cutのing形は？',choices:['cuting','cuteing','cutting','cuts'],answer:2,words:['cutting'],exp:'cut: 短母音＋子音 → 子音重ねてing。<b>cutting</b>',gram:'同じルール: put→putting / run→running',adv:'⚠️ cuttingはtを重ねます！cutingは間違い✂️'},
 {id:27,cat:'現在進行形',tag:'進行形のbe動詞',type:'choice',text:'They （　） playing soccer.',hint:'TheyのときのBe動詞は？',choices:['is','am','was','are'],answer:3,words:['are'],exp:'They → <b>are</b> playing（複数はare）',gram:'am(I) / is(he,she,it) / are(you,we,they)',adv:'進行形でもbe動詞は主語に合わせて変える⚽'},
-{id:28,cat:'現在進行形',tag:'nowがあれば進行形',type:'choice',text:'I （　） English now.',hint:'「今〜している」は？',choices:['study','studies','am studying','studied'],answer:2,words:['am','studying'],exp:'now（今）があるので現在進行形。<b>am studying</b>',gram:'now/at this moment → 現在進行形',adv:'now・at this momentが見えたら進行形のサイン！'},
-{id:29,cat:'過去形',tag:'規則動詞の過去形',type:'choice',text:'She （　） her homework yesterday.',hint:'finishの過去形は？',choices:['finish','finishes','finished','finishing'],answer:2,words:['finished'],exp:'規則動詞の過去形は<b>-ed</b>。finish→<b>finished</b>',gram:'規則動詞: 動詞+ed',adv:'yesterdayが出たら過去形のサイン📅'},
 {id:30,cat:'過去形',tag:'不規則動詞：go',type:'choice',text:'I （　） to school this morning.',hint:'goの過去形は？',choices:['go','goes','goed','went'],answer:3,words:['went'],exp:'goは不規則動詞。過去形は<b>went</b>。× goed',gram:'go→went / come→came / see→saw',adv:'goの過去形はwent！goed とは言わない😤'},
 {id:31,cat:'過去形',tag:'不規則動詞：eat',type:'choice',text:'I （　） sushi last night.',hint:'eatの過去形は？',choices:['eat','eated','eats','ate'],answer:3,words:['ate'],exp:'eatは不規則動詞。過去形は<b>ate</b>。',gram:'eat→ate / drink→drank / write→wrote',adv:'eat→ate は頻出！覚えよう🍣'},
-{id:32,cat:'過去形',tag:'不規則動詞：see',type:'choice',text:'I （　） a good movie yesterday.',hint:'seeの過去形は？',choices:['see','sees','seed','saw'],answer:3,words:['saw'],exp:'seeは不規則動詞。過去形は<b>saw</b>。',gram:'see→saw / hear→heard / read→read',adv:'saw は映画鑑賞でよく使う表現🎬'},
 {id:33,cat:'過去形',tag:'⚠️ひっかけ：studyの過去形',type:'choice',text:'She （　） English last night.',hint:'studyの過去形は？',choices:['studyed','studied','studyied','studed'],answer:1,words:['studied'],exp:'子音+y→yをiに変えてed。study→<b>studied</b>',gram:'子音+y→ied: study→studied / try→tried',adv:'⚠️ studyed は間違い！yをiに変えてedです📖'},
-{id:34,cat:'過去形',tag:'過去の疑問文',type:'choice',text:'（　） she go to the park yesterday?',hint:'過去の疑問文は？',choices:['Does','Did','Was','Do'],answer:1,words:['Did'],exp:'過去の疑問文 → <b>Did</b>＋主語＋動詞の原形。',gram:'Did + 主語 + 動詞の原形?',adv:'⚠️ Didのあとは動詞の原形！Did she went〜は間違い'},
-{id:35,cat:'過去形',tag:'不規則動詞：make',type:'choice',text:'She （　） a cake for me.',hint:'makeの過去形は？',choices:['maked','make','made','making'],answer:2,words:['made'],exp:'makeは不規則動詞。過去形は<b>made</b>。',gram:'make→made / take→took / break→broke',adv:'Made in Japan はこの形！make→madeを覚えよう🍰'},
 {id:36,cat:'過去形',tag:'不規則動詞：have',type:'choice',text:'I （　） a great time yesterday.',hint:'haveの過去形は？',choices:['have','haved','has','had'],answer:3,words:['had'],exp:'haveは不規則動詞。過去形は<b>had</b>。',gram:'have→had / give→gave / get→got',adv:'had a great time =楽しかった！よく使う表現です😊'},
-{id:37,cat:'過去形',tag:'不規則動詞：write',type:'choice',text:'He （　） a letter to her.',hint:'writeの過去形は？',choices:['write','writed','written','wrote'],answer:3,words:['wrote'],exp:'writeは不規則動詞。過去形は<b>wrote</b>。',gram:'write→wrote→written',adv:'wrote=書いた、written=書かれた（受動態）の違いも覚えよう✉️'},
-{id:38,cat:'過去形',tag:'be動詞の過去',type:'choice',text:'He （　） sick last week.',hint:'HeのBe動詞過去形は？',choices:['is','are','was','were'],answer:2,words:['was'],exp:'He（3人称単数）の過去be動詞は<b>was</b>。',gram:'was: I/He/She/It / were: We/You/They',adv:'was/wereどちらかを迷ったら主語の数で判断📝'},
+{id:38,cat:'過去形',tag:'be動詞の過去',type:'choice',text:'He （　） seriously ill last week.',hint:'HeのBe動詞過去形は？',choices:['is','are','was','were'],answer:2,words:['was'],exp:'He（3人称単数）の過去be動詞は<b>was</b>。',gram:'was: I/He/She/It / were: We/You/They',adv:'was/wereどちらかを迷ったら主語の数で判断📝'},
 {id:39,cat:'未来',tag:'willの基本',type:'choice',text:'I （　） go shopping tomorrow.',hint:'「〜するつもり」未来は？',choices:['am','will','do','going'],answer:1,words:['will'],exp:'未来 = <b>will＋動詞の原形</b>。',gram:'will + 動詞の原形（主語に関わらず同じ）',adv:'willの後は必ず原形！主語がsheでもwillsにしない🚀'},
 {id:40,cat:'未来',tag:'be going to',type:'choice',text:'She （　） going to study English.',hint:'be going toのbeは主語に合わせて',choices:['am','is','are','be'],answer:1,words:['is','going'],exp:'主語がShe → be動詞は<b>is</b>。She is going to...',gram:'am/is/are + going to + 動詞の原形',adv:'be going toのbeは主語で変わる！I am / He is / You are🙂'},
 {id:41,cat:'未来',tag:'⚠️ひっかけ：willの後は原形',type:'choice',text:'She will （　） a cake tomorrow.',hint:'willの後の動詞の形は？',choices:['makes','made','making','make'],answer:3,words:['will','make'],exp:'willの後は<b>動詞の原形</b>。主語がSheでも<b>make</b>。',gram:'will + 動詞の原形（三単現のsなし）',adv:'⚠️ will makesは間違い！willを使ったら後は必ず原形'},
-{id:42,cat:'未来',tag:'willの否定',type:'choice',text:'I （　） be late.',hint:'willの否定は？',choices:["won't","willn't","don't will","am not will"],answer:0,words:["won't"],exp:"will notの短縮形は<b>won't</b>（willnotではない）。",gram:"will not = won't",adv:"won'tはwill notの短縮形。発音に注意！"},
-{id:43,cat:'未来',tag:'willの疑問文',type:'choice',text:'（　） you help me?',hint:'willの疑問文は？',choices:['Do','Are','Will','Is'],answer:2,words:['Will'],exp:'willの疑問文 → <b>Will</b>＋主語＋動詞の原形?',gram:'Will + 主語 + 動詞の原形?',adv:'Will you〜?は依頼にも使える便利な表現😊'},
-{id:44,cat:'未来',tag:'be going toの否定',type:'choice',text:'He is （　） to come.',hint:'be going toの否定は？',choices:['not going','going not','not go','not to go'],answer:0,words:['not','going'],exp:"be going toの否定 → be動詞の後にnot。<b>is not going to</b>",gram:"is not going to = isn't going to + 動詞の原形",adv:'be going toの否定もbe動詞の後にnotを置くだけ🚫'},
+{id:42,cat:'未来',tag:'willの否定',type:'choice',text:'I （　） be late.',hint:'willの否定は？',choices:['won\'t','willn\'t','don\'t will','am not will'],answer:0,words:['won\'t'],exp:'will notの短縮形は<b>won\'t</b>（willnotではない）。',gram:'will not = won\'t',adv:'won\'tはwill notの短縮形。発音に注意！'},
 {id:45,cat:'未来',tag:'未来：根拠のある予測',type:'choice',text:'Look at those clouds. It （　） rain soon.',hint:'空模様を見て予測するときは？',choices:['is raining','rained','will','is going to'],answer:3,words:['is','going'],exp:'目に見える根拠がある予測 → <b>be going to</b>。',gram:'根拠ある予測: be going to / 直感的予測: will',adv:'雲が見えて「雨が降りそう」はbe going to！根拠があるから📡'},
 {id:46,cat:'助動詞',tag:'can（できる）',type:'choice',text:'She （　） speak Japanese very well.',hint:'「〜できる」は？',choices:['can','cans','is can','to can'],answer:0,words:['can'],exp:'「できる」= <b>can＋動詞の原形</b>。Sheでもcansにしない。',gram:'can + 動詞の原形（三単現sなし）',adv:'canは助動詞なのでsはつかない！💪'},
 {id:47,cat:'助動詞',tag:'must（しなければ）',type:'choice',text:'You （　） study harder.',hint:'「〜しなければならない」は？',choices:['will','can','must','may'],answer:2,words:['must'],exp:'「〜しなければ」= <b>must＋動詞の原形</b>。',gram:'must: 強い義務 / must not: 禁止',adv:'mustは強い義務！must notは禁止を表す📚'},
-{id:48,cat:'助動詞',tag:'mayで許可',type:'choice',text:'（　） I use your pen?',hint:'「〜してもいいですか？」許可を求める',choices:['Must','Should','May','Will'],answer:2,words:['May'],exp:'許可を求める → <b>May I〜?</b>またはCan I〜?',gram:'May I〜? = 〜してもいいですか？',adv:'May I〜?は丁寧な許可求め。友達にはCan I〜?😊'},
-{id:49,cat:'助動詞',tag:'should（すべき）',type:'choice',text:'You （　） see a doctor.',hint:'「〜すべき」は？',choices:['must not','will','should','can'],answer:2,words:['should'],exp:'「〜すべき」= <b>should＋動詞の原形</b>。',gram:'should: 〜すべき（mustより弱い義務）',adv:'shouldはmustより柔らかい「した方がいい」💊'},
+{id:49,cat:'助動詞',tag:'should（すべき）',type:'choice',text:'You （　） consult a physician.',hint:'「〜すべき」は？',choices:['must not','will','should','can'],answer:2,words:['should'],exp:'「〜すべき」= <b>should＋動詞の原形</b>。',gram:'should: 〜すべき（mustより弱い義務）',adv:'shouldはmustより柔らかい「した方がいい」💊'},
 {id:50,cat:'助動詞',tag:'⚠️ひっかけ：canの過去形',type:'choice',text:'I （　） swim when I was five.',hint:'canの過去形は？',choices:['could','can','caned','was can'],answer:0,words:['could'],exp:'canの過去形は<b>could</b>。× caned',gram:'can→could（過去）',adv:'⚠️ canの過去形はcould！過去の「できた」はcouldで表す🏊'},
-{id:51,cat:'助動詞',tag:'have to（しなければ）',type:'choice',text:'I （　） go now.',hint:'mustと同じ意味の表現は？',choices:['have to','has to','must to','need to'],answer:0,words:['have','to'],exp:'「〜しなければ」= <b>have to＋動詞の原形</b>（mustと同義）。',gram:'have to = must / has to（三単現）',adv:'have toはmustと同じ意味！日常会話ではhave toがよく使われる🚶'},
-{id:52,cat:'助動詞',tag:'⚠️ひっかけ：must notとdon\'t have to',type:'choice',text:"You （　） come if you don't want to.",hint:'「来なくていい」は？',choices:['must not','should not','don\'t have to','cannot'],answer:2,words:["don't",'have','to'],exp:"「〜しなくていい」= <b>don't have to</b>。must notは「禁止」で別の意味。",gram:"don't have to = 〜しなくていい（禁止ではない！）",adv:"⚠️ must not（禁止）とdon't have to（不必要）は全然違う意味！"},
-{id:53,cat:'助動詞',tag:'would like（丁寧）',type:'choice',text:'I （　） a cup of coffee, please.',hint:'「〜をいただけますか」丁寧な表現は？',choices:['want','like','would like','will like'],answer:2,words:['would','like'],exp:'丁寧な要求 → <b>would like</b>（= wantのていねい版）。',gram:'would like + 名詞 / would like to + 動詞の原形',adv:'would likeはwantより丁寧！レストランなどで使える便利な表現☕'},
-{id:54,cat:'助動詞',tag:'⚠️ひっかけ：shouldの疑問文',type:'choice',text:'（　） I call him now?「今電話した方がいいですか？」',hint:'shouldの疑問文は？',choices:['Do I should','Should I','Am I should','Will I should'],answer:1,words:['Should'],exp:'shouldの疑問文 → <b>Should＋主語＋動詞の原形?</b>',gram:'Should I〜? = 〜した方がいいですか？',adv:'Should I〜?は相手にアドバイスを求める表現。よく使う！'},
-{id:55,cat:'助動詞',tag:'be able to（できる）',type:'choice',text:'He （　） speak three languages.',hint:'canと同じ意味の別表現は？',choices:['is able to','can to','able to','is can'],answer:0,words:['able','to'],exp:'「できる」= <b>be able to＋動詞の原形</b>（canと同義）。',gram:'be able to = can（過去: was/were able to）',adv:'be able toはcanと同じ意味。過去形にしやすい（was able to）🗣️'},
+{id:52,cat:'助動詞',tag:'⚠️ひっかけ：must notとdon\'t have to',type:'choice',text:'You （　） come if you don\'t want to.',hint:'「来なくていい」は？',choices:['must not','should not','don\'t have to','cannot'],answer:2,words:['don\'t','have','to'],exp:'「〜しなくていい」= <b>don\'t have to</b>。must notは「禁止」で別の意味。',gram:'don\'t have to = 〜しなくていい（禁止ではない！）',adv:'⚠️ must not（禁止）とdon\'t have to（不必要）は全然違う意味！'},
 {id:56,cat:'疑問詞',tag:'What（何）',type:'choice',text:'（　） is your name?',hint:'「何」を聞く疑問詞',choices:['Who','When','What','Where'],answer:2,words:['What'],exp:'「何」= <b>What</b>。What is your name?',gram:'What(何)/Who(誰)/When(いつ)/Where(どこ)/Why(なぜ)/How(どのように)',adv:'疑問詞6つをまず覚えよう！What=何が基本📚'},
 {id:57,cat:'疑問詞',tag:'Where（どこ）',type:'choice',text:'（　） is the station?',hint:'「どこ」を聞く疑問詞',choices:['What','Who','Where','When'],answer:2,words:['Where'],exp:'「どこ」= <b>Where</b>。Where is the station?',gram:'Where is〜? = 〜はどこですか？',adv:'Where=どこ！道案内でも使う超基本表現🗺️'},
 {id:58,cat:'疑問詞',tag:'How many（数）',type:'choice',text:'（　） books do you have?',hint:'数を聞くときは？',choices:['How much','How many','How long','How old'],answer:1,words:['How','many'],exp:'数えられるものの数 → <b>How many＋複数名詞</b>。',gram:'How many + 複数名詞 / How much（量・値段）',adv:'How many=数、How much=量・金額🔢'},
-{id:59,cat:'疑問詞',tag:'Whose（誰の）',type:'choice',text:'（　） bag is this?',hint:'「誰の」を聞く疑問詞',choices:['Who','Whom','Whose','Which'],answer:2,words:['Whose'],exp:'「誰の」= <b>Whose</b>。Whose + 名詞で使う。',gram:'Whose + 名詞 + is/are?',adv:'WhoseはWhoと間違いやすい！Whose=誰の所有物👜'},
 {id:60,cat:'疑問詞',tag:'Why（なぜ）',type:'choice',text:'（　） were you late?',hint:'「なぜ」を聞く疑問詞',choices:['Where','When','Why','What'],answer:2,words:['Why'],exp:'「なぜ」= <b>Why</b>。答えはBecause〜。',gram:'Why〜? → Because〜.（なぜなら〜）',adv:'WhyにはBecauseで答える！セットで覚えよう'},
-{id:61,cat:'疑問詞',tag:'How（手段）',type:'choice',text:'（　） do you go to school?',hint:'「どのように・手段」を聞く疑問詞',choices:['What','Where','Which','How'],answer:3,words:['How'],exp:'「どのように・手段」= <b>How</b>。',gram:'How do you〜? = どのように〜しますか？',adv:'How=どのように。交通手段・方法を聞くときに使う🚲'},
-{id:62,cat:'疑問詞',tag:'When（いつ）',type:'choice',text:'（　） is your birthday?',hint:'「いつ」を聞く疑問詞',choices:['Where','When','Which','How'],answer:1,words:['When'],exp:'「いつ」= <b>When</b>。',gram:'When is〜? = いつ〜ですか？',adv:'When=いつ。誕生日を聞くときによく使う🎂'},
 {id:63,cat:'疑問詞',tag:'⚠️ひっかけ：How far',type:'choice',text:'（　） is it from here to the station?',hint:'距離を聞くときは？',choices:['How long','How far','How many','How old'],answer:1,words:['How','far'],exp:'距離を聞くときは<b>How far</b>。How longは時間の長さ。',gram:'How far（距離）/ How long（時間・長さ）/ How old（年齢）',adv:'⚠️ How long は「どのくらいの時間」、How farは「どのくらいの距離」！'},
-{id:64,cat:'名詞・冠詞',tag:'複数形の基本',type:'choice',text:'There are three （　） on the desk.',hint:'bookの複数形は？',choices:['book','books','bookes','bookies'],answer:1,words:['books'],exp:'多くの名詞の複数形は<b>-s</b>。book→<b>books</b>',gram:'複数形: -s / -es(ch,sh,s,x) / -ies(子音+y)',adv:'複数形の基本はs！特殊なものも少しずつ覚えよう✏️'},
+{id:64,cat:'名詞・冠詞',tag:'複数形の基本',type:'choice',text:'There are three novels on the desk, all written by the same author.',hint:'novelの複数形は？',choices:['novel','novels','noveles','novelies'],answer:1,words:['novels'],exp:'多くの名詞の複数形は<b>-s</b>。novel→<b>novels</b>',gram:'複数形: -s / -es(ch,sh,s,x) / -ies(子音+y)',adv:'複数形の基本はs！特殊なものも少しずつ覚えよう✏️'},
 {id:65,cat:'名詞・冠詞',tag:'⚠️ひっかけ：不規則複数形',type:'choice',text:'There are five （　） in the room.',hint:'childの複数形は？',choices:['childs','childes','children','child'],answer:2,words:['children'],exp:'childの複数形は不規則変化で<b>children</b>。',gram:'不規則: child→children / man→men / woman→women',adv:'⚠️ childrenは超頻出！man→men/foot→feetも覚えよう'},
 {id:66,cat:'名詞・冠詞',tag:'⚠️ひっかけ：aとan',type:'choice',text:'She is （　） engineer.',hint:'engineerの最初の音は？',choices:['a','an','the','×'],answer:1,words:['an','engineer'],exp:'engineerは母音（エ）で始まる → <b>an</b>。',gram:'母音(a,i,u,e,o)の音で始まる語 → an',adv:'⚠️ aかanかは発音で決まる！an apple / an hour / an umbrella'},
-{id:67,cat:'名詞・冠詞',tag:'theの使い方',type:'choice',text:'I saw a dog. （　） dog was cute.',hint:'2回目の名詞の前は？',choices:['A','An','The','×'],answer:2,words:['The'],exp:'2度目に出てくる名詞 → <b>the</b>。特定のものを指す。',gram:'a/an: 初登場 / the: 特定のもの・2度目',adv:'2回目はthe！「あのdog」と特定するのでtheを使う📖'},
-{id:68,cat:'名詞・冠詞',tag:'冠詞不要なケース',type:'choice',text:'I play （　） soccer after school.',hint:'スポーツの前に冠詞は？',choices:['a','an','the','×（不要）'],answer:3,words:['soccer'],exp:'スポーツ名・教科名・食事名の前に冠詞は不要。',gram:'冠詞不要: スポーツ名/教科名/食事名',adv:'play soccer / study math / have breakfast は冠詞なし！楽器（the guitar）は別🎸'},
 {id:69,cat:'名詞・冠詞',tag:'the：世界に1つのもの',type:'choice',text:'（　） sun rises in the east.',hint:'太陽には何をつける？',choices:['A','An','The','×'],answer:2,words:['The','sun'],exp:'世界に1つしかないもの（太陽・月・空）→ <b>the</b>。',gram:'the + 世界に1つ: the sun / the moon / the sky',adv:'太陽・月は世界に1つ！必ずtheをつける☀️'},
-{id:70,cat:'名詞・冠詞',tag:'固有名詞に冠詞なし',type:'choice',text:'（　） Japan is a beautiful country.',hint:'国名の前に冠詞は必要？',choices:['A','An','The','×（不要）'],answer:3,words:['Japan'],exp:'国名・人名などの固有名詞の前に冠詞は不要。',gram:'固有名詞（国名・人名など）→ 冠詞なし',adv:'Japanには冠詞なし！the United Statesのように定冠詞が必要な国もある🌏'},
+{id:70,cat:'名詞・冠詞',tag:'固有名詞に冠詞なし',type:'choice',text:'（　） Japan is a magnificent country.',hint:'国名の前に冠詞は必要？',choices:['A','An','The','×（不要）'],answer:3,words:['Japan'],exp:'国名・人名などの固有名詞の前に冠詞は不要。',gram:'固有名詞（国名・人名など）→ 冠詞なし',adv:'Japanには冠詞なし！the United Statesのように定冠詞が必要な国もある🌏'},
 {id:71,cat:'比較',tag:'比較級（-er）',type:'choice',text:'She is （　） than me.',hint:'tallの比較級は？',choices:['tall','taller','tallest','more tall'],answer:1,words:['taller'],exp:'短い形容詞の比較級 → <b>-er</b>。tall→<b>taller</b>',gram:'比較級: 短い語+-er / 長い語: more+形容詞',adv:'AはBより〜 = A is 比較級 than B📊'},
 {id:72,cat:'比較',tag:'最上級（the -est）',type:'choice',text:'He is the （　） student in the class.',hint:'goodの最上級は？',choices:['good','gooder','best','goodest'],answer:2,words:['best'],exp:'goodの最上級は<b>best</b>（不規則）。最上級にはthe。',gram:'good→better→best / many→more→most',adv:'goodは不規則！good→better→bestを丸暗記⭐'},
-{id:73,cat:'比較',tag:'比較級：long',type:'choice',text:'This river is （　） than that one.',hint:'longの比較級は？',choices:['more long','longest','longer','longing'],answer:2,words:['longer'],exp:'long(1音節) → <b>longer</b>。more longとは言わない。',gram:'1〜2音節 → -er / 3音節以上 → more+形容詞',adv:'longはlonger！短い単語はerをつける📏'},
-{id:74,cat:'比較',tag:'最上級：most+形容詞',type:'choice',text:'This is the （　） movie I have ever seen.',hint:'interestingの最上級は？',choices:['interestinger','most interesting','interestingest','more interesting'],answer:1,words:['most','interesting'],exp:'長い語（3音節以上）の最上級 → <b>the most</b>＋形容詞。',gram:'3音節以上の最上級: the most + 形容詞',adv:'interestingはmost interesting！長い形容詞はmostをつける🎬'},
 {id:75,cat:'比較',tag:'⚠️ひっかけ：比較級にtheは不要',type:'choice',text:'Ken is （　） than Tom.',hint:'比較級のとき、theは必要？',choices:['the faster','faster','fastest','more fast'],answer:1,words:['faster'],exp:'比較級には<b>theをつけない</b>！theは最上級だけ。',gram:'比較級 + than（theなし）/ 最上級 → the + 最上級',adv:'⚠️ theをつけるのは最上級だけ！比較級にtheは不要'},
 {id:76,cat:'比較',tag:'⚠️ひっかけ：as〜as（原級）',type:'choice',text:'Ken is as （　） as Tom.',hint:'as〜asの間の形容詞の形は？',choices:['taller','tallest','tall','more tall'],answer:2,words:['tall'],exp:'as〜asの間は<b>形容詞の原級</b>（そのままの形）。',gram:'as + 形容詞/副詞の原級 + as = 同じくらい',adv:'⚠️ as〜asの間は原形！比較級・最上級にしないで'},
 {id:77,cat:'比較',tag:'最上級：in と of',type:'choice',text:'Mt. Fuji is the highest mountain （　） Japan.',hint:'「日本の中で」は in？of？',choices:['of','for','at','in'],answer:3,words:['in','Japan'],exp:'場所・範囲を示すとき → <b>in</b>。the highest in Japan。',gram:'最上級 + in + 場所 / 最上級 + of + 複数名詞',adv:'in Japan（場所）/ of all（全て）/ of the three（3つの中）🏔️'},
-{id:78,cat:'比較',tag:'比較級：manyの比較級',type:'choice',text:'She has （　） books than me.',hint:'manyの比較級は？',choices:['more','most','much','many'],answer:0,words:['more'],exp:'many/muchの比較級は<b>more</b>（不規則）。',gram:'many/much→more→most',adv:'many・muchの比較級はmore！manyerとは言わない📚'},
-{id:79,cat:'不定詞',tag:'to不定詞：名詞的用法',type:'choice',text:'I want （　） a doctor.',hint:'wantの後は？',choices:['become','to become','becoming','became'],answer:1,words:['to','become'],exp:'wantの後 → <b>to＋動詞の原形</b>。',gram:'to不定詞(名詞的用法): want to / like to / try to',adv:'wantの後はto+原形！I want to be〜は超頻出🎯'},
+{id:79,cat:'不定詞',tag:'to不定詞：名詞的用法',type:'choice',text:'I want （　） a physician.',hint:'wantの後は？',choices:['become','to become','becoming','became'],answer:1,words:['to','become'],exp:'wantの後 → <b>to＋動詞の原形</b>。',gram:'to不定詞(名詞的用法): want to / like to / try to',adv:'wantの後はto+原形！I want to be〜は超頻出🎯'},
 {id:80,cat:'不定詞',tag:'to不定詞：副詞的用法',type:'choice',text:'I went to the library （　） books.',hint:'「〜するために」は？',choices:['borrow','borrowing','to borrow','borrowed'],answer:2,words:['to','borrow'],exp:'「〜するために」= <b>to＋動詞の原形</b>（副詞的用法）。',gram:'to不定詞(副詞的用法): 〜するために',adv:'「〜するために」はto+原形！目的を言いたいときに便利🎯'},
 {id:81,cat:'不定詞',tag:'⚠️ひっかけ：stopの後',type:'choice',text:'He stopped （　） suddenly.',hint:'stopの後はingかtoか？',choices:['to run','run','ran','running'],answer:3,words:['running'],exp:'stop＋ing = 〜するのをやめる。<b>stop running</b>。<br>stop to run = 走るために立ち止まる（別の意味）',gram:'stop + ing = 〜するのをやめる',adv:'⚠️ 超頻出ひっかけ！stop runningとstop to runは意味が全然違う😲'},
 {id:82,cat:'不定詞',tag:'It is...to〜構文',type:'choice',text:'（　） is fun to play soccer.',hint:'「〜することは楽しい」の主語は？',choices:['Soccer','That','It','This'],answer:2,words:['It','to'],exp:'「〜することは楽しい」= <b>It is 形容詞 to＋原形</b>。Itが仮主語。',gram:'It is + 形容詞 + to + 動詞の原形',adv:'Itが仮の主語！本当の意味の主語はto以下です🌟'},
-{id:83,cat:'不定詞',tag:'too〜to構文',type:'choice',text:'He is too tired （　） walk.',hint:'too〜toの構文は？',choices:['and','for','to','so'],answer:2,words:['too','to'],exp:'too〜to = <b>〜すぎて…できない</b>。too tired to walk。',gram:'too + 形容詞/副詞 + to + 動詞の原形',adv:'too〜toは超頻出構文！「疲れすぎて歩けない」はtoo tired to walk😴'},
-{id:84,cat:'不定詞',tag:'tell+人+to〜',type:'choice',text:'She told me （　） more.「彼女はもっと勉強するよう伝えた」',hint:'tell + 人 + の後は？',choices:['study','studied','to study','studying'],answer:2,words:['to','study'],exp:'tell＋人＋<b>to＋原形</b>（〜するよう伝える）。told me <b>to study</b> more.',gram:'tell/ask/want + 人 + to + 動詞の原形',adv:'tell me to〜の形！ask me to〜/ want me to〜も同じ形📣'},
+{id:83,cat:'不定詞',tag:'too〜to構文',type:'choice',text:'He is too exhausted （　） walk.',hint:'too〜toの構文は？',choices:['and','for','to','so'],answer:2,words:['too','to'],exp:'too〜to = <b>〜すぎて…できない</b>。too exhausted to walk。',gram:'too + 形容詞/副詞 + to + 動詞の原形',adv:'too〜toは超頻出構文！「疲れすぎて歩けない」はtoo exhausted to walk😴'},
 {id:85,cat:'動名詞',tag:'動名詞の基本',type:'choice',text:'I like （　） songs.「歌を歌うことが好きです」',hint:'likeの後はingとto不定詞どちらも使える！',choices:['sing','sings','sang','singing'],answer:3,words:['singing'],exp:'likeの後は<b>singing（動名詞）</b>でも<b>to sing（to不定詞）</b>でも、どちらも正解！<br>この問題では singing が模範解答ですが、to singも正しい英語です。<br>※ enjoy/finish/stopの後はingのみ。',gram:'like + ing / like + to不定詞（どちらも可）',adv:'likeはingとtoどちらも使えます🎵 でもenjoyはingのみ！"enjoy to sing"は間違いなので注意！'},
 {id:86,cat:'動名詞',tag:'動名詞が主語',type:'choice',text:'（　） English is important.',hint:'「〜すること」が主語になるとき',choices:['Study','Studies','To studying','Studying'],answer:3,words:['Studying'],exp:'動名詞が主語になれる。<b>Studying</b> English is important.',gram:'動名詞(主語): 動詞ing + is/was(単数扱い)',adv:'動名詞が主語のとき動詞はis（単数扱い）！📚'},
 {id:87,cat:'動名詞',tag:'⚠️ひっかけ：enjoyの後',type:'choice',text:'I enjoy （　） music.',hint:'enjoyの後はingかtoか？',choices:['to listen','listen','listens','listening'],answer:3,words:['listening'],exp:'enjoyの後は<b>動名詞(ing)のみ</b>！to listen は不可。',gram:'enjoy/finish/stop/mind + 動名詞(ing)のみ',adv:'⚠️ enjoyの後はingだけ！enjoy to listenは間違い🎵'},
 {id:88,cat:'動名詞',tag:'⚠️ひっかけ：前置詞の後はing',type:'choice',text:'I am good at （　） pictures.',hint:'前置詞atの後は？',choices:['draw','drew','to draw','drawing'],answer:3,words:['drawing'],exp:'前置詞の後には<b>動名詞(ing)</b>。good at <b>drawing</b>',gram:'前置詞 + 動名詞: good at〜ing / thank you for〜ing',adv:'⚠️ 前置詞の後は必ずing！to不定詞は置けない'},
 {id:89,cat:'動名詞',tag:'finish + ing',type:'choice',text:'Have you finished （　） your homework?',hint:'finishの後はingかtoか？',choices:['do','to do','done','doing'],answer:3,words:['doing'],exp:'finishの後は<b>ing</b>のみ。finished <b>doing</b>',gram:'finish + ing: finish doing / eating / writing',adv:'finish + ingのみ！finish to doは間違い✅'},
-{id:90,cat:'動名詞',tag:'give up + ing',type:'choice',text:"Don't give up （　）.",hint:'give upの後は？',choices:['study','to study','studied','studying'],answer:3,words:['studying'],exp:'give upの後は<b>動名詞(ing)</b>。give up studying。',gram:'give up + ing = 〜するのをあきらめる',adv:'give up studyingは「勉強をあきらめる」！頑張ろう💪'},
-{id:91,cat:'受動態',tag:'受動態の基本',type:'choice',text:'English （　） in many countries.',hint:'受動態の形は？',choices:['speak','speaks','is spoken','is speaking'],answer:2,words:['is','spoken'],exp:'受動態 = <b>be動詞＋過去分詞</b>。speakの過去分詞→spoken。',gram:'受動態: am/is/are + 過去分詞（+ by ...）',adv:'受動態はbe動詞+過去分詞！speak→spokenを覚えよう📝'},
+{id:91,cat:'受動態',tag:'受動態の基本',type:'choice',text:'English （　） in numerous countries around the world.',hint:'受動態の形は？',choices:['speak','speaks','is spoken','is speaking'],answer:2,words:['is','spoken'],exp:'受動態 = <b>be動詞＋過去分詞</b>。speakの過去分詞→spoken。',gram:'受動態: am/is/are + 過去分詞（+ by ...）',adv:'受動態はbe動詞+過去分詞！speak→spokenを覚えよう📝'},
 {id:92,cat:'受動態',tag:'受動態の過去',type:'choice',text:'This song （　） by many people last year.',hint:'過去の受動態は？',choices:['is sung','was sung','sang','were sung'],answer:1,words:['was','sung'],exp:'過去の受動態 = <b>was/were＋過去分詞</b>。This song→単数→<b>was sung</b>',gram:'過去の受動態: was/were + 過去分詞',adv:'⚠️ 過去はwas/were！sing→sang→sungを覚えよう🎵'},
 {id:93,cat:'受動態',tag:'受動態：make',type:'choice',text:'This car （　） in Japan.',hint:'makeの過去分詞は？',choices:['is making','is maked','is made','makes'],answer:2,words:['is','made'],exp:'makeの過去分詞は<b>made</b>（不規則）。is made in Japan。',gram:'make→made / write→written / break→broken',adv:'Made in Japan！makeの過去分詞はmadeで覚えよう🏭'},
-{id:94,cat:'受動態',tag:'受動態の疑問文',type:'choice',text:'（　） this book written by Soseki?',hint:'受動態の疑問文は？',choices:['Does','Did','Was','Were'],answer:2,words:['Was','written'],exp:'受動態の疑問文 → <b>Was/Were</b>を文頭に。this book（単数）→<b>Was</b>',gram:'Was/Were + 主語 + 過去分詞?',adv:'受動態の疑問文はbe動詞を前に出す❓'},
 {id:95,cat:'受動態',tag:'⚠️ひっかけ：by以外の前置詞',type:'choice',text:'I am interested （　） music.',hint:'be interestedの後は何？',choices:['by','in','at','on'],answer:1,words:['interested','in'],exp:'be interested <b>in</b>〜（〜に興味がある）は決まり文句。',gram:'interested in / surprised at / pleased with',adv:'⚠️ interestedの後はin！byとの間違いに注意📌'},
-{id:96,cat:'受動態',tag:'受動態：否定文',type:'choice',text:'The letter （　） yet.',hint:'受動態の否定は？',choices:["isn't written","doesn't write","not written","not is written"],answer:0,words:["isn't",'written'],exp:"受動態の否定 → <b>be動詞＋not＋過去分詞</b>。isn't written。",gram:"受動態否定: am/is/are + not + 過去分詞",adv:'受動態の否定もbe動詞の後にnotを置くだけ🚫'},
-{id:97,cat:'受動態',tag:'受動態：by+行為者',type:'choice',text:'This book was written （　） Natsume Soseki.',hint:'「〜によって」は？',choices:['to','for','by','with'],answer:2,words:['written','by'],exp:'受動態で行為者を示す→ <b>by</b>＋人。written <b>by</b> Soseki。',gram:'受動態 + by + 行為者（〜によって）',adv:'「誰によって」を言いたいときはby！Written by〜📖'},
 {id:98,cat:'受動態',tag:'受動態：build',type:'choice',text:'This bridge （　） 100 years ago.',hint:'buildの過去分詞は？',choices:['is built','was building','was built','builded'],answer:2,words:['was','built'],exp:'100 years ago（過去）→ <b>was built</b>。buildの過去分詞はbuilt。',gram:'build→built（不規則）/ send→sent / teach→taught',adv:'buildの過去分詞はbuilt！建物の説明でよく使う🌉'},
 {id:99,cat:'現在完了',tag:'現在完了（経験）',type:'choice',text:'I （　） to Kyoto before.',hint:'「〜したことがある」は？',choices:['go','went','have been','am going'],answer:2,words:['have','been'],exp:'経験の現在完了 = <b>have/has＋過去分詞</b>。have been to Kyoto。',gram:'現在完了: have/has + 過去分詞',adv:'I have been to〜=行ったことがある！丸ごと覚えよう⏰'},
-{id:100,cat:'現在完了',tag:'現在完了（継続）',type:'choice',text:'She （　） in Tokyo for three years.',hint:'「ずっと〜している」継続',choices:['lives','lived','has lived','is living'],answer:2,words:['has','lived'],exp:'継続の現在完了 → <b>has＋過去分詞＋for/since</b>。',gram:'継続: have/has + 過去分詞 + for（期間）/ since（〜以来）',adv:'forは期間、sinceは起点！for 3 years / since 2020⏳'},
-{id:101,cat:'現在完了',tag:'⚠️ひっかけ：haveとhas',type:'choice',text:'He （　） already eaten lunch.',hint:'主語がHeのとき、haveかhasか？',choices:['have','has','had','is'],answer:1,words:['has'],exp:'主語がhe/she/it → <b>has</b>＋過去分詞。',gram:'I/You/We/They → have / He/She/It → has',adv:'⚠️ 主語がHeならhas！haveとhasの使い分けを忘れずに'},
+{id:100,cat:'現在完了',tag:'現在完了（継続）',type:'choice',text:'She （　） in Tokyo for three years.',hint:'「ずっと〜している」継続',choices:['resides','resided','has resided','is residing'],answer:2,words:['has','resided'],exp:'継続の現在完了 → <b>has＋過去分詞＋for/since</b>。resideは「住む・居住する」というliveのフォーマルな言い換え。',gram:'継続: have/has + 過去分詞 + for（期間）/ since（〜以来）',adv:'forは期間、sinceは起点！for 3 years / since 2020⏳'},
 {id:102,cat:'現在完了',tag:'現在完了：never',type:'choice',text:'I have （　） seen snow.',hint:'「一度もない」は？',choices:['ever','never','not','before'],answer:1,words:['never','seen'],exp:'「一度も〜したことがない」= <b>have never＋過去分詞</b>。',gram:'never: 一度もない / ever: 今までに（疑問文）',adv:'neverは「一度もない」！Have you ever〜?(今までに〜したことある？)❄️'},
-{id:103,cat:'現在完了',tag:'現在完了：since',type:'choice',text:'I have lived here （　） 2018.',hint:'「2018年から」は for？since？',choices:['for','since','from','during'],answer:1,words:['since','2018'],exp:'特定の時点から → <b>since</b>。since 2018（2018年から）。',gram:'since + 時点 / for + 期間',adv:'since 2018 vs for 5 years！時点はsince、期間はfor📅'},
 {id:104,cat:'現在完了',tag:'⚠️ひっかけ：過去形と現在完了の区別',type:'choice',text:'I （　） in Osaka three years ago.',hint:'「3年前」は現在完了？過去形？',choices:['have lived','has lived','lived','live'],answer:2,words:['lived'],exp:'three years ago（3年前）など過去の時点が明確 → <b>過去形</b>！',gram:'ago/last year/yesterdayがあれば→過去形',adv:'⚠️ ago・yesterday・last〜があれば現在完了は使えない！過去形を使う📅'},
-{id:105,cat:'現在完了',tag:'現在完了：yet',type:'choice',text:'Have you finished your homework （　）?',hint:'「もう〜した？」疑問文での副詞は？',choices:['already','never','just','yet'],answer:3,words:['yet'],exp:'疑問文・否定文で「もう/まだ」→ <b>yet</b>。',gram:'yet: 疑問文（もう）/ 否定文（まだ）',adv:"Have you〜yet?=もうした？ I haven't〜yet=まだしていない📌"},
+{id:105,cat:'現在完了',tag:'現在完了：yet',type:'choice',text:'Have you finished your homework （　）?',hint:'「もう〜した？」疑問文での副詞は？',choices:['already','never','just','yet'],answer:3,words:['yet'],exp:'疑問文・否定文で「もう/まだ」→ <b>yet</b>。',gram:'yet: 疑問文（もう）/ 否定文（まだ）',adv:'Have you〜yet?=もうした？ I haven\'t〜yet=まだしていない📌'},
 {id:106,cat:'代名詞',tag:'所有代名詞',type:'input',text:'This is （　）.（これは彼のものです）',hint:'heの「〜のもの」は？',answer:'his',words:['his'],exp:'所有代名詞「〜のもの」: I→mine / he→<b>his</b> / she→hers',gram:'所有代名詞: mine/his/hers/ours/theirs',adv:'所有代名詞の表をまとめて覚えよう！heだけhisが所有格と同じ📋'},
 {id:107,cat:'代名詞',tag:'目的格',type:'input',text:'Please help （　）.（彼女を助けてください）',hint:'sheの目的格は？',answer:'her',words:['her'],exp:'sheの目的格 = <b>her</b>（〜を/に）',gram:'目的格: I→me/he→him/she→her/they→them',adv:'目的格は動詞の後に置く形！I→me、she→her🔤'},
 {id:108,cat:'代名詞',tag:'再帰代名詞',type:'choice',text:'He hurt （　）.「彼は自分を傷つけた」',hint:'「彼自身」を表す代名詞は？',choices:['him','his','himself','he'],answer:2,words:['himself'],exp:'「〜自身」= <b>再帰代名詞</b>。he→<b>himself</b>',gram:'myself/yourself/himself/herself/ourselves/themselves',adv:'himself=彼自身。by himself=一人でも覚えよう！'},
-{id:109,cat:'代名詞',tag:'所有格',type:'choice',text:'（　） dog is very cute.「彼女の犬はとてもかわいい」',hint:'sheの「〜の（所有格）」は？',choices:['She','Hers','Her','Him'],answer:2,words:['Her'],exp:'sheの所有格 = <b>her</b>（〜の）。her dog（彼女の犬）。',gram:'所有格: my/your/his/her/our/their',adv:'herは目的格にも所有格にも使う！文脈で判断しよう👤'},
+{id:109,cat:'代名詞',tag:'所有格',type:'choice',text:'（　） dog is extremely adorable.「彼女の犬はとてもかわいい」',hint:'sheの「〜の（所有格）」は？',choices:['She','Hers','Her','Him'],answer:2,words:['Her'],exp:'sheの所有格 = <b>her</b>（〜の）。her dog（彼女の犬）。',gram:'所有格: my/your/his/her/our/their',adv:'herは目的格にも所有格にも使う！文脈で判断しよう👤'},
 {id:110,cat:'代名詞',tag:'指示代名詞：these/those',type:'choice',text:'（　） are my friends.「これらは私の友達です」',hint:'「これら（複数・近く）」は？',choices:['This','That','These','Those'],answer:2,words:['These'],exp:'近くのもの（複数）= <b>these</b>。this（近く・単数）の複数形。',gram:'this/these（近い）/ that/those（遠い）',adv:'this→these（近く）/ that→those（遠く）の単複セットで覚えよう！'},
 {id:111,cat:'前置詞',tag:'時の前置詞：in',type:'choice',text:'I was born （　） March.',hint:'月・年・季節の前は？',choices:['at','on','in','by'],answer:2,words:['in','March'],exp:'月・年・季節の前 → <b>in</b>。in March / in 2020 / in summer',gram:'at時刻/on曜日・日付/in月・年・季節',adv:'at→on→inと「大きさ」で使い分け！in=一番広い範囲⏱️'},
 {id:112,cat:'前置詞',tag:'⚠️ひっかけ：日付はon',type:'choice',text:'My birthday is （　） July 15th.',hint:'「7月15日」に使う前置詞は？',choices:['in','at','on','by'],answer:2,words:['on','July'],exp:'特定の日付の前 → <b>on</b>。on July 15th。月だけならin July。',gram:'on + 特定の日付・曜日 / in + 月・年・季節',adv:'⚠️ 月だけ→in（in July）、日付まで→on（on July 15th）！'},
 {id:113,cat:'前置詞',tag:'場所の前置詞：in/on/under',type:'choice',text:'The cat is （　） the box.',hint:'「〜の中に」は？',choices:['on','under','in','by'],answer:2,words:['in'],exp:'「〜の中に」= <b>in</b>。on(上)/under(下)/by(そば)/in(中)',gram:'in(中)/on(上・接触)/under(下)/by(そば)',adv:'場所の前置詞はイメージで覚えよう！in=ボックスの中📦'},
-{id:114,cat:'前置詞',tag:'場所の前置詞：at',type:'choice',text:'I will meet you （　） the station.',hint:'「〜で（地点）」は？',choices:['in','on','at','by'],answer:2,words:['at'],exp:'特定の地点 → <b>at</b>。at the station / at school / at home',gram:'at: 特定の一地点（ピンポイント）',adv:'atはピンポイントの場所！in Tokyoは広い範囲📍'},
-{id:115,cat:'前置詞',tag:'前置詞：from〜to',type:'choice',text:'I walk （　） home to school every day.',hint:'「〜から」は？',choices:['at','in','from','by'],answer:2,words:['from'],exp:'「〜から…まで」= <b>from〜to</b>。from home to school',gram:'from〜to...: 〜から...まで（場所・時間）',adv:'from〜toはセットで覚えよう！from Monday to Friday🚶'},
 {id:116,cat:'前置詞',tag:'前置詞：with',type:'choice',text:'I went to the park （　） my friends.',hint:'「〜と一緒に」は？',choices:['in','by','with','for'],answer:2,words:['with'],exp:'「〜と一緒に」= <b>with</b>。with my friends',gram:'with: 〜と一緒に / without: 〜なしで',adv:'withは「一緒に」、withoutは「なしで」！セットで覚えよう👫'},
-{id:117,cat:'前置詞',tag:'前置詞：for（目的）',type:'choice',text:'This present is （　） you.',hint:'「〜のために」は？',choices:['to','for','at','by'],answer:1,words:['for'],exp:'「〜のために」= <b>for</b>。for you / for me',gram:'for: 〜のために・〜の間（期間）',adv:'forは「〜のために」と「期間（for 3 years）」の2つの意味がある🎁'},
-{id:118,cat:'前置詞',tag:'⚠️ひっかけ：by（期限）とuntil（継続）',type:'choice',text:'Please finish this （　） tomorrow.',hint:'「〜までに」は？',choices:['until','by','to','at'],answer:1,words:['by'],exp:'「〜までに（期限）」= <b>by</b>。by tomorrow（明日までに）',gram:'by: 〜までに（期限）/ until: 〜までずっと（継続）',adv:'⚠️ by=期限（明日までに完成）/ until=継続（明日まで待つ）は全然違う！'}
+{id:118,cat:'前置詞',tag:'⚠️ひっかけ：by（期限）とuntil（継続）',type:'choice',text:'Please finish this （　） tomorrow.',hint:'「〜までに」は？',choices:['until','by','to','at'],answer:1,words:['by'],exp:'「〜までに（期限）」= <b>by</b>。by tomorrow（明日までに）',gram:'by: 〜までに（期限）/ until: 〜までずっと（継続）',adv:'⚠️ by=期限（明日までに完成）/ until=継続（明日まで待つ）は全然違う！'},
+{id:200,cat:'関係詞',tag:'関係代名詞 who(主格)',type:'choice',text:'I have a friend （　） lives in Osaka.',hint:'先行詞は人・主格',choices:['who','whom','whose','which'],answer:0,words:['who'],exp:'先行詞が人で主格の関係代名詞は<b>who</b>。',gram:'who(主格・人)/whom(目的格・人)/which(物)/that(人・物)',adv:'関係代名詞はまず「人か物か」「主格か目的格か」を意識しよう！',jp:'私には大阪に住んでいる友人がいます。'},
+{id:201,cat:'関係詞',tag:'関係代名詞 whom(目的格)',type:'choice',text:'She is the woman （　） I met yesterday.',hint:'目的格・人（フォーマル）',choices:['who','whom','whose','which'],answer:1,words:['whom'],exp:'目的格の関係代名詞（人）はフォーマルには<b>whom</b>。口語ではwhoやthatも可。',gram:'whom: 目的格(人)。口語ではwho/thatで代用されることが多い',adv:'whomはやや堅い表現。会話ではwhoでもOKだけど、書き言葉ではwhomが正式！',jp:'彼女は私が昨日会った女性です。'},
+{id:202,cat:'関係詞',tag:'関係代名詞 whose(所有格)',type:'choice',text:'I know a boy （　） father is a pilot.',hint:'「〜の」所有格',choices:['who','whom','whose','which'],answer:2,words:['whose'],exp:'「〜の」を表す所有格の関係代名詞は<b>whose</b>。人にも物にも使える。',gram:'whose + 名詞: 〜の…',adv:'whoseは人・物どちらの所有格にも使えるのがポイント！',jp:'私は父親がパイロットである少年を知っています。'},
+{id:203,cat:'関係詞',tag:'関係代名詞 which(物)',type:'choice',text:'This is the book （　） changed my life.',hint:'先行詞は物・主格',choices:['who','which','whom','whose'],answer:1,words:['which'],exp:'先行詞が物のときの主格関係代名詞は<b>which</b>。',gram:'which: 物(主格・目的格) / that: 人・物どちらも可',adv:'物にはwhich、人にはwho、両方いけるのがthat！',jp:'これは私の人生を変えた本です。'},
+{id:204,cat:'関係詞',tag:'⚠️ひっかけ：非制限用法にthatは不可',type:'choice',text:'Tokyo, （　） is the capital of Japan, is very crowded.',hint:'コンマがある非制限用法',choices:['that','which','who','whose'],answer:1,words:['which'],exp:'コンマを使う非制限用法（補足説明）では<b>that</b>は使えない。<b>which</b>を使う。',gram:'非制限用法(, which / , who): thatは使用不可',adv:'⚠️ コンマ+関係代名詞のときは絶対thatはNG！whichかwhoを使おう',jp:'日本の首都である東京はとても混雑しています。'},
+{id:205,cat:'関係詞',tag:'関係代名詞：目的格の省略',type:'choice',text:'The pen （　） she gave me is very nice.',hint:'目的格の関係代名詞。省略可能',choices:['which','who','whose','× is not needed'],answer:0,words:['which'],exp:'目的格の関係代名詞（物）は<b>which</b>だが、この位置なら省略も可能（The pen she gave me...）。',gram:'目的格の関係代名詞は省略可（主格・所有格は省略不可）',adv:'目的格の関係代名詞はよく省略される！でも主格は省略できないので注意⚠️',jp:'彼女が私にくれたペンはとても素敵です。'},
+{id:206,cat:'関係詞',tag:'⚠️ひっかけ：主格は省略不可',type:'choice',text:'I have a friend （　） speaks four languages.',hint:'主格の関係代名詞は省略できない！',choices:['who','×（省略）','whom','whose'],answer:0,words:['who'],exp:'主格の関係代名詞は<b>省略できない</b>。ここでは<b>who</b>が必須。',gram:'主格の関係代名詞は省略不可、目的格は省略可',adv:'⚠️ 主格の省略はNG！後ろにspeaksのような動詞が直接続くときは主語が必要',jp:'私には4か国語を話す友人がいます。'},
+{id:207,cat:'関係詞',tag:'関係副詞：where',type:'choice',text:'This is the town （　） I was born.',hint:'場所を表す関係副詞',choices:['which','where','when','why'],answer:1,words:['where'],exp:'先行詞が場所で、後ろが完全文（前置詞なし）のときは関係副詞<b>where</b>。',gram:'where = in/at which（場所）',adv:'where=前置詞+which！the town in which I was born と同じ意味',jp:'ここは私が生まれた町です。'},
+{id:208,cat:'関係詞',tag:'関係副詞：when',type:'choice',text:'I remember the day （　） we first met.',hint:'時を表す関係副詞',choices:['where','when','why','which'],answer:1,words:['when'],exp:'先行詞が時を表すとき → 関係副詞<b>when</b>。',gram:'when = on/at which（時）',adv:'when=前置詞+which！the day on which we met と同じ',jp:'私は私たちが初めて会った日を覚えています。'},
+{id:209,cat:'関係詞',tag:'関係副詞：why',type:'choice',text:'That\'s the reason （　） she was late.',hint:'理由を表す関係副詞',choices:['where','when','why','which'],answer:2,words:['why'],exp:'先行詞がreason（理由）のとき → 関係副詞<b>why</b>。',gram:'why = for which（理由）',adv:'the reason why のセットで覚えると楽！',jp:'それが彼女が遅れた理由です。'},
+{id:210,cat:'関係詞',tag:'関係代名詞what',type:'choice',text:'（　） he said was true.',hint:'先行詞を含む関係代名詞',choices:['That','What','Which','Who'],answer:1,words:['What'],exp:'「〜すること・もの」で先行詞を含む関係代名詞は<b>what</b>（= the thing which）。',gram:'what = the thing(s) which（先行詞なしで使う）',adv:'⚠️ whatは先行詞なしで使う唯一の関係代名詞！',jp:'彼が言ったことは本当でした。'},
+{id:211,cat:'関係詞',tag:'⚠️ひっかけ：前置詞+which',type:'choice',text:'This is the house （　） I live.',hint:'in which または関係副詞whereで',choices:['which','in which','who','whose'],answer:1,words:['in','which'],exp:'liveは自動詞なので前置詞inが必要 → <b>in which</b>（= where）。',gram:'前置詞+which = 関係副詞（in which=where）',adv:'⚠️ liveのような自動詞は前置詞が必要！in which や where を使おう',jp:'これは私が住んでいる家です。'},
+{id:220,cat:'分詞構文',tag:'分詞構文：時（〜のとき）',type:'choice',text:'（　） the door, I heard a strange noise.',hint:'「ドアを開けたとき」現在分詞で',choices:['Open','Opening','Opened','To open'],answer:1,words:['Opening'],exp:'「〜する時/しながら」を表す分詞構文は<b>現在分詞(-ing)</b>で始める。Opening the door = When I opened the door',gram:'分詞構文: 動詞ing〜, 主節（時・理由・付帯状況などを表す）',adv:'分詞構文はing形で文を始めるのが基本！接続詞+主語を省略した形',jp:'ドアを開けたとき、私は奇妙な物音を聞きました。'},
+{id:221,cat:'分詞構文',tag:'分詞構文：理由',type:'choice',text:'（　） tired, she went to bed early.',hint:'「疲れていたので」理由',choices:['Feel','Feeling','Felt','To feel'],answer:1,words:['Feeling'],exp:'「〜なので」の理由を表す分詞構文 → <b>Feeling tired</b>（= Because she felt tired）',gram:'分詞構文(理由): Feeling〜, ... = Because she felt 〜',adv:'分詞構文は文脈で「時」「理由」「付帯状況」など意味が変わる！',jp:'疲れていたので、彼女は早く寝ました。'},
+{id:222,cat:'分詞構文',tag:'分詞構文：完了形(having+過去分詞)',type:'choice',text:'（　） finished his homework, he went out to play.',hint:'主節より前の完了を表す',choices:['Finishing','Having finished','Finished','To finish'],answer:1,words:['Having','finished'],exp:'主節より<b>前に完了したこと</b>を表す分詞構文は<b>having+過去分詞</b>。',gram:'完了分詞構文: Having+過去分詞〜 = After/Because he had 過去分詞',adv:'時間差がある時はhaving+p.p.！普通のing形との違いに注意',jp:'宿題を終えたので、彼は遊びに出かけました。'},
+{id:223,cat:'分詞構文',tag:'⚠️ひっかけ：受動の分詞構文',type:'choice',text:'（　） in English, this book is easy to read.',hint:'「英語で書かれているので」受動の意味',choices:['Writing','Written','Having written','To write'],answer:1,words:['Written'],exp:'主語が「〜される」立場（受動）のときは<b>過去分詞</b>から始める（Being writtenのBeingは省略可）。',gram:'受動の分詞構文: (Being) + 過去分詞〜',adv:'⚠️ 受動の意味のときはWritingではなくWritten！Beingは省略されることが多い',jp:'英語で書かれているので、この本は読みやすいです。'},
+{id:224,cat:'分詞構文',tag:'分詞構文の否定',type:'choice',text:'（　） know what to say, she remained silent.',hint:'「知らなかったので」否定は分詞の前にNot',choices:['Not knowing','Knowing not','Don\'t knowing','No knowing'],answer:0,words:['Not','knowing'],exp:'分詞構文の否定は<b>Not+分詞</b>。Not knowing = Because she did not know',gram:'分詞構文の否定: Not + 分詞〜（Notは分詞の直前）',adv:'否定はNotを分詞の前に置くだけ！Not knowingの語順を覚えよう',jp:'何を言えばいいかわからなかったので、彼女は黙ったままでした。'},
+{id:225,cat:'分詞構文',tag:'独立分詞構文',type:'choice',text:'（　） being fine, we went on a picnic.',hint:'意味上の主語(天気)が主節と違うとき',choices:['It','This','That','×'],answer:0,words:['It'],exp:'分詞の意味上の主語が主節の主語と異なる場合、その主語を分詞の前に置く（独立分詞構文）。天気のitを使い<b>It being fine</b>',gram:'独立分詞構文: 意味上の主語 + 分詞〜（主節の主語と異なる時）',adv:'天気や状況が主語のときは独立分詞構文でItを前に置こう☀️',jp:'天気が良かったので、私たちはピクニックに行きました。'},
+{id:226,cat:'分詞構文',tag:'分詞構文：付帯状況',type:'choice',text:'She sat on the sofa, （　） a book.',hint:'「〜しながら」付帯状況',choices:['read','reading','to read','reads'],answer:1,words:['reading'],exp:'「〜しながら」という付帯状況は<b>分詞(-ing)</b>で表す。sat〜, reading a book',gram:'付帯状況: 主節, 動詞ing〜（〜しながら）',adv:'付帯状況の分詞構文は文の後ろに置くこともよくある！',jp:'彼女はソファに座って本を読んでいました。'},
+{id:227,cat:'分詞構文',tag:'分詞構文への書き換え(接続詞残す)',type:'choice',text:'（　） walking along the street, I met an old friend.',hint:'接続詞を残す分詞構文',choices:['When','Walking','While','To walk'],answer:2,words:['While'],exp:'意味を明確にするため接続詞を残すこともある。<b>While walking</b> = While I was walking',gram:'接続詞+分詞: While/When/After + 分詞〜（意味を明確化）',adv:'あいまいさを避けるため接続詞を残す分詞構文もよく使われる！',jp:'通りを歩いているときに、私は旧友に会いました。'},
+{id:228,cat:'分詞構文',tag:'⚠️ひっかけ：慣用的な分詞構文',type:'choice',text:'（　） all things considered, I think he did well.',hint:'慣用表現：〜を考慮すると',choices:['With','Considering','Because','By'],answer:1,words:['Considering'],exp:'<b>Considering</b>〜（〜を考慮すると）は慣用的な分詞構文で、意味上の主語を気にせず使う。',gram:'慣用的分詞構文: considering〜/ judging from〜/ generally speaking',adv:'considering, judging from, generally speakingなどは慣用句として丸暗記！',jp:'すべてを考慮すると、彼はよくやったと思います。'},
+{id:229,cat:'分詞構文',tag:'分詞構文：〜すると(結果)',type:'choice',text:'He left home early, （　） to miss the train.',hint:'「〜して、結局…した」結果',choices:['only','only to','so as to','in order to'],answer:1,words:['only','to'],exp:'「〜したが結局…だった」という意外な結果は<b>only to</b>で表す。',gram:'only to + 動詞の原形: 〜したが結局…（不本意な結果）',adv:'only to〜は「頑張ったのに…」という残念な結果を表すときに使う表現📌',jp:'彼は早く家を出たが、結局電車に乗り遅れました。'},
+{id:230,cat:'分詞構文',tag:'分詞構文：付帯状況(with+O+分詞)',type:'choice',text:'He was standing there, （　） his arms folded.',hint:'with+目的語+過去分詞',choices:['with','by','for','at'],answer:0,words:['with'],exp:'「〜を…した状態で」= <b>with+目的語+分詞</b>。with his arms folded（腕を組んで）',gram:'with+O+分詞: 付帯状況を表す（Oが〜される時は過去分詞、する時はing）',adv:'with+O+p.p./ing は「〜の状態で」を表す便利な構文！',jp:'彼は腕を組んでそこに立っていました。'},
+{id:231,cat:'分詞構文',tag:'⚠️ひっかけ：be動詞由来の分詞構文',type:'choice',text:'（　） young, she loved to sing.',hint:'sheが若かった時→分詞で',choices:['Being','Been','To be','Be'],answer:0,words:['Being'],exp:'状態を表すbe動詞由来の分詞構文は<b>Being young</b>（= When she was young）。省略されることも多い。',gram:'Being + 形容詞/名詞〜（beの分詞構文）',adv:'Beingは省略されがちだけど、正式にはBeing youngのように書く！',jp:'若かったので、彼女は歌うのが好きでした。'},
+{id:240,cat:'仮定法',tag:'仮定法過去：基本',type:'choice',text:'If I （　） rich, I would travel around the world.',hint:'現在の事実に反する仮定',choices:['am','was','were','will be'],answer:2,words:['were'],exp:'仮定法過去は<b>If+主語+were（過去形）</b>, 主語+would+原形。現在の事実に反する願望を表す。',gram:'仮定法過去: If+S+過去形, S+would/could/might+原形',adv:'仮定法ではbe動詞はwereを使うのが伝統的なルール（口語ではwasも可）！',jp:'もし私がお金持ちなら、世界中を旅行するだろう。'},
+{id:241,cat:'仮定法',tag:'仮定法過去：帰結節',type:'choice',text:'If she knew the truth, she （　） so angry.',hint:'仮定法過去の帰結節',choices:['is','was','would be','will be'],answer:2,words:['would','be'],exp:'仮定法過去の帰結節は<b>would/could/might+動詞の原形</b>。',gram:'仮定法過去: If+過去形, S+would+原形',adv:'if節は過去形、帰結節はwould+原形！セットで覚えよう',jp:'もし彼女が真実を知ったら、とても怒るだろう。'},
+{id:242,cat:'仮定法',tag:'仮定法過去完了',type:'choice',text:'If I （　） harder, I would have passed the exam.',hint:'過去の事実に反する仮定',choices:['studied','had studied','have studied','study'],answer:1,words:['had','studied'],exp:'過去の事実に反する仮定は<b>If+had+過去分詞</b>, would have+過去分詞。',gram:'仮定法過去完了: If+had+p.p., S+would have+p.p.',adv:'過去のことを「もし〜だったら」と言うときはhad+p.p.！',jp:'もっと一生懸命勉強していたら、試験に合格していただろう。'},
+{id:243,cat:'仮定法',tag:'仮定法過去完了：帰結節',type:'choice',text:'If it had not rained, we （　） the game.',hint:'過去の帰結節',choices:['would enjoy','would have enjoyed','enjoyed','will enjoy'],answer:1,words:['would','have','enjoyed'],exp:'仮定法過去完了の帰結節は<b>would have+過去分詞</b>。',gram:'仮定法過去完了: 帰結節はwould/could/might have + 過去分詞',adv:'過去の話はhad + would have のペア！時制をそろえよう',jp:'雨が降っていなかったら、私たちは試合を楽しんでいただろう。'},
+{id:244,cat:'仮定法',tag:'I wish + 仮定法過去',type:'choice',text:'I wish I （　） fly like a bird.',hint:'現在できないことへの願望',choices:['can','could','will','would'],answer:1,words:['could'],exp:'現在の事実に反する願望「〜できたらなあ」= <b>I wish+主語+過去形/could</b>。',gram:'I wish + 仮定法過去: 現在の願望（〜だったらなあ）',adv:'I wishの後は仮定法！canではなくcouldを使う📌',jp:'鳥のように飛べたらいいのに。'},
+{id:245,cat:'仮定法',tag:'I wish + 仮定法過去完了',type:'choice',text:'I wish I （　） harder when I was a student.',hint:'過去への後悔',choices:['studied','had studied','have studied','study'],answer:1,words:['had','studied'],exp:'過去への後悔「〜すればよかった」= <b>I wish+主語+had+過去分詞</b>。',gram:'I wish + 仮定法過去完了: 過去への後悔',adv:'過去の後悔はI wish + had + p.p.！現在の願望と時制で区別しよう',jp:'学生の時にもっと勉強しておけばよかった。'},
+{id:246,cat:'仮定法',tag:'as if + 仮定法',type:'choice',text:'He talks as if he （　） everything.',hint:'「まるで〜のように」現在の事実に反する',choices:['knows','knew','has known','know'],answer:1,words:['knew'],exp:'「まるで〜であるかのように」= <b>as if+仮定法過去</b>（現在の事実に反する）。',gram:'as if + 過去形: 現在の事実に反する比喩',adv:'as ifの後は仮定法！実際は知らないのに「知っているかのように」話す様子',jp:'彼はまるで何でも知っているかのように話す。'},
+{id:247,cat:'仮定法',tag:'⚠️ひっかけ：as if+仮定法過去完了',type:'choice',text:'She looked as if she （　） a ghost.',hint:'「まるで幽霊を見たかのように」過去のことに見える',choices:['saw','had seen','sees','has seen'],answer:1,words:['had','seen'],exp:'主節より前の事実に反する比喩は<b>as if+had+過去分詞</b>。',gram:'as if + had + 過去分詞: 過去の事実に反する比喩',adv:'⚠️ as ifの後ろの時制で「いつのことか」が変わる！過去より前ならhad+p.p.',jp:'彼女はまるで幽霊を見たかのような顔をしていた。'},
+{id:248,cat:'仮定法',tag:'仮定法未来：were to',type:'choice',text:'If the sun （　） to rise in the west, I still wouldn\'t believe you.',hint:'実現がほぼありえない未来の仮定',choices:['were','was','is','will be'],answer:0,words:['were','to'],exp:'実現の可能性がほとんどない未来の仮定は<b>If+主語+were to+原形</b>。',gram:'仮定法未来: If+S+were to+原形（可能性がほぼゼロの仮定）',adv:'were toはSFのようなありえない未来の仮定に使う表現！',jp:'たとえ太陽が西から昇ったとしても、私はまだあなたを信じないだろう。'},
+{id:249,cat:'仮定法',tag:'仮定法未来：should',type:'choice',text:'If it （　） rain tomorrow, we would cancel the picnic.',hint:'可能性は低いが起こりうる未来の仮定',choices:['should','were to','will','would'],answer:0,words:['should'],exp:'起こる可能性が低いがゼロではない未来の仮定は<b>If+主語+should+原形</b>。',gram:'仮定法未来: If+S+should+原形（可能性は低いがありうる仮定）',adv:'shouldはwere toより「まだ起こりうる」ニュアンス！',jp:'万一明日雨が降ったら、私たちはピクニックを中止するだろう。'},
+{id:250,cat:'仮定法',tag:'if省略の倒置',type:'choice',text:'（　） I have known, I would have called you.',hint:'ifを省略した倒置形',choices:['Have','Had','Did','Would'],answer:1,words:['Had'],exp:'ifを省略すると主語と助動詞が倒置される。<b>Had I known</b> = If I had known',gram:'if省略の倒置: Had/Were/Should+主語〜（ifなし）',adv:'ifを省略するとHad I〜のように倒置！仮定法特有の形',jp:'知っていたら、あなたに電話していただろう。'},
+{id:251,cat:'仮定法',tag:'without/but forの仮定法',type:'choice',text:'（　） your help, I could not have finished the project.',hint:'「〜がなければ」ifを使わない仮定法',choices:['Without','With','By','For'],answer:0,words:['Without'],exp:'「〜がなければ」= <b>Without/But for</b>〜, 主語+would/could have+過去分詞。',gram:'Without/But for〜: ifを使わない仮定法表現',adv:'Without〜, But for〜はif it were not for〜の書き換え表現！',jp:'あなたの助けがなければ、私はそのプロジェクトを終えられなかっただろう。'},
+{id:260,cat:'不定詞発展',tag:'独立不定詞',type:'choice',text:'（　） the truth, I don\'t like him.',hint:'「実を言うと」独立不定詞',choices:['To tell','Telling','Told','Tell'],answer:0,words:['To','tell'],exp:'文全体を修飾する慣用的な不定詞「実を言うと」= <b>to tell the truth</b>（独立不定詞）。',gram:'独立不定詞: to tell the truth/ to be honest/ so to speak など',adv:'独立不定詞は決まり文句として丸暗記しよう！',jp:'実を言うと、私は彼が好きではありません。'},
+{id:261,cat:'不定詞発展',tag:'原形不定詞：使役動詞make',type:'choice',text:'My mother made me （　） the room.',hint:'使役動詞+目的語+原形',choices:['clean','to clean','cleaning','cleaned'],answer:0,words:['clean'],exp:'使役動詞make/have/letの後は<b>原形不定詞</b>（to無し）。made me <b>clean</b>',gram:'使役動詞(make/have/let)+O+原形不定詞',adv:'⚠️ makeの後にtoは不要！make me to clean は間違い',jp:'母は私に部屋を掃除させました。'},
+{id:262,cat:'不定詞発展',tag:'原形不定詞：知覚動詞see',type:'choice',text:'I saw him （　） into the room.',hint:'知覚動詞+目的語+原形',choices:['walk','to walk','walked','walks'],answer:0,words:['walk'],exp:'知覚動詞(see/hear/feel)+目的語+<b>原形不定詞</b>（一部始終を見た場合）。',gram:'知覚動詞(see/hear/feel)+O+原形不定詞（ingも可、意味が少し変わる）',adv:'知覚動詞も使役動詞と同じく原形を使うことが多い！',jp:'私は彼が部屋に入るのを見ました。'},
+{id:263,cat:'不定詞発展',tag:'⚠️ひっかけ：使役動詞get(toが必要)',type:'choice',text:'I got him （　） the work.',hint:'getは他の使役動詞と違いtoが必要',choices:['do','to do','doing','did'],answer:1,words:['to','do'],exp:'使役動詞に見えるgetは<b>get+O+to+原形</b>とtoが必要（make/have/letと違う）。',gram:'get+O+to+動詞の原形（例外的にtoが必要）',adv:'⚠️ getはmake/have/letの仲間に見えて実はtoが必要！ここが超頻出のひっかけ',jp:'私は彼にその仕事をしてもらいました。'},
+{id:264,cat:'不定詞発展',tag:'不定詞の意味上の主語(for)',type:'choice',text:'It is important （　） you to study English.',hint:'不定詞の意味上の主語（一般的な形容詞）',choices:['of','for','to','by'],answer:1,words:['for'],exp:'不定詞の意味上の主語は通常<b>for+人</b>。It is important for you to study.',gram:'不定詞の意味上の主語: for+人（一般的な形容詞のとき）',adv:'for+人が基本形！人の性質を表す形容詞のときだけofになる',jp:'あなたが英語を勉強することは重要です。'},
+{id:265,cat:'不定詞発展',tag:'⚠️ひっかけ：不定詞の意味上の主語(of)',type:'choice',text:'It is kind （　） you to help me.',hint:'人の性質を表す形容詞のときはof',choices:['for','of','to','with'],answer:1,words:['of'],exp:'kind/nice/foolish/carelessなど<b>人の性質</b>を表す形容詞のときは<b>of+人</b>を使う。',gram:'It is 性質の形容詞 + of + 人 + to〜',adv:'⚠️ kind/nice/foolish/stupidなどはof！forとの使い分けが頻出',jp:'私を助けてくれるなんてあなたは親切ですね。'},
+{id:266,cat:'不定詞発展',tag:'疑問詞+to不定詞',type:'choice',text:'I don\'t know （　） to solve this problem.',hint:'「どうやって〜するか」',choices:['how','how to','what to','which'],answer:1,words:['how','to'],exp:'「どうやって〜するか」= <b>how to</b>＋動詞の原形。',gram:'疑問詞+to不定詞: what to do/ how to do/ where to go/ when to start',adv:'疑問詞+to不定詞は「〜すべきか」という名詞句を作る便利な形！',jp:'私はこの問題をどうやって解けばいいかわかりません。'},
+{id:267,cat:'不定詞発展',tag:'不定詞：結果を表す(grow up to be)',type:'choice',text:'She grew up （　） a famous singer.',hint:'「成長して〜になった」結果',choices:['to be','being','be','to being'],answer:0,words:['to','be'],exp:'「成長して結局〜になった」という結果を表す不定詞 → <b>grow up to be</b>',gram:'結果を表すto不定詞: grow up to be/ live to be/ never to〜',adv:'grow up to beは「大人になって〜になった」という結果構文！',jp:'彼女は成長して有名な歌手になりました。'},
+{id:268,cat:'不定詞発展',tag:'too...to構文の応用',type:'choice',text:'This question is too difficult （　） me to answer.',hint:'意味上の主語をforで示すtoo〜to',choices:['for','of','to','by'],answer:0,words:['for'],exp:'too〜to構文で不定詞の意味上の主語を示すときは<b>for+人</b>。too difficult for me to answer',gram:'too + 形容詞 + for + 人 + to〜',adv:'too〜toの意味上の主語もforを使う！',jp:'この問題は難しすぎて私には答えられません。'},
+{id:269,cat:'不定詞発展',tag:'⚠️ひっかけ：seem toのニュアンス',type:'choice',text:'She seems （　） a lot about art.',hint:'「知っているように見える」現在の状態',choices:['to know','knowing','known','know'],answer:0,words:['to','know'],exp:'seem/appear + <b>to+動詞の原形</b>で「〜のようだ」を表す。',gram:'seem/appear + to + 動詞の原形',adv:'seem to〜は「見た目には〜のようだ」という控えめな推測表現！',jp:'彼女は美術についてよく知っているようです。'},
+{id:270,cat:'不定詞発展',tag:'完了不定詞(to have+過去分詞)',type:'choice',text:'He seems （　） the truth.',hint:'主節より前のことを表す不定詞',choices:['to know','to have known','knowing','known'],answer:1,words:['to','have','known'],exp:'主節の時制より<b>前のこと</b>を表す不定詞は<b>to have+過去分詞</b>（完了不定詞）。',gram:'完了不定詞: to have + 過去分詞（主節より前の時を表す）',adv:'「〜したようだ」と過去のことを推測するときはto have+p.p.！',jp:'彼は真実を知っていたようです。'},
+{id:271,cat:'不定詞発展',tag:'in order to / so as to',type:'choice',text:'She got up early （　） catch the first train.',hint:'目的を明確にする不定詞表現',choices:['in order to','so that','for to','to for'],answer:0,words:['in order to'],exp:'「〜するために」を明確にする表現は<b>in order to</b>（= so as to）。',gram:'in order to = so as to（目的を強調するto不定詞）',adv:'in order to/so as toはto不定詞の「目的」の意味を強調する表現！',jp:'彼女は始発電車に乗るために早起きしました。'}
+,
+{id:300,cat:'完了進行形',tag:'現在完了進行形：基本',type:'choice',text:'I （　） English for two hours.',hint:'ずっと〜し続けている(継続の強調)',choices:['study','studied','have studied','have been studying'],answer:3,words:['have','been','studying'],jp:'私は2時間ずっと英語を勉強しています。',exp:'「ずっと〜し続けている」という動作の継続を強調する現在完了進行形は<b>have/has been+動詞ing</b>。',gram:'現在完了進行形: have/has been + 動詞ing（動作の継続を強調）',adv:'状態動詞(know, like等)は進行形にできないので現在完了(have known等)を使う点に注意！'},
+{id:301,cat:'完了進行形',tag:'現在完了進行形：天気',type:'choice',text:'It （　） since this morning.',hint:'天気の継続',choices:['rains','rained','has rained','has been raining'],answer:3,words:['has','been','raining'],jp:'今朝からずっと雨が降っています。',exp:'雨が降り続いている動作の継続 → <b>has been raining</b>。',gram:'has/have been + 動詞ing',adv:'天気の継続にも現在完了進行形はよく使われる！'},
+{id:302,cat:'完了進行形',tag:'⚠️ひっかけ：状態動詞は進行形不可',type:'choice',text:'I （　） him for ten years.',hint:'knowは状態動詞、進行形不可',choices:['have known','have been knowing','know','am knowing'],answer:0,words:['have','known'],jp:'私は彼を10年前から知っています。',exp:'know/like/loveなどの<b>状態動詞</b>は進行形にできない。継続はhave knownで表す。',gram:'状態動詞(know/like/have<所有>/believe等)は進行形不可',adv:'⚠️ knowを進行形にした"have been knowing"はNG！状態動詞に注意'},
+{id:303,cat:'完了進行形',tag:'過去完了進行形',type:'choice',text:'She （　） for three hours when I arrived.',hint:'過去のある時点までの継続',choices:['studied','has studied','had been studying','was studying'],answer:2,words:['had','been','studying'],jp:'私が着いたとき、彼女は3時間ずっと勉強していました。',exp:'過去のある時点までの動作の継続は<b>had been+動詞ing</b>（過去完了進行形）。',gram:'過去完了進行形: had been + 動詞ing',adv:'過去の一点を基準にした継続はhad been -ing！'},
+{id:304,cat:'完了進行形',tag:'未来完了進行形',type:'choice',text:'By next month, I （　） here for five years.',hint:'未来のある時点までの継続予定',choices:['will work','will have worked','will have been working','have been working'],answer:2,words:['will','have','been','working'],jp:'来月までに、私はここで5年間働き続けていることになります。',exp:'未来のある時点までの継続の見込みは<b>will have been+動詞ing</b>（未来完了進行形）。',gram:'未来完了進行形: will have been + 動詞ing',adv:'未来完了進行形は「その時までずっと〜していることになる」という予定を表す高度な形！'},
+{id:305,cat:'完了進行形',tag:'現在完了進行形の疑問文',type:'choice',text:'How long （　） English?',hint:'「どれくらいの間〜していますか」',choices:['do you study','have you studied','have you been studying','are you studying'],answer:2,words:['have','you','been','studying'],jp:'あなたはどれくらいの間英語を勉強していますか。',exp:'期間を尋ねるHow longの疑問文でも継続の強調は<b>have you been+動詞ing</b>。',gram:'How long have you been + 動詞ing?',adv:'How longの疑問文でも現在完了進行形はよく使う！'},
+{id:306,cat:'完了進行形',tag:'完了進行形と完了形の違い(結果重視)',type:'choice',text:'I （　） the wall, so it looks great now.',hint:'完了して結果が残っていることを強調',choices:['have painted','have been painting','paint','was painting'],answer:0,words:['have','painted'],jp:'私はその壁を塗り終えたので、今はとても素敵に見えます。',exp:'動作の<b>完了・結果</b>を強調するときは通常の現在完了(have+過去分詞)。継続中の動作を強調するときはhave been+動詞ing。',gram:'完了・結果重視: have+過去分詞 / 継続重視: have been+動詞ing',adv:'結果か継続か、どちらを強調したいかで形を選ぼう！'},
+{id:307,cat:'完了進行形',tag:'完了進行形とfor/since',type:'choice',text:'They have been waiting for the bus （　） 30 minutes.',hint:'期間を表す前置詞',choices:['since','for','from','at'],answer:1,words:['for'],jp:'彼らは30分間ずっとバスを待っています。',exp:'期間を表すときは<b>for</b>。since+時点、for+期間、のルールは完了進行形でも同じ。',gram:'for+期間 / since+時点（完了進行形でも共通）',adv:'完了形と同じくfor/sinceのルールがそのまま使える！'},
+{id:308,cat:'完了進行形',tag:'完了進行形の否定',type:'choice',text:'She （　） TV all day; she\'s been doing homework.',hint:'完了進行形の否定',choices:['hasn\'t been watching','has not watch','doesn\'t watch','was not watching'],answer:0,words:['hasn\'t','been','watching'],jp:'彼女は一日中テレビを見ていません。ずっと宿題をしています。',exp:'完了進行形の否定は<b>have/has not been+動詞ing</b>。',gram:'否定: haven\'t/hasn\'t been + 動詞ing',adv:'否定文でもbeenの位置は変わらない！'},
+{id:309,cat:'完了進行形',tag:'⚠️ひっかけ：had been vs was doing',type:'choice',text:'By the time he called, I （　） for two hours already.',hint:'過去のある時点までの継続',choices:['was sleeping','slept','had been sleeping','have been sleeping'],answer:2,words:['had','been','sleeping'],jp:'彼が電話してきたときには、私はすでに2時間眠っていました。',exp:'過去の基準点までの継続を表すのは<b>had been+動詞ing</b>。was sleepingは単なる進行中の動作で「継続時間」のニュアンスがない。',gram:'過去完了進行形はby the time/whenなどと相性が良い',adv:'⚠️ 「継続時間+過去の基準点」が出たらhad been -ingを考えよう！'},
+{id:310,cat:'完了進行形',tag:'完了進行形：理由の説明',type:'choice',text:'I\'m exhausted. I （　） all morning.',hint:'午前中ずっと〜していた（理由）',choices:['worked','have been working','work','am working'],answer:1,words:['have','been','working'],jp:'疲れました。午前中ずっと働いていました。',exp:'現在の状態(疲れ)の理由として、直前まで継続していた動作は<b>have been+動詞ing</b>で説明する。',gram:'have been + 動詞ing（現在の状態の理由を説明）',adv:'「疲れた理由」を説明するときによく使われる現在完了進行形！'},
+{id:311,cat:'完了進行形',tag:'⚠️ひっかけ：回数表現には進行形不可',type:'choice',text:'I （　） this book three times.',hint:'回数を表すときは進行形にしない',choices:['have read','have been reading','am reading','read'],answer:0,words:['have','read'],jp:'私はこの本を3回読んだことがあります。',exp:'回数（three times）を表すときは進行形にせず、通常の<b>現在完了(have+過去分詞)</b>を使う。',gram:'回数・経験を表すときは進行形不可（have+過去分詞のみ）',adv:'⚠️ three timesのような回数表現には進行形は使えない！'},
+{id:320,cat:'使役・知覚動詞発展',tag:'have+O+過去分詞(使役受身)',type:'choice',text:'I had my hair （　） yesterday.',hint:'「髪を切ってもらった」使役受身',choices:['cut','to cut','cutting','cuts'],answer:0,words:['had','cut'],jp:'私は昨日髪を切ってもらいました。',exp:'「〜してもらう/される」= <b>have+O+過去分詞</b>（使役受身）。had my hair <b>cut</b>',gram:'have+O+過去分詞: 〜してもらう・される（使役受身）',adv:'have+O+p.p.は「他人にやってもらう」時の超頻出構文！'},
+{id:321,cat:'使役・知覚動詞発展',tag:'get+O+過去分詞',type:'choice',text:'I need to get my car （　）.',hint:'「車を修理してもらう」getを使った使役受身',choices:['repair','to repair','repaired','repairing'],answer:2,words:['get','repaired'],jp:'私は車を修理してもらう必要があります。',exp:'get+O+過去分詞も同様に「〜してもらう」を表す。get my car <b>repaired</b>',gram:'get+O+過去分詞 = have+O+過去分詞（使役受身、getの方がやや口語的）',adv:'get+O+p.p.はhave+O+p.p.と同じ意味でより口語的！'},
+{id:322,cat:'使役・知覚動詞発展',tag:'⚠️ひっかけ：have+O+p.p.の被害用法',type:'choice',text:'I had my bag （　） on the train.',hint:'「かばんを盗まれた」被害',choices:['steal','to steal','stole','stolen'],answer:3,words:['had','stolen'],jp:'私は電車の中でかばんを盗まれました。',exp:'have+O+過去分詞は「してもらう」だけでなく「被害（〜される）」も表す。had my bag <b>stolen</b>（盗まれた）',gram:'have+O+過去分詞: 被害の意味にも使える',adv:'⚠️ have+O+p.p.は「してもらう」と「される（被害）」の両方の意味があるので文脈で判断！'},
+{id:323,cat:'使役・知覚動詞発展',tag:'let+O+原形',type:'choice',text:'My parents let me （　） out with my friends.',hint:'使役letは許可のニュアンス',choices:['go','to go','going','went'],answer:0,words:['let','go'],jp:'両親は私が友達と出かけることを許してくれました。',exp:'letは「許可して〜させる」というニュアンスの使役動詞。let+O+<b>原形</b>。',gram:'let+O+原形: 許可の使役（させてあげる）',adv:'let/make/haveは全部原形をとる使役動詞グループ！'},
+{id:324,cat:'使役・知覚動詞発展',tag:'help+O+(to)原形',type:'choice',text:'She helped me （　） my homework.',hint:'helpはtoが省略できる',choices:['do','doing','did','does'],answer:0,words:['help','do'],jp:'彼女は私が宿題をするのを手伝ってくれました。',exp:'helpは<b>help+O+(to)+原形</b>。toは省略されることが多い。',gram:'help+O+(to)+原形（toは省略可）',adv:'helpは使役動詞に近いけどtoがあってもなくてもOKという例外的存在！'},
+{id:325,cat:'使役・知覚動詞発展',tag:'知覚動詞hear+O+ing',type:'choice',text:'I heard someone （　） in the next room.',hint:'進行中の様子を目撃',choices:['sing','to sing','singing','sang'],answer:2,words:['heard','singing'],jp:'私は隣の部屋で誰かが歌っているのが聞こえました。',exp:'知覚動詞+O+<b>ing</b>は「〜している最中」を目撃したことを表す。',gram:'知覚動詞+O+ing: 動作の途中・進行中を強調',adv:'知覚動詞は原形(一部始終)とing(途中経過)で意味が変わる！'},
+{id:326,cat:'使役・知覚動詞発展',tag:'⚠️ひっかけ：知覚動詞+過去分詞',type:'choice',text:'I saw my name （　） on the list.',hint:'「名前が書かれているのを見た」受動',choices:['write','to write','writing','written'],answer:3,words:['saw','written'],jp:'私はリストに自分の名前が書かれているのを見ました。',exp:'知覚動詞+O+<b>過去分詞</b>は「〜されるのを見る」という受動の意味。',gram:'知覚動詞+O+過去分詞: 受動の意味（〜されるのを見る/聞く）',adv:'⚠️ Oが「される」立場のときは過去分詞！'},
+{id:327,cat:'使役・知覚動詞発展',tag:'⚠️ひっかけ：makeの受動態はtoが戻る',type:'choice',text:'He was made （　） the room by his mother.',hint:'使役動詞makeが受動態になるとtoが必要',choices:['clean','to clean','cleaning','cleaned'],answer:1,words:['made','to','clean'],jp:'彼は母親に部屋を掃除させられました。',exp:'使役動詞makeは能動態では原形だが、<b>受動態になるとto不定詞</b>が復活する。was made <b>to clean</b>',gram:'make+O+原形(能動) → be made to+原形(受動)',adv:'⚠️ 超頻出のひっかけ！makeの受動態だけtoが戻ってくる'},
+{id:328,cat:'使役・知覚動詞発展',tag:'知覚動詞see+原形(一部始終)',type:'choice',text:'I saw the sun （　） behind the mountains.',hint:'一部始終(沈む様子全部)を見た',choices:['set','setting','to set','sets'],answer:0,words:['saw','set'],jp:'私は太陽が山の後ろに沈むのを見ました。',exp:'一連の動作の最初から最後まで見た場合は知覚動詞+O+<b>原形</b>。',gram:'知覚動詞+O+原形: 動作の一部始終を見る/聞く',adv:'ingは「途中」、原形は「最初から最後まで」の違いを意識しよう！'},
+{id:329,cat:'使役・知覚動詞発展',tag:'have+O+原形(依頼)',type:'choice',text:'Can you have him （　） me back?',hint:'「彼に電話をかけ直させて」使役have',choices:['call','to call','calling','called'],answer:0,words:['have','call'],jp:'彼に私に折り返し電話させてもらえますか。',exp:'have+O+<b>原形</b>で「〜させる/してもらう」という使役の依頼表現。',gram:'have+O+原形: 依頼・指示の使役',adv:'Can you have him call me back?はビジネスメールでも使う便利な表現！'},
+{id:330,cat:'使役・知覚動詞発展',tag:'知覚動詞feel+ing',type:'choice',text:'I felt something （　） on my shoulder.',hint:'「何かが触れているのを感じた」進行中',choices:['touch','to touch','touching','touched'],answer:2,words:['felt','touching'],jp:'私は何かが肩に触れているのを感じました。',exp:'知覚動詞feel+O+<b>ing</b>で「〜しているのを感じる」。',gram:'feel+O+ing: 感覚的に進行中の動作を感じる',adv:'feel/see/hearなどの知覚動詞はどれも同じルール(原形/ing/過去分詞)で使える！'},
+{id:331,cat:'使役・知覚動詞発展',tag:'⚠️ひっかけ：get+O+to原形(説得)',type:'choice',text:'I finally got her （　） agree with my plan.',hint:'説得して〜させる、getは必ずto必要',choices:['agree','to agree','agreeing','agreed'],answer:1,words:['got','to','agree'],jp:'私はついに彼女を説得して私の計画に同意させました。',exp:'getを使役として使うときは<b>get+O+to+原形</b>とtoが必要（make/have/letと違う例外）。',gram:'get+O+to+原形（説得して〜させる、苦労のニュアンス）',adv:'⚠️ getは仲間はずれ！to不定詞が必要なことを絶対忘れずに'},
+{id:340,cat:'話法',tag:'平叙文の話法(時制の一致)',type:'choice',text:'He said, "I am tired." → He said that he （　） tired.',hint:'時制の一致で過去形に',choices:['is','was','has been','will be'],answer:1,words:['was'],jp:'彼は「疲れた」と言った。→ 彼は疲れていると言った。',exp:'伝達動詞が過去形(said)のとき、被伝達文の時制も一つ過去にずれる（時制の一致）。am→<b>was</b>',gram:'時制の一致: 伝達動詞が過去形→被伝達文も一つ過去へ',adv:'directな発言→間接話法にすると時制が1段階過去にずれる！'},
+{id:341,cat:'話法',tag:'話法：人称代名詞の変換',type:'choice',text:'She said, "I love my dog." → She said that （　） loved her dog.',hint:'Iは伝達される人（she）に変わる',choices:['I','she','he','they'],answer:1,words:['she'],jp:'彼女は「私は自分の犬が大好き」と言った。→ 彼女は自分の犬が大好きだと言った。',exp:'話法の転換では人称代名詞も話者に合わせて変える。I→<b>she</b>',gram:'話法転換: 人称代名詞は伝達内容の主語に合わせる',adv:'時制だけでなく人称代名詞の変化も忘れずに！'},
+{id:342,cat:'話法',tag:'Yes/No疑問文の話法(if/whether)',type:'choice',text:'He asked, "Are you tired?" → He asked if I （　） tired.',hint:'Yes/No疑問文はif/whetherを使う',choices:['am','was','were','be'],answer:1,words:['if','was'],jp:'彼は「あなたは疲れていますか」と尋ねた。→ 彼は私が疲れているかどうか尋ねた。',exp:'Yes/No疑問文の間接話法は<b>if/whether+主語+動詞</b>（語順は平叙文と同じ）。時制も一致してwas。',gram:'Yes/No疑問文の話法: if/whether + S + V（疑問文の語順に戻さない）',adv:'間接疑問文は普通の文の語順！Are you→if I wasのように倒置を戻す'},
+{id:343,cat:'話法',tag:'疑問詞疑問文の話法',type:'choice',text:'She asked, "Where do you live?" → She asked where I （　）.',hint:'疑問詞はそのまま、語順は平叙文',choices:['do live','live','lived','did live'],answer:2,words:['lived'],jp:'彼女は「あなたはどこに住んでいますか」と尋ねた。→ 彼女は私がどこに住んでいるか尋ねた。',exp:'疑問詞疑問文の間接話法は<b>疑問詞+主語+動詞</b>（doは使わない）。時制も一致してlived。',gram:'疑問詞疑問文の話法: 疑問詞+S+V（doを使わない語順）',adv:'間接疑問文はdo/does/didを使わない普通の文の形に戻す！'},
+{id:344,cat:'話法',tag:'命令文の話法(tell+人+to)',type:'choice',text:'He said to me, "Close the door." → He told me （　） the door.',hint:'命令文はtell+人+to',choices:['close','to close','closing','closed'],answer:1,words:['told','to','close'],jp:'彼は私に「ドアを閉めて」と言った。→ 彼は私にドアを閉めるように言った。',exp:'命令文の間接話法は<b>tell/order/ask+人+to+原形</b>。',gram:'命令文の話法: tell/order/ask + 人 + to + 原形',adv:'命令文の話法転換はto不定詞を使う頻出パターン！'},
+{id:345,cat:'話法',tag:'否定命令文の話法',type:'choice',text:'She said, "Don\'t be late." → She told me （　） late.',hint:'否定命令はnot to',choices:['to not be','not to be','not be','to be not'],answer:1,words:['not','to','be'],jp:'彼女は「遅れないで」と言った。→ 彼女は私に遅れないように言った。',exp:'否定命令文の話法は<b>not to+原形</b>。',gram:'否定命令の話法: tell+人+not to+原形',adv:'notの位置はtoの前！not to be lateの語順を覚えよう'},
+{id:346,cat:'話法',tag:'時を表す語の変化(tomorrow)',type:'choice',text:'He said, "I will call you tomorrow." → He said he would call me the （　） day.',hint:'tomorrowは間接話法で変わる',choices:['next','following','tomorrow','this'],answer:1,words:['following'],jp:'彼は「明日あなたに電話します」と言った。→ 彼は翌日私に電話すると言った。',exp:'話法の転換でtomorrowは<b>the following day / the next day</b>に変わる。',gram:'時を表す語の変化: tomorrow→the next day / yesterday→the day before / now→then',adv:'話法転換のときの副詞の変化は要暗記！tomorrow→the next dayが代表例'},
+{id:347,cat:'話法',tag:'⚠️ひっかけ：助動詞の変化(will→would)',type:'choice',text:'She said, "I （　） help you." → She said she would help me.',hint:'元の発言はwill',choices:['will','would','can','shall'],answer:0,words:['will'],jp:'彼女は「あなたを手伝います」と言った。→ 彼女は私を手伝うと言った。',exp:'元の直接話法はwill。話法転換でwillは<b>would</b>に変化する。',gram:'助動詞の変化: will→would / can→could / may→might / must→had to',adv:'助動詞の変化パターンも丸暗記！will→would、can→couldなど'},
+{id:348,cat:'話法',tag:'感嘆文の話法',type:'choice',text:'She said, "What a beautiful sunset!" → She exclaimed （　） a beautiful sunset it was.',hint:'感嘆文の話法転換',choices:['that','what','how','which'],answer:1,words:['what'],jp:'彼女は「なんて美しい夕日でしょう！」と言った。→ 彼女はなんて美しい夕日だろうと言った。',exp:'What〜！の感嘆文の話法は<b>exclaimed that what+名詞+主語+動詞</b>の形になる。',gram:'感嘆文の話法: exclaimed that what/how + S + V',adv:'感嘆文の話法は少し特殊！What/Howの形はそのまま残る'},
+{id:349,cat:'話法',tag:'⚠️ひっかけ：時制の一致の例外(不変の真理)',type:'choice',text:'The teacher said that the earth （　） around the sun.',hint:'不変の真理は時制の一致を受けない',choices:['went','goes','would go','had gone'],answer:1,words:['goes'],jp:'先生は地球が太陽の周りを回っていると言った。',exp:'<b>不変の真理・事実</b>は時制の一致を受けず、現在形のまま使う。',gram:'時制の一致の例外: 不変の真理・現在の習慣は現在形のまま',adv:'⚠️ 科学的事実や真理は時制の一致を無視して現在形のまま！'},
+{id:350,cat:'話法',tag:'疑問詞節の時制の一致',type:'choice',text:'He asked me what time it （　） .',hint:'疑問詞節も時制の一致を受ける',choices:['is','was','be','will be'],answer:1,words:['was'],jp:'彼は私に今何時か尋ねました。',exp:'疑問詞節内も伝達動詞に合わせて時制が一致する。is→<b>was</b>',gram:'疑問詞節も時制の一致の対象',adv:'疑問詞節でも時制の一致を忘れずに！'},
+{id:351,cat:'話法',tag:'提案文の話法(suggest)',type:'choice',text:'He said, "Let\'s go to the beach." → He suggested （　） to the beach.',hint:'Let\'sの提案文の話法',choices:['going','to go','go','that go'],answer:0,words:['suggested','going'],jp:'彼は「海に行こう」と言った。→ 彼は海に行くことを提案した。',exp:'Let\'s〜の提案文は<b>suggest+動名詞(ing)</b>または<b>suggest that+主語+(should)+原形</b>で表す。',gram:'提案文の話法: suggest -ing / suggest that S (should) 原形',adv:'suggestの後はthat節ならshouldを省略した原形が使われることも！'},
+{id:360,cat:'分詞の応用',tag:'現在分詞の限定用法(能動)',type:'choice',text:'Look at the （　） dog over there.',hint:'「走っている犬」能動',choices:['run','running','ran','runs'],answer:1,words:['running'],jp:'あそこで走っている犬を見て。',exp:'名詞を修飾する分詞で、名詞が「〜している」能動の意味なら<b>現在分詞(ing)</b>。the running dog',gram:'名詞+現在分詞(能動): 〜している…',adv:'名詞の前に置く分詞は能動ならing、受動ならp.p.！'},
+{id:361,cat:'分詞の応用',tag:'過去分詞の限定用法(受動)',type:'choice',text:'I bought a （　） car.',hint:'「中古の（使われた）車」受動',choices:['use','using','used','uses'],answer:2,words:['used'],jp:'私は中古車を買いました。',exp:'名詞が「〜される」受動の意味なら<b>過去分詞</b>。a used car（使われた車=中古車）',gram:'名詞+過去分詞(受動): 〜された…',adv:'used car=中古車、この形は日常会話でも超頻出！'},
+{id:362,cat:'分詞の応用',tag:'感情動詞のing(原因)',type:'choice',text:'The movie was very （　）.',hint:'「映画が（人を）興奮させる」原因側',choices:['excited','exciting','excite','excites'],answer:1,words:['exciting'],jp:'その映画はとても興奮するものでした。',exp:'感情を「与える」もの（映画自体）は<b>-ing</b>。The movie is exciting.',gram:'感情動詞: -ing(感情を与える) / -ed(感情を受ける)',adv:'ものが主語ならing、人が主語ならedが基本ルール！'},
+{id:363,cat:'分詞の応用',tag:'感情動詞のed(人が感じる)',type:'choice',text:'I was very （　） by the news.',hint:'「私が（ニュースに）驚かされた」感じる側',choices:['surprising','surprised','surprise','surprises'],answer:1,words:['surprised'],jp:'私はそのニュースにとても驚きました。',exp:'感情を「感じる」人は<b>-ed</b>。I was surprised.',gram:'感情動詞: 人が感じる→-ed / ものが与える→-ing',adv:'excited/interested/boredなど-edは「人がどう感じるか」を表す！'},
+{id:364,cat:'分詞の応用',tag:'分詞の後置修飾(能動)',type:'choice',text:'The man （　） over there is my uncle.',hint:'「あそこに立っている男性」現在分詞の後置修飾',choices:['stand','standing','stood','stands'],answer:1,words:['standing'],jp:'あそこに立っている男性は私のおじです。',exp:'分詞句が長くなると名詞の<b>後ろ</b>に置く（後置修飾）。standing over thereがThe manを修飾。',gram:'分詞句が長い場合は名詞の後ろに置く（後置修飾）',adv:'分詞1語なら前、分詞句(長い)なら後ろに置くのが基本！'},
+{id:365,cat:'分詞の応用',tag:'分詞の後置修飾(受動)',type:'choice',text:'The language （　） in Brazil is Portuguese.',hint:'「ブラジルで話されている言語」受動の後置修飾',choices:['speak','speaking','spoken','spoke'],answer:2,words:['spoken'],jp:'ブラジルで話されている言語はポルトガル語です。',exp:'受動の意味の分詞句も後置修飾できる。spoken in Brazilが言語を修飾。',gram:'名詞 + 過去分詞句（後置修飾、受動の意味）',adv:'the language spoken in〜は超頻出パターン！'},
+{id:366,cat:'分詞の応用',tag:'文頭の分詞構文(受動)',type:'choice',text:'（　） by the news, she couldn\'t speak for a while.',hint:'文頭の分詞構文（受動）',choices:['Shock','Shocking','Shocked','To shock'],answer:2,words:['Shocked'],jp:'そのニュースに衝撃を受けて、彼女はしばらく話せませんでした。',exp:'主語が「衝撃を受ける」受動の立場なので文頭の分詞構文は<b>過去分詞</b>。Shocked by the news',gram:'受動の分詞構文: (Being) + 過去分詞〜',adv:'このパターンは分詞構文の受動系の代表例！'},
+{id:367,cat:'分詞の応用',tag:'with+O+現在分詞(能動)',type:'choice',text:'She was reading a book, with her cat （　） beside her.',hint:'with+O+分詞（猫が寝ている＝能動）',choices:['sleep','sleeping','slept','to sleep'],answer:1,words:['with','sleeping'],jp:'彼女は猫がそばで眠っている状態で本を読んでいました。',exp:'with+O+分詞で、Oが「〜している」能動の意味なら<b>現在分詞</b>。with her cat sleeping',gram:'with+O+現在分詞(能動) / with+O+過去分詞(受動)',adv:'catは自分で眠る(能動)からsleeping！'},
+{id:368,cat:'分詞の応用',tag:'with+O+過去分詞(受動)',type:'choice',text:'He stood there, with his eyes （　）.',hint:'「目を閉じた状態で」受動',choices:['close','closing','closed','to close'],answer:2,words:['with','closed'],jp:'彼は目を閉じた状態でそこに立っていました。',exp:'目は「閉じられる」受動の対象なので<b>過去分詞</b>。with his eyes closed',gram:'with+O+過去分詞: Oが受動の関係のとき',adv:'eyesは自分では閉じない(される)からclosed！sleepingとの対比で覚えよう'},
+{id:369,cat:'分詞の応用',tag:'完了分詞構文(経験の蓄積)',type:'choice',text:'（　） abroad for many years, she speaks three languages fluently.',hint:'長年の経験(完了)を表す分詞構文',choices:['Living','Lived','Having lived','To live'],answer:2,words:['Having','lived'],jp:'長年海外で暮らしてきたので、彼女は3か国語を流暢に話します。',exp:'主節より前からの経験・完了を表すときは<b>Having lived</b>（完了分詞構文）。ただの継続中ならLivingでもよいが、ここでは「長年の経験の蓄積」を強調するのでHaving livedがより適切。',gram:'完了分詞構文: Having+過去分詞〜（主節より前からの継続・経験）',adv:'長年の経験の積み重ねを表すときはHaving+p.p.を使おう！'},
+{id:370,cat:'分詞の応用',tag:'独立分詞構文(There being)',type:'choice',text:'（　） no buses available, we decided to walk.',hint:'「バスがなかったので」There is/areの分詞構文',choices:['There being','Being there','It being','There is'],answer:0,words:['There','being'],jp:'利用できるバスがなかったので、私たちは歩くことにしました。',exp:'There is/are構文を分詞構文にする場合は<b>There being</b>という独立分詞構文になる。',gram:'There is/are → There being〜（独立分詞構文）',adv:'There beingは少し特殊だけど頻出の独立分詞構文パターン！'},
+{id:371,cat:'分詞の応用',tag:'慣用的分詞構文(judging from)',type:'choice',text:'（　） from his accent, he is from Kansai.',hint:'「〜から判断すると」慣用的分詞構文',choices:['Judge','Judging','Judged','To judge'],answer:1,words:['Judging'],jp:'彼のアクセントから判断すると、彼は関西出身です。',exp:'<b>Judging from</b>〜（〜から判断すると）は意味上の主語を気にしない慣用的分詞構文。',gram:'慣用的分詞構文: judging from〜/ considering〜/ generally speaking',adv:'judging fromはconsideringと同じグループの慣用表現として覚えよう！'}
+,
+{id:400,cat:'比較発展',tag:'クジラ構文(no more A than B)',type:'choice',text:'A whale is no more a fish than a horse （　）.',hint:'鯨構文：鯨が魚でないのと同様に馬も〜でない',choices:['is','is a fish','are','was'],answer:0,words:['no','more','than'],jp:'クジラが魚でないのは、馬が魚でないのと同じだ。',exp:'「AがBでないのはCがDでないのと同じ」を表すのが<b>no more A than B</b>構文（クジラ構文）。ここではisで文が終わる（=is a fishの省略）。',gram:'no more A than B: AでないのはBと同じ（クジラ構文）',adv:'クジラ構文は「馬が魚でないのと同様、クジラも魚ではない」という否定の強調表現！'},
+{id:401,cat:'比較発展',tag:'not so much A as B',type:'choice',text:'He is not so much a teacher （　） a friend to his students.',hint:'AというよりむしろB',choices:['as','than','that','so'],answer:0,words:['not','so','much','as'],jp:'彼は教師というよりむしろ生徒たちの友人だ。',exp:'「AというよりむしろB」= <b>not so much A as B</b>。',gram:'not so much A as B = B rather than A',adv:'not so much A as Bはrather than の言い換えとしてよく出る！'},
+{id:402,cat:'比較発展',tag:'the 比較級, the 比較級',type:'choice',text:'The more you practice, （　） you become.',hint:'〜すればするほど…',choices:['the better','better','the best','more better'],answer:0,words:['the','more','the','better'],jp:'練習すればするほど、上手になる。',exp:'「〜すればするほど…」= <b>the+比較級, the+比較級</b>。',gram:'the 比較級 S V, the 比較級 S V',adv:'the more, the betterのような対句表現は超頻出！'},
+{id:403,cat:'比較発展',tag:'no more than(たった〜だけ)',type:'choice',text:'I have （　） 1000 yen.（たった1000円しか持っていない）',hint:'「たった〜しかない」',choices:['no more than','not more than','no less than','not less than'],answer:0,words:['no','more','than'],jp:'私はたった1000円しか持っていない。',exp:'「たった〜しかない（少ない）」という主観的なニュアンスは<b>no more than</b>。',gram:'no more than = たった〜だけ（少ないという主観）/ not more than = 多くても〜（客観的上限）',adv:'no more thanとnot more thanのニュアンスの違いに注意！'},
+{id:404,cat:'比較発展',tag:'no less than(〜も)',type:'choice',text:'She has （　） 100 dollars.（100ドルも持っている）',hint:'「〜も」多いことを強調',choices:['no less than','no more than','not less than','not more than'],answer:0,words:['no','less','than'],jp:'彼女は100ドルも持っている。',exp:'「〜も（多いという驚き）」= <b>no less than</b>。',gram:'no less than = 〜も（多いという主観）/ not less than = 少なくとも〜（客観的下限）',adv:'no less thanは「そんなに多いのか！」という驚きのニュアンス！'},
+{id:405,cat:'比較発展',tag:'倍数表現',type:'choice',text:'This building is twice （　） tall as that one.',hint:'倍数表現の語順',choices:['as','so','than','more'],answer:0,words:['twice','as'],jp:'この建物はあの建物の2倍の高さがある。',exp:'倍数表現は<b>倍数+as+形容詞/副詞+as</b>。twice as tall as',gram:'倍数表現: 倍数+as+原級+as',adv:'twice as ~ as / three times as ~ as のように倍数語+as~asで表現！'},
+{id:406,cat:'比較発展',tag:'⚠️ひっかけ：almost allの語順',type:'choice',text:'（　） of the students passed the exam.',hint:'「ほとんどすべての」の正しい語順',choices:['Almost all','Almost','Most of all','Almost of'],answer:0,words:['Almost','all'],jp:'ほとんどすべての生徒が試験に合格した。',exp:'「ほとんどすべての〜」= <b>almost all + 名詞</b>（almostの後にofは不要）。',gram:'almost all + 名詞 / most of the + 名詞',adv:'⚠️ almost of the studentsは間違い！almost all the studentsが正しい'},
+{id:407,cat:'比較発展',tag:'all the 比較級 for(理由強調)',type:'choice',text:'I like him all the more （　） his honesty.',hint:'「〜だからこそいっそう」',choices:['for','because','so','than'],answer:0,words:['all','the','more','for'],jp:'彼が正直だからこそ、私は彼のことがいっそう好きだ。',exp:'「〜だからこそいっそう…」= <b>all the+比較級+for/because of</b>。',gram:'all the 比較級 for/because of: 〜だからこそいっそう',adv:'all the moreは理由を強調する頻出表現！'},
+{id:408,cat:'比較発展',tag:'比較級 and 比較級(だんだん〜)',type:'choice',text:'The weather is getting （　） and colder.',hint:'「だんだん〜になる」',choices:['cold','colder','more cold','coldest'],answer:1,words:['colder','and','colder'],jp:'天気はだんだん寒くなってきている。',exp:'「だんだん〜になる」= <b>比較級+and+比較級</b>。colder and colder',gram:'比較級 and 比較級: だんだん〜になる',adv:'get better and better / more and more difficultのように使う！'},
+{id:409,cat:'比較発展',tag:'⚠️ひっかけ：比較級の強調語',type:'choice',text:'This book is （　） more interesting than that one.',hint:'比較級を強調する副詞',choices:['very','much','so','too'],answer:1,words:['much'],jp:'この本はあの本よりずっと面白い。',exp:'比較級を強調するのは<b>much/far/even/still/a lot</b>。veryは比較級を強調できない。',gram:'比較級の強調: much/far/even/still/a lot（veryは不可）',adv:'⚠️ veryは原級しか強調できない！比較級はmuch/farを使う'},
+{id:410,cat:'比較発展',tag:'比較級+than any other(最上級の代用)',type:'choice',text:'Tokyo is larger than any other （　） in Japan.',hint:'「他のどの〜よりも」で最上級の意味',choices:['city','cities','the city','a city'],answer:0,words:['than','any','other','city'],jp:'東京は日本の他のどの都市よりも大きい。',exp:'「他のどの〜より…」= <b>比較級+than any other+単数名詞</b>で最上級と同じ意味を表せる。',gram:'比較級+than any other+単数名詞 = 最上級の代用表現',adv:'最上級を使わずに比較級で最上級の意味を表す便利なテクニック！'},
+{id:411,cat:'比較発展',tag:'No other+原級asの最上級代用',type:'choice',text:'No （　） mountain in Japan is as high as Mt. Fuji.',hint:'「他のどの山も〜ほど高くない」',choices:['other','more','most','another'],answer:0,words:['No','other'],jp:'日本の他のどの山も富士山ほど高くない。',exp:'「他のどの〜も…ほど〜ない」= <b>No other+単数名詞+as+原級+as</b>で最上級の意味を表す。',gram:'No other + 単数名詞 + as 原級 as = 最上級の代用',adv:'比較級だけでなく原級を使った最上級相当表現も覚えよう！'},
+{id:420,cat:'強調構文・倒置',tag:'It is ~ that強調構文',type:'choice',text:'It was the window （　） Tom broke.',hint:'It is ~ thatの強調構文（目的語を強調）',choices:['that','who','it','what'],answer:0,words:['It','was','that'],jp:'トムが割ったのはその窓だった。',exp:'「〜したのは…だ」と特定の要素を強調するのが<b>It is/was ~ that</b>構文。ここではthe windowを強調。',gram:'It is/was + 強調したい語句 + that ~（強調構文）',adv:'強調構文はSVOCの各要素を強調できる！人ならwhoも可'},
+{id:421,cat:'強調構文・倒置',tag:'⚠️ひっかけ：強調構文の見分け方',type:'choice',text:'（　） was in this house that he was born.',hint:'強調構文か形式主語か文脈で判断',choices:['It','This','That','There'],answer:0,words:['It','was','that'],jp:'彼が生まれたのはこの家でした。',exp:'It was in this house that he was born.は「彼が生まれたのはこの家だ」という強調構文。Itとthatを消しても意味が通れば強調構文と判断できる。',gram:'強調構文の見分け方: Itとthatを消して意味が通れば強調構文',adv:'⚠️ 強調構文か形式主語(It is ~ to)かは文脈で判断しよう！'},
+{id:422,cat:'強調構文・倒置',tag:'否定語倒置(Never)',type:'choice',text:'（　） have I seen such a beautiful sunset.',hint:'否定語Neverが文頭→倒置',choices:['Never','I never','Not never','No never'],answer:0,words:['Never','have','I'],jp:'こんなに美しい夕日を見たことは一度もない。',exp:'Never等の否定語が強調のために文頭に出ると、<b>疑問文の語順（倒置）</b>になる。Never have I seen〜',gram:'否定語(Never/Little/Hardly等)が文頭→主語と助動詞が倒置',adv:'否定語の強調倒置は英作文でも使うと表現力アップ！'},
+{id:423,cat:'強調構文・倒置',tag:'Not only ~ but alsoの倒置',type:'choice',text:'（　） did she pass the exam, but she also got the highest score.',hint:'Not onlyが文頭→倒置',choices:['Not only','She not only','Only not','Not'],answer:0,words:['Not','only','did'],jp:'彼女は試験に合格しただけでなく、最高点も取った。',exp:'Not onlyが文頭に来ると倒置が起こる。<b>Not only did she〜</b>',gram:'Not only ~ (倒置), but also …: 〜だけでなく…も',adv:'Not onlyが文頭のときは絶対倒置！but alsoとセットで覚えよう'},
+{id:424,cat:'強調構文・倒置',tag:'Little did+倒置',type:'choice',text:'（　） did I know that he was lying.',hint:'「〜とはほとんど知らなかった」',choices:['Little','Small','Few','Not'],answer:0,words:['Little','did','I'],jp:'彼が嘘をついているとはほとんど知らなかった。',exp:'Little（ほとんど〜ない）が文頭に来ると倒置。Little did I know〜',gram:'Little did S+動詞原形: 〜とはほとんど知らなかった（決まり文句）',adv:'Little did I know〜は物語の導入でよく使われる決まり文句！'},
+{id:425,cat:'強調構文・倒置',tag:'Only+副詞句の倒置',type:'choice',text:'（　） did I realize my mistake.',hint:'「〜になって初めて」',choices:['Only then','Then only','Only I','I only'],answer:0,words:['Only','then','did'],jp:'その時になって初めて私は自分の間違いに気づいた。',exp:'Only+副詞(句)が文頭に来ると倒置。Only then did I realize〜',gram:'Only + 副詞(句)が文頭→倒置',adv:'Only after/Only when/Only thenなど「Only+副詞」は全部倒置のサイン！'},
+{id:426,cat:'強調構文・倒置',tag:'So+形容詞の倒置',type:'choice',text:'（　） was the noise that I couldn\'t sleep.',hint:'「とても〜だったので…」の倒置',choices:['So loud','Loud so','So much loud','Such loud'],answer:0,words:['So','loud','was'],jp:'その騒音はとても大きかったので、私は眠れなかった。',exp:'So+形容詞が文頭に出ると倒置が起こる。So loud was the noise that〜',gram:'So+形容詞(文頭)+be動詞+S+that…: とても〜なので…',adv:'So ~ thatの構文が倒置されるパターンも押さえておこう！'},
+{id:427,cat:'強調構文・倒置',tag:'場所の副詞句の倒置',type:'choice',text:'（　） comes the bus!',hint:'「バスが来た！」場所の副詞句が文頭',choices:['Here','There','Now','Then'],answer:0,words:['Here','comes'],jp:'ほら、バスが来た！',exp:'Here/Thereなど場所の副詞が文頭に来ると、主語と動詞が倒置される。Here comes the bus!',gram:'Here/There + 動詞 + 主語（名詞のときのみ倒置）',adv:'Here comes the bus! / There goes my train!などは日常会話でも使う！'},
+{id:428,cat:'強調構文・倒置',tag:'⚠️ひっかけ：代名詞主語は倒置しない',type:'choice',text:'Here it （　）!',hint:'主語が代名詞のときは倒置しない',choices:['come','comes','coming','is come'],answer:1,words:['Here','it','comes'],jp:'それが来たよ（ほら来た）。',exp:'主語が代名詞（it, he, she等）のときは倒置せず<b>Here it comes.</b>のように通常の語順のまま。',gram:'Here/There + 代名詞 + 動詞（倒置しない）',adv:'⚠️ 名詞主語なら倒置、代名詞主語なら倒置しない！'},
+{id:429,cat:'強調構文・倒置',tag:'形容詞+as+SVの譲歩',type:'choice',text:'（　） as she was tired, she kept working.',hint:'「疲れていたけれども」as/thoughの倒置譲歩',choices:['Tired','Tiring','Tire','To tire'],answer:0,words:['Tired','as'],jp:'疲れていたけれども、彼女は働き続けた。',exp:'形容詞+as+S+Vで「〜だけれども」という譲歩を表せる（倒置的語順）。Tired as she was〜',gram:'形容詞/副詞 + as + S + V: 〜だけれども（譲歩、as=thoughに近い）',adv:'Tired as she was = Though she was tiredと同じ意味の高度な譲歩表現！'},
+{id:430,cat:'強調構文・倒置',tag:'仮定法のif省略倒置(Were)',type:'choice',text:'（　） I you, I would apologize.',hint:'If I were youのifを省略した倒置',choices:['Were','Was','Am','Be'],answer:0,words:['Were','I','you'],jp:'もし私があなたなら、謝るだろう。',exp:'仮定法でifを省略すると倒置が起こる。Were I you = If I were you',gram:'仮定法のif省略倒置: Were/Had/Should+S〜',adv:'Were I you, Had I known, Should you needなど仮定法の倒置は頻出！'},
+{id:431,cat:'強調構文・倒置',tag:'疑問文の強調構文',type:'choice',text:'（　） is it that you want to tell me?',hint:'疑問文の強調構文',choices:['What','It','That','Who'],answer:0,words:['What','is','it','that'],jp:'あなたが私に言いたいことは一体何なの？',exp:'疑問文でも<b>疑問詞+is it that〜</b>で強調構文が使われる。',gram:'疑問詞 + is it that ~（疑問文の強調構文）',adv:'What is it that〜?は「一体何が」を強調する会話表現！'},
+{id:440,cat:'接続詞発展',tag:'though/although(譲歩)',type:'choice',text:'（　） he was tired, he kept working.',hint:'「〜だけれども」',choices:['Because','Though','So','If'],answer:1,words:['Though'],jp:'疲れていたけれども、彼は働き続けた。',exp:'「〜だけれども」= <b>though/although</b>。',gram:'though/although: 〜だけれども（譲歩）',adv:'thoughとalthoughはほぼ同じ意味。thoughは文末にも置ける！'},
+{id:441,cat:'接続詞発展',tag:'even if vs even though',type:'choice',text:'（　） it rains, we will go on the trip.',hint:'「たとえ〜でも」実現するかどうかわからない仮定',choices:['Even though','Even if','Although','Because'],answer:1,words:['Even','if'],jp:'たとえ雨が降っても、私たちは旅行に行くつもりだ。',exp:'「たとえ〜でも」で<b>まだ起こっていない仮定</b>にはeven if。',gram:'even if: たとえ〜でも（未確定の仮定）/ even though: 〜だけれども（事実）',adv:'even ifは「もし〜でも」、even thoughは「実際に〜だけど」の違い！'},
+{id:442,cat:'接続詞発展',tag:'whereas(対比)',type:'choice',text:'She likes coffee, （　） he prefers tea.',hint:'対比を表す接続詞',choices:['because','whereas','so','unless'],answer:1,words:['whereas'],jp:'彼女はコーヒーが好きだが、一方で彼は紅茶を好む。',exp:'「〜である一方」対比を表す接続詞は<b>whereas</b>（whileも同様に使える）。',gram:'whereas/while: 〜である一方（対比）',adv:'whereasは文語的な対比表現。評論文でよく使う！'},
+{id:443,cat:'接続詞発展',tag:'in that(理由・観点)',type:'choice',text:'This method is better （　） it saves more time.',hint:'「〜という点で」理由',choices:['in that','so that','now that','so as'],answer:0,words:['in','that'],jp:'この方法は時間をより節約できるという点で優れている。',exp:'「〜という点で」= <b>in that</b>（理由や観点を示す）。',gram:'in that: 〜という点で（理由・観点）',adv:'in thatは少し硬い表現だけど論説文でよく出てくる！'},
+{id:444,cat:'接続詞発展',tag:'now that(理由)',type:'choice',text:'（　） you are here, let\'s start the meeting.',hint:'「今や〜なので」',choices:['Now that','Now','So that','As soon as'],answer:0,words:['Now','that'],jp:'あなたがここに来たので、会議を始めましょう。',exp:'「今や〜なので」= <b>now that</b>（新しい状況を理由にする）。',gram:'now that: 今や〜なので（新状況を理由に）',adv:'now thatは「状況が変わったから」というニュアンスの理由！'},
+{id:445,cat:'接続詞発展',tag:'⚠️ひっかけ：so that(目的)',type:'choice',text:'He studied hard （　） he could pass the exam.',hint:'「〜するために」目的',choices:['so that','so ~ that','such that','in order that not'],answer:0,words:['so','that'],jp:'彼は試験に合格できるように一生懸命勉強した。',exp:'「〜するために」目的を表すのは<b>so that+主語+can/could/will/would</b>。',gram:'so that + S + can/could/will/would: 〜するために（目的）',adv:'⚠️ so thatは「目的」と「結果」両方あるので、後ろの助動詞の有無で見分けよう！'},
+{id:446,cat:'接続詞発展',tag:'unless(もし〜でなければ)',type:'choice',text:'You will fail （　） you study harder.',hint:'「もし〜でなければ」=if not',choices:['unless','if','because','though'],answer:0,words:['unless'],jp:'もっと勉強しなければ、あなたは失敗するだろう。',exp:'「もし〜しなければ」= <b>unless</b>（= if not）。',gram:'unless = if ~ not（もし〜でなければ）',adv:'unlessは条件の否定！if notと置き換えて意味を確認しよう'},
+{id:447,cat:'接続詞発展',tag:'provided that(条件)',type:'choice',text:'You can go out （　） you finish your homework.',hint:'「〜という条件で」provided/providing',choices:['provided that','because','so','though'],answer:0,words:['provided','that'],jp:'宿題を終えるという条件で、あなたは外出してもいい。',exp:'「〜という条件で」= <b>provided that / providing that</b>（ifの硬い言い換え）。',gram:'provided (that) / providing (that): 〜という条件で（= if）',adv:'契約書や規則の文章でよく使われるやや硬い表現！'},
+{id:448,cat:'接続詞発展',tag:'given that(〜を考えると)',type:'choice',text:'（　） the weather is bad, we should cancel the picnic.',hint:'「〜を考えると」',choices:['Given that','So that','Now','Because of'],answer:0,words:['Given','that'],jp:'天気が悪いことを考えると、私たちはピクニックを中止すべきだ。',exp:'「〜を考えると・〜を踏まえると」= <b>given that</b>。',gram:'given that: 〜を考慮すると（前提を述べる）',adv:'given thatは論説文の書き出しでよく使う便利な表現！'},
+{id:449,cat:'接続詞発展',tag:'as long as(条件)',type:'choice',text:'You may stay here （　） you keep quiet.',hint:'「〜する限りは」条件',choices:['as long as','as soon as','as far as','as well as'],answer:0,words:['as','long','as'],jp:'静かにしている限り、ここにいてもいいですよ。',exp:'「〜する限りは」条件を表すのは<b>as long as</b>。',gram:'as long as: 〜する限りは（条件）/ as far as: 〜する限りでは（範囲・程度）',adv:'as long as（条件）とas far as（範囲）の違いに注意！'},
+{id:450,cat:'接続詞発展',tag:'複合関係詞whatever(譲歩)',type:'choice',text:'（　） happens, I will support you.',hint:'「何が起ころうとも」譲歩',choices:['Whatever','Whenever','Wherever','Whoever'],answer:0,words:['Whatever'],jp:'何が起ころうとも、私はあなたを支えます。',exp:'「たとえ何が〜でも」= <b>whatever</b>（複合関係詞、譲歩を表す）。',gram:'whatever/whoever/whenever/wherever/however + S + V: 譲歩（〜でも）',adv:'複合関係詞は譲歩の意味で使われることが多い！'},
+{id:451,cat:'接続詞発展',tag:'複合関係詞however(譲歩)',type:'choice',text:'（　） hard he tries, he can\'t win.',hint:'「どんなに〜でも」',choices:['However','Whatever','Whenever','Whoever'],answer:0,words:['However'],jp:'どんなに一生懸命努力しても、彼は勝てない。',exp:'「どんなに〜でも」= <b>however+形容詞/副詞+S+V</b>。',gram:'however + 形容詞/副詞 + S + V: どんなに〜でも',adv:'howeverの後は形容詞/副詞が直接続く語順に注意！'},
+{id:460,cat:'前置詞発展',tag:'despite(前置詞)',type:'choice',text:'（　） the rain, they went out to play.',hint:'「〜にもかかわらず」前置詞',choices:['Despite','Although','Because','Even'],answer:0,words:['Despite'],jp:'雨にもかかわらず、彼らは遊びに出かけた。',exp:'「〜にもかかわらず」前置詞は<b>despite</b>（= in spite of、後ろに動名詞・名詞）。',gram:'despite / in spite of + 名詞・動名詞（前置詞、後ろにSVは不可）',adv:'despiteの後にthatを続けるのは間違い！despite the fact thatなら可'},
+{id:461,cat:'前置詞発展',tag:'according to(情報源)',type:'choice',text:'（　） the weather forecast, it will rain tomorrow.',hint:'「〜によれば」',choices:['According to','Due to','Owing to','Instead of'],answer:0,words:['According','to'],jp:'天気予報によれば、明日は雨が降るだろう。',exp:'「〜によれば」情報源を示す前置詞は<b>according to</b>。',gram:'according to: 〜によれば（情報源）',adv:'according toは自分の意見には使えない！他者の情報源を示すときだけ'},
+{id:462,cat:'前置詞発展',tag:'owing to(理由)',type:'choice',text:'The game was cancelled （　） the heavy rain.',hint:'「〜のせいで」理由',choices:['owing to','according to','instead of','regardless of'],answer:0,words:['owing','to'],jp:'大雨のせいで試合は中止になった。',exp:'「〜が原因で」= <b>owing to / due to / because of</b>。',gram:'owing to / due to / because of + 名詞（理由）',adv:'because of, due to, owing toはほぼ同じ意味で使い分けは緩やか！'},
+{id:463,cat:'前置詞発展',tag:'regardless of(〜に関係なく)',type:'choice',text:'Everyone can join the event （　） age.',hint:'「〜に関係なく」',choices:['regardless of','according to','instead of','because of'],answer:0,words:['regardless','of'],jp:'年齢に関係なく、誰でもそのイベントに参加できる。',exp:'「〜に関係なく」= <b>regardless of</b>。',gram:'regardless of: 〜に関係なく',adv:'regardless ofは「関係ない」ことを強調する便利な表現！'},
+{id:464,cat:'前置詞発展',tag:'in favor of(〜に賛成)',type:'choice',text:'Most people voted （　） the new policy.',hint:'「〜に賛成して」',choices:['in favor of','in spite of','instead of','in case of'],answer:0,words:['in','favor','of'],jp:'ほとんどの人がその新しい政策に賛成票を投じた。',exp:'「〜に賛成して」= <b>in favor of</b>。',gram:'in favor of: 〜に賛成して（⇔ against）',adv:'in favor of ⇔ against（反対して）とセットで覚えよう！'},
+{id:465,cat:'前置詞発展',tag:'on account of(理由)',type:'choice',text:'The trip was postponed （　） the storm.',hint:'「〜の理由で」',choices:['on account of','in favor of','regardless of','for fear of'],answer:0,words:['on','account','of'],jp:'その旅行は嵐のため延期された。',exp:'「〜の理由で」= <b>on account of</b>（= because of）。',gram:'on account of: 〜の理由で',adv:'on account ofはbecause ofのやや硬い言い換え表現！'},
+{id:466,cat:'前置詞発展',tag:'for fear of(〜を恐れて)',type:'choice',text:'She didn\'t go out （　） catching a cold.',hint:'「〜することを恐れて」',choices:['for fear of','in favor of','instead of','in case of'],answer:0,words:['for','fear','of'],jp:'彼女は風邪をひくのを恐れて外出しなかった。',exp:'「〜するのを恐れて」= <b>for fear of + 動名詞</b>。',gram:'for fear of -ing: 〜するのを恐れて',adv:'for fear ofの後は動名詞(-ing)が続く！'},
+{id:467,cat:'前置詞発展',tag:'at the risk of(〜の危険を冒して)',type:'choice',text:'He saved the child （　） his own life.',hint:'「〜を犠牲にするリスクを冒して」',choices:['at the risk of','in favor of','for the sake of','in return for'],answer:0,words:['at','the','risk','of'],jp:'彼は自分の命を危険にさらしてその子を救った。',exp:'「〜の危険を冒して」= <b>at the risk of</b>。',gram:'at the risk of: 〜の危険を冒して',adv:'at the risk of one\'s lifeは「命がけで」という意味の頻出表現！'},
+{id:468,cat:'前置詞発展',tag:'in return for(〜のお返しに)',type:'choice',text:'He gave her a gift （　） her kindness.',hint:'「〜のお返しに」',choices:['in return for','in favor of','regardless of','on account of'],answer:0,words:['in','return','for'],jp:'彼は彼女の親切のお返しにプレゼントをあげた。',exp:'「〜のお返しに」= <b>in return for</b>。',gram:'in return for: 〜のお返しに',adv:'in return forは「見返りに」という意味の頻出表現！'},
+{id:469,cat:'前置詞発展',tag:'in exchange for(〜と交換に)',type:'choice',text:'I gave him my old bike （　） his skateboard.',hint:'「〜と交換に」',choices:['in exchange for','in favor of','in return for','in case of'],answer:0,words:['in','exchange','for'],jp:'私は彼のスケートボードと交換に自分の古い自転車をあげた。',exp:'「〜と交換に」= <b>in exchange for</b>。',gram:'in exchange for: 〜と交換に',adv:'in exchange forとin return forは似ているが、exchangeは「交換」、returnは「お返し」のニュアンス！'},
+{id:470,cat:'前置詞発展',tag:'⚠️ひっかけ：前置詞despiteと接続詞although',type:'choice',text:'（　） it was raining, we went for a walk.',hint:'後ろにSVが続くのはどちら？',choices:['Despite','Although','Because of','In spite of'],answer:1,words:['Although'],jp:'雨が降っていたけれども、私たちは散歩に出かけた。',exp:'後ろに<b>主語+動詞(SV)</b>が続く場合は接続詞の<b>although</b>。despite/in spite ofは前置詞なので後ろは名詞・動名詞。',gram:'although(接続詞)+SV / despite・in spite of(前置詞)+名詞・動名詞',adv:'⚠️ 後ろがSVか名詞かで接続詞か前置詞か見分けよう！超頻出の文法問題'},
+{id:471,cat:'前置詞発展',tag:'in spite of the fact that',type:'choice',text:'In spite of the fact （　） it was raining, he decided to go.',hint:'in spite ofの後にSVを続けたいときの形',choices:['that','which','of','if'],answer:0,words:['in','spite','of','the','fact','that'],jp:'雨が降っているという事実にもかかわらず、彼は行くことに決めた。',exp:'前置詞despite/in spite ofの後にSVを続けたいときは<b>the fact that</b>を挟む。',gram:'in spite of the fact that + SV = although + SV',adv:'despite/in spite ofでもthe fact thatを使えばSVを続けられる裏技！'}
 ];
 
 var VOCAB=[
-  {en:'am / is / are',jp:'〜です・〜にいる',cat:'be動詞',ex:'I am a student. She is kind.'},
-  {en:'was / were',jp:'〜でした（be動詞の過去形）',cat:'be動詞',ex:'He was sick. We were happy.'},
-  {en:"isn't / aren't / wasn't",jp:'be動詞の否定短縮形',cat:'be動詞',ex:"She isn't a doctor."},
-  {en:'go → went',jp:'行く（不規則動詞）',cat:'不規則動詞',ex:'She went to school.'},
-  {en:'come → came',jp:'来る（不規則動詞）',cat:'不規則動詞',ex:'He came home early.'},
-  {en:'see → saw',jp:'見る（不規則動詞）',cat:'不規則動詞',ex:'I saw a good movie.'},
-  {en:'eat → ate',jp:'食べる（不規則動詞）',cat:'不規則動詞',ex:'We ate pizza last night.'},
-  {en:'make → made',jp:'作る（不規則動詞）',cat:'不規則動詞',ex:'She made a cake.'},
-  {en:'have → had',jp:'持つ（不規則動詞）',cat:'不規則動詞',ex:'I had a great time.'},
-  {en:'write → wrote → written',jp:'書く（不規則動詞）',cat:'不規則動詞',ex:'He wrote a letter. It was written by him.'},
-  {en:'speak → spoke → spoken',jp:'話す（不規則動詞）',cat:'不規則動詞',ex:'English is spoken all over the world.'},
-  {en:'sing → sang → sung',jp:'歌う（不規則動詞）',cat:'不規則動詞',ex:'This song was sung by many people.'},
-  {en:'build → built',jp:'建てる（不規則動詞）',cat:'不規則動詞',ex:'This castle was built 500 years ago.'},
-  {en:'swim → swimming',jp:'泳ぐ（ing形：子音を重ねる）',cat:'動詞のing形',ex:'He is swimming in the pool.'},
-  {en:'write → writing',jp:'書く（ing形：eを取ってing）',cat:'動詞のing形',ex:'She is writing a letter.'},
-  {en:'study → studied / studies',jp:'勉強する（y→ied / y→ies）',cat:'動詞変化',ex:'She studied hard. She studies every day.'},
-  {en:'will + 動詞の原形',jp:'〜するつもり・〜でしょう',cat:'助動詞',ex:'I will go shopping tomorrow.'},
-  {en:"won't (will not)",jp:'〜しないでしょう',cat:'助動詞',ex:"I won't be late."},
-  {en:'can + 動詞の原形',jp:'〜できる',cat:'助動詞',ex:'She can speak Japanese.'},
-  {en:'could',jp:'〜できた（canの過去形）',cat:'助動詞',ex:'I could swim when I was five.'},
-  {en:'must + 動詞の原形',jp:'〜しなければならない',cat:'助動詞',ex:'You must study harder.'},
-  {en:'should + 動詞の原形',jp:'〜すべき・〜した方がいい',cat:'助動詞',ex:'You should see a doctor.'},
-  {en:"don't have to",jp:'〜しなくていい（不必要）',cat:'助動詞',ex:"You don't have to come. / must not = してはいけない（禁止）、don't have to = しなくていい（禁止ではない）"},
-  {en:'be going to + 動詞の原形',jp:'〜するつもり・〜しそう（根拠がある）',cat:'未来',ex:'She is going to study English.'},
-  {en:'taller / tallest',jp:'より背が高い / 一番背が高い',cat:'比較',ex:'She is taller than me.'},
-  {en:'better / best',jp:'より良い / 最も良い（goodの変化）',cat:'比較',ex:'He is the best student.'},
-  {en:'more interesting / most interesting',jp:'より面白い / 最も面白い（長い形容詞）',cat:'比較',ex:'This is the most interesting book.'},
-  {en:'as + 形容詞 + as',jp:'〜と同じくらい（原級比較）',cat:'比較',ex:'Ken is as tall as Tom.'},
-  {en:'more / most',jp:'many・muchの比較級・最上級',cat:'比較',ex:'She has more books than me.'},
-  {en:'to + 動詞の原形（不定詞）',jp:'〜すること・〜するために・〜するための',cat:'不定詞',ex:'I want to become a doctor.'},
-  {en:'too 〜 to ...',jp:'〜すぎて...できない（超頻出！）',cat:'不定詞構文',ex:'He is too tired to walk.'},
-  {en:'It is 形容詞 to 〜',jp:'〜することは...だ（仮主語のIt）',cat:'不定詞構文',ex:'It is fun to play soccer.'},
-  {en:'stop -ing',jp:'〜するのをやめる',cat:'動名詞',ex:"He stopped running.（走るのをやめた）/ stop to run = 走るために立ち止まった（意味が全然違う！）"},
-  {en:'enjoy -ing',jp:'〜することを楽しむ（toは使えない！）',cat:'動名詞',ex:'I enjoy listening to music.'},
-  {en:'finish -ing',jp:'〜し終える（toは使えない！）',cat:'動名詞',ex:"Have you finished doing your homework?"},
-  {en:'be動詞 + 過去分詞（受動態）',jp:'〜される・〜されている',cat:'受動態',ex:'English is spoken in many countries.'},
-  {en:'was / were + 過去分詞',jp:'〜された（過去の受動態）',cat:'受動態',ex:'This car was made in Japan.'},
-  {en:'have/has + 過去分詞（現在完了）',jp:'〜したことがある・〜し続けている',cat:'現在完了',ex:'I have been to Kyoto before.'},
-  {en:'for / since',jp:'〜の間 / 〜以来（現在完了で使用）',cat:'現在完了',ex:'She has lived here for 3 years / since 2020.'},
-  {en:'already / yet / just / ever / never',jp:'すでに/まだ/ちょうど/今までに/一度もない',cat:'現在完了',ex:'I have already eaten. Have you finished yet?'},
-  {en:'in / on / at（時間）',jp:'月・年 / 日付・曜日 / 時刻',cat:'前置詞',ex:"in March / on Monday / at 3 o'clock"},
-  {en:'in / on / at（場所）',jp:'〜の中 / 〜の上 / 〜の地点',cat:'前置詞',ex:'in the box / on the desk / at the station'},
-  {en:'by / until',jp:'〜までに（期限） / 〜までずっと（継続）',cat:'前置詞',ex:'Finish by tomorrow. / Wait until Monday.'}
+{en:'am / is / are',jp:'〜です・〜にいる',cat:'文法語彙（中学）',ex:'I am a student. She is kind.'},
+{en:'was / were',jp:'〜でした（be動詞の過去形）',cat:'文法語彙（中学）',ex:'He was sick. We were happy.'},
+{en:'isn\'t / aren\'t / wasn\'t',jp:'be動詞の否定短縮形',cat:'文法語彙（中学）',ex:'She isn\'t a doctor.'},
+{en:'go → went',jp:'行く（不規則動詞）',cat:'文法語彙（中学）',ex:'She went to school.'},
+{en:'come → came',jp:'来る（不規則動詞）',cat:'文法語彙（中学）',ex:'He came home early.'},
+{en:'see → saw',jp:'見る（不規則動詞）',cat:'文法語彙（中学）',ex:'I saw a good movie.'},
+{en:'eat → ate',jp:'食べる（不規則動詞）',cat:'文法語彙（中学）',ex:'We ate pizza last night.'},
+{en:'make → made',jp:'作る（不規則動詞）',cat:'文法語彙（中学）',ex:'She made a cake.'},
+{en:'have → had',jp:'持つ（不規則動詞）',cat:'文法語彙（中学）',ex:'I had a great time.'},
+{en:'write → wrote → written',jp:'書く（不規則動詞）',cat:'文法語彙（中学）',ex:'He wrote a letter. It was written by him.'},
+{en:'speak → spoke → spoken',jp:'話す（不規則動詞）',cat:'文法語彙（中学）',ex:'English is spoken all over the world.'},
+{en:'sing → sang → sung',jp:'歌う（不規則動詞）',cat:'文法語彙（中学）',ex:'This song was sung by many people.'},
+{en:'build → built',jp:'建てる（不規則動詞）',cat:'文法語彙（中学）',ex:'This castle was built 500 years ago.'},
+{en:'swim → swimming',jp:'泳ぐ（ing形：子音を重ねる）',cat:'文法語彙（中学）',ex:'He is swimming in the pool.'},
+{en:'write → writing',jp:'書く（ing形：eを取ってing）',cat:'文法語彙（中学）',ex:'She is writing a letter.'},
+{en:'study → studied / studies',jp:'勉強する（y→ied / y→ies）',cat:'文法語彙（中学）',ex:'She studied hard. She studies every day.'},
+{en:'will + 動詞の原形',jp:'〜するつもり・〜でしょう',cat:'文法語彙（中学）',ex:'I will go shopping tomorrow.'},
+{en:'won\'t (will not)',jp:'〜しないでしょう',cat:'文法語彙（中学）',ex:'I won\'t be late.'},
+{en:'can + 動詞の原形',jp:'〜できる',cat:'文法語彙（中学）',ex:'She can speak Japanese.'},
+{en:'could',jp:'〜できた（canの過去形）',cat:'文法語彙（中学）',ex:'I could swim when I was five.'},
+{en:'must + 動詞の原形',jp:'〜しなければならない',cat:'文法語彙（中学）',ex:'You must study harder.'},
+{en:'should + 動詞の原形',jp:'〜すべき・〜した方がいい',cat:'文法語彙（中学）',ex:'You should see a doctor.'},
+{en:'don\'t have to',jp:'〜しなくていい（不必要）',cat:'文法語彙（中学）',ex:'You don\'t have to come. / must not = してはいけない（禁止）、don\'t have to = しなくていい（禁止ではない）'},
+{en:'be going to + 動詞の原形',jp:'〜するつもり・〜しそう（根拠がある）',cat:'文法語彙（中学）',ex:'She is going to study English.'},
+{en:'taller / tallest',jp:'より背が高い / 一番背が高い',cat:'文法語彙（中学）',ex:'She is taller than me.'},
+{en:'better / best',jp:'より良い / 最も良い（goodの変化）',cat:'文法語彙（中学）',ex:'He is the best student.'},
+{en:'more interesting / most interesting',jp:'より面白い / 最も面白い（長い形容詞）',cat:'文法語彙（中学）',ex:'This is the most interesting book.'},
+{en:'as + 形容詞 + as',jp:'〜と同じくらい（原級比較）',cat:'文法語彙（中学）',ex:'Ken is as tall as Tom.'},
+{en:'more / most',jp:'many・muchの比較級・最上級',cat:'文法語彙（中学）',ex:'She has more books than me.'},
+{en:'to + 動詞の原形（不定詞）',jp:'〜すること・〜するために・〜するための',cat:'文法語彙（中学）',ex:'I want to become a doctor.'},
+{en:'too 〜 to ...',jp:'〜すぎて...できない（超頻出！）',cat:'文法語彙（中学）',ex:'He is too tired to walk.'},
+{en:'It is 形容詞 to 〜',jp:'〜することは...だ（仮主語のIt）',cat:'文法語彙（中学）',ex:'It is fun to play soccer.'},
+{en:'stop -ing',jp:'〜するのをやめる',cat:'文法語彙（中学）',ex:'He stopped running.（走るのをやめた）/ stop to run = 走るために立ち止まった（意味が全然違う！）'},
+{en:'enjoy -ing',jp:'〜することを楽しむ（toは使えない！）',cat:'文法語彙（中学）',ex:'I enjoy listening to music.'},
+{en:'finish -ing',jp:'〜し終える（toは使えない！）',cat:'文法語彙（中学）',ex:'Have you finished doing your homework?'},
+{en:'be動詞 + 過去分詞（受動態）',jp:'〜される・〜されている',cat:'文法語彙（中学）',ex:'English is spoken in many countries.'},
+{en:'was / were + 過去分詞',jp:'〜された（過去の受動態）',cat:'文法語彙（中学）',ex:'This car was made in Japan.'},
+{en:'have/has + 過去分詞（現在完了）',jp:'〜したことがある・〜し続けている',cat:'文法語彙（中学）',ex:'I have been to Kyoto before.'},
+{en:'for / since',jp:'〜の間 / 〜以来（現在完了で使用）',cat:'文法語彙（中学）',ex:'She has lived here for 3 years / since 2020.'},
+{en:'already / yet / just / ever / never',jp:'すでに/まだ/ちょうど/今までに/一度もない',cat:'文法語彙（中学）',ex:'I have already eaten. Have you finished yet?'},
+{en:'in / on / at（時間）',jp:'月・年 / 日付・曜日 / 時刻',cat:'文法語彙（中学）',ex:'in March / on Monday / at 3 o\'clock'},
+{en:'in / on / at（場所）',jp:'〜の中 / 〜の上 / 〜の地点',cat:'文法語彙（中学）',ex:'in the box / on the desk / at the station'},
+{en:'by / until',jp:'〜までに（期限） / 〜までずっと（継続）',cat:'文法語彙（中学）',ex:'Finish by tomorrow. / Wait until Monday.'},
+{en:'acknowledge',jp:'〜を認める',cat:'英単語（英検2級レベル）',ex:'He acknowledged his mistake.',ipa:'/əkˈnɒlɪdʒ/'},
+{en:'accomplish',jp:'〜を成し遂げる',cat:'英単語（英検2級レベル）',ex:'She accomplished her goal.',ipa:'/əˈkʌmplɪʃ/'},
+{en:'additional',jp:'追加の',cat:'英単語（英検2級レベル）',ex:'We need additional information.',ipa:'/əˈdɪʃənəl/'},
+{en:'alter',jp:'〜を変える',cat:'英単語（英検2級レベル）',ex:'They altered their plans.',ipa:'/ˈɔːltər/'},
+{en:'ambiguous',jp:'あいまいな',cat:'英単語（英検2級レベル）',ex:'His answer was ambiguous.',ipa:'/æmˈbɪɡjuəs/'},
+{en:'anticipate',jp:'〜を予期する',cat:'英単語（英検2級レベル）',ex:'We anticipate a good result.',ipa:'/ænˈtɪsɪpeɪt/'},
+{en:'apparent',jp:'明らかな',cat:'英単語（英検2級レベル）',ex:'It became apparent that he was wrong.',ipa:'/əˈpærənt/'},
+{en:'aspect',jp:'側面、観点',cat:'英単語（英検2級レベル）',ex:'Consider every aspect of the problem.',ipa:'/ˈæspekt/'},
+{en:'assume',jp:'〜と仮定する',cat:'英単語（英検2級レベル）',ex:'I assume you already know this.',ipa:'/əˈsjuːm/'},
+{en:'circumstance',jp:'状況、事情',cat:'英単語（英検2級レベル）',ex:'Under these circumstances, we must wait.',ipa:'/ˈsɜːkəmstæns/'},
+{en:'compensate',jp:'埋め合わせをする',cat:'英単語（英検2級レベル）',ex:'Nothing can compensate for the loss.',ipa:'/ˈkɒmpenseɪt/'},
+{en:'comprehensive',jp:'包括的な',cat:'英単語（英検2級レベル）',ex:'This is a comprehensive report.',ipa:'/ˌkɒmprɪˈhensɪv/'},
+{en:'considerable',jp:'かなりの',cat:'英単語（英検2級レベル）',ex:'It took a considerable amount of time.',ipa:'/kənˈsɪdərəbl/'},
+{en:'consequently',jp:'その結果',cat:'英単語（英検2級レベル）',ex:'It rained heavily; consequently, the game was cancelled.',ipa:'/ˈkɒnsɪkwəntli/'},
+{en:'contribute',jp:'貢献する、寄付する',cat:'英単語（英検2級レベル）',ex:'She contributed to the project.',ipa:'/kənˈtrɪbjuːt/'},
+{en:'controversy',jp:'論争',cat:'英単語（英検2級レベル）',ex:'The plan caused a lot of controversy.',ipa:'/ˈkɒntrəvɜːsi/'},
+{en:'convince',jp:'〜を納得させる',cat:'英単語（英検2級レベル）',ex:'He convinced me to join the team.',ipa:'/kənˈvɪns/'},
+{en:'crucial',jp:'決定的に重要な',cat:'英単語（英検2級レベル）',ex:'This decision is crucial for our future.',ipa:'/ˈkruːʃəl/'},
+{en:'derive',jp:'〜に由来する、引き出す',cat:'英単語（英検2級レベル）',ex:'The word derives from Latin.',ipa:'/dɪˈraɪv/'},
+{en:'devote',jp:'〜をささげる',cat:'英単語（英検2級レベル）',ex:'She devoted her life to teaching.',ipa:'/dɪˈvəʊt/'},
+{en:'distinct',jp:'明確に異なる',cat:'英単語（英検2級レベル）',ex:'These are two distinct issues.',ipa:'/dɪˈstɪŋkt/'},
+{en:'diverse',jp:'多様な',cat:'英単語（英検2級レベル）',ex:'We live in a diverse society.',ipa:'/daɪˈvɜːs/'},
+{en:'emphasize',jp:'〜を強調する',cat:'英単語（英検2級レベル）',ex:'The teacher emphasized the importance of practice.',ipa:'/ˈemfəsaɪz/'},
+{en:'enormous',jp:'巨大な',cat:'英単語（英検2級レベル）',ex:'They live in an enormous house.',ipa:'/ɪˈnɔːməs/'},
+{en:'evaluate',jp:'〜を評価する',cat:'英単語（英検2級レベル）',ex:'We need to evaluate the results.',ipa:'/ɪˈvæljueɪt/'},
+{en:'eventually',jp:'最終的に',cat:'英単語（英検2級レベル）',ex:'He eventually succeeded.',ipa:'/ɪˈventʃuəli/'},
+{en:'exceed',jp:'〜を超える',cat:'英単語（英検2級レベル）',ex:'The cost exceeded our budget.',ipa:'/ɪkˈsiːd/'},
+{en:'fundamental',jp:'基本的な',cat:'英単語（英検2級レベル）',ex:'This is a fundamental principle.',ipa:'/ˌfʌndəˈmentl/'},
+{en:'generate',jp:'〜を生み出す',cat:'英単語（英検2級レベル）',ex:'The plan will generate new jobs.',ipa:'/ˈdʒenəreɪt/'},
+{en:'genuine',jp:'本物の、誠実な',cat:'英単語（英検2級レベル）',ex:'She showed genuine concern.',ipa:'/ˈdʒenjuɪn/'},
+{en:'illustrate',jp:'〜を説明する、例示する',cat:'英単語（英検2級レベル）',ex:'This example illustrates the point well.',ipa:'/ˈɪləstreɪt/'},
+{en:'imply',jp:'〜をほのめかす',cat:'英単語（英検2級レベル）',ex:'Her silence implied disagreement.',ipa:'/ɪmˈplaɪ/'},
+{en:'inevitable',jp:'避けられない',cat:'英単語（英検2級レベル）',ex:'Change is inevitable.',ipa:'/ɪnˈevɪtəbl/'},
+{en:'initial',jp:'最初の',cat:'英単語（英検2級レベル）',ex:'The initial results were promising.',ipa:'/ɪˈnɪʃəl/'},
+{en:'reside',jp:'居住する（liveの改まった言い方）',cat:'英単語（英検2級レベル）',ex:'She has resided in Tokyo for three years.',ipa:'/rɪˈzaɪd/'},
+{en:'in order to / so as to',jp:'〜するために（目的を強調）',cat:'文法語彙（中学）',ex:'She got up early in order to catch the first train.'},
+{en:'look after',jp:'〜の世話をする',cat:'熟語（高校範囲）',ex:'She looks after her little brother every day.'},
+{en:'come up with',jp:'〜を思いつく',cat:'熟語（高校範囲）',ex:'He came up with a great idea.'},
+{en:'put up with',jp:'〜を我慢する',cat:'熟語（高校範囲）',ex:'I can\'t put up with this noise anymore.'},
+{en:'get over',jp:'〜を乗り越える、克服する',cat:'熟語（高校範囲）',ex:'It took months to get over the illness.'},
+{en:'take after',jp:'（性格・容姿が）〜に似ている',cat:'熟語（高校範囲）',ex:'She takes after her mother.'},
+{en:'make up for',jp:'〜の埋め合わせをする',cat:'熟語（高校範囲）',ex:'He worked overtime to make up for the delay.'},
+{en:'turn down',jp:'〜を断る、拒否する',cat:'熟語（高校範囲）',ex:'She turned down the job offer.'},
+{en:'run into',jp:'〜に偶然出会う',cat:'熟語（高校範囲）',ex:'I ran into an old friend at the station.'},
+{en:'carry out',jp:'（計画・実験など）を実行する',cat:'熟語（高校範囲）',ex:'They carried out the plan successfully.'},
+{en:'bring about',jp:'〜を引き起こす',cat:'熟語（高校範囲）',ex:'The new policy brought about many changes.'},
+{en:'take over',jp:'〜を引き継ぐ',cat:'熟語（高校範囲）',ex:'She took over the company from her father.'},
+{en:'look into',jp:'〜を調査する',cat:'熟語（高校範囲）',ex:'The police are looking into the case.'},
+{en:'come across',jp:'〜に偶然出くわす',cat:'熟語（高校範囲）',ex:'I came across an interesting article yesterday.'},
+{en:'catch up with',jp:'〜に追いつく',cat:'熟語（高校範囲）',ex:'He ran fast to catch up with the bus.'},
+{en:'do away with',jp:'〜を廃止する',cat:'熟語（高校範囲）',ex:'The school did away with the old uniform rule.'},
+{en:'be aware of',jp:'〜に気づいている',cat:'熟語（高校範囲）',ex:'She is aware of the risks involved.'},
+{en:'be capable of',jp:'〜の能力がある',cat:'熟語（高校範囲）',ex:'He is capable of solving the problem.'},
+{en:'be committed to',jp:'〜に献身している、専念している',cat:'熟語（高校範囲）',ex:'The company is committed to reducing waste.'},
+{en:'be dependent on',jp:'〜に依存している',cat:'熟語（高校範囲）',ex:'The village is dependent on tourism.'},
+{en:'be equipped with',jp:'〜を備えている',cat:'熟語（高校範囲）',ex:'The car is equipped with the latest safety features.'},
+{en:'be engaged in',jp:'〜に従事している',cat:'熟語（高校範囲）',ex:'He is engaged in medical research.'},
+{en:'be associated with',jp:'〜と関連している',cat:'熟語（高校範囲）',ex:'Smoking is associated with many health problems.'},
+{en:'be composed of',jp:'〜から構成されている',cat:'熟語（高校範囲）',ex:'The committee is composed of ten members.'},
+{en:'be subject to',jp:'〜を受けやすい、〜次第である',cat:'熟語（高校範囲）',ex:'The schedule is subject to change.'},
+{en:'be inclined to',jp:'〜する傾向がある',cat:'熟語（高校範囲）',ex:'People are inclined to believe what they want to believe.'},
+{en:'take A for granted',jp:'Aを当然のことと思う',cat:'熟語（高校範囲）',ex:'We often take clean water for granted.'},
+{en:'make the most of',jp:'〜を最大限に活用する',cat:'熟語（高校範囲）',ex:'You should make the most of this opportunity.'},
+{en:'take advantage of',jp:'〜を利用する',cat:'熟語（高校範囲）',ex:'He took advantage of the sale to buy a new laptop.'},
+{en:'keep an eye on',jp:'〜から目を離さない、見張る',cat:'熟語（高校範囲）',ex:'Could you keep an eye on my bag for a minute?'},
+{en:'on the other hand',jp:'一方で（対比）',cat:'熟語（高校範囲）',ex:'On the other hand, some people disagree with this idea.'},
+{en:'in terms of',jp:'〜の点で、〜に関して',cat:'熟語（高校範囲）',ex:'The two products are similar in terms of price.'},
+{en:'as a result of',jp:'〜の結果として',cat:'熟語（高校範囲）',ex:'As a result of the storm, many flights were cancelled.'},
+{en:'in spite of',jp:'〜にもかかわらず',cat:'熟語（高校範囲）',ex:'In spite of the rain, they went out to play.'},
+{en:'in contrast to',jp:'〜とは対照的に',cat:'熟語（高校範囲）',ex:'In contrast to last year, sales have improved.'},
+{en:'with regard to',jp:'〜に関して',cat:'熟語（高校範囲）',ex:'I have a question with regard to the schedule.'},
+{en:'in the long run',jp:'長い目で見れば、結局は',cat:'熟語（高校範囲）',ex:'Saving money now will help you in the long run.'},
+{en:'at the expense of',jp:'〜を犠牲にして',cat:'熟語（高校範囲）',ex:'He succeeded at the expense of his health.'},
+{en:'for the sake of',jp:'〜のために',cat:'熟語（高校範囲）',ex:'She quit smoking for the sake of her children.'},
+{en:'by means of',jp:'〜という手段によって',cat:'熟語（高校範囲）',ex:'They communicated by means of hand signals.'},
+{en:'in the face of',jp:'〜に直面して',cat:'熟語（高校範囲）',ex:'They remained calm in the face of danger.'},
+{en:'to make matters worse',jp:'さらに悪いことに',cat:'熟語（高校範囲）',ex:'To make matters worse, it started to rain.'},
+{en:'needless to say',jp:'言うまでもなく',cat:'熟語（高校範囲）',ex:'Needless to say, health is important.'},
+{en:'to some extent',jp:'ある程度は',cat:'熟語（高校範囲）',ex:'I agree with you to some extent.'},
+{en:'more often than not',jp:'たいていは、往々にして',cat:'熟語（高校範囲）',ex:'More often than not, he arrives late.'},
+{en:'for the time being',jp:'当分の間、さしあたり',cat:'熟語（高校範囲）',ex:'Let\'s leave things as they are for the time being.'},
+{en:'in the meantime',jp:'その間に',cat:'熟語（高校範囲）',ex:'Dinner will be ready soon. In the meantime, please wait here.'},
+{en:'as far as I know',jp:'私の知る限り',cat:'熟語（高校範囲）',ex:'As far as I know, he hasn\'t arrived yet.'},
+{en:'as long as',jp:'〜する限りは（条件）',cat:'熟語（高校範囲）',ex:'You can stay here as long as you like.'},
+{en:'in case of',jp:'〜の場合には',cat:'熟語（高校範囲）',ex:'In case of fire, use the stairs.'},
+{en:'on the verge of',jp:'今にも〜しそうで',cat:'熟語（高校範囲）',ex:'The company was on the verge of bankruptcy.'},
+{en:'at the mercy of',jp:'〜のなすがままで',cat:'熟語（高校範囲）',ex:'The small boat was at the mercy of the waves.'},
+{en:'in accordance with',jp:'〜に従って',cat:'熟語（高校範囲）',ex:'The plan was carried out in accordance with the rules.'},
+{en:'with a view to',jp:'〜する目的で',cat:'熟語（高校範囲）',ex:'He studied abroad with a view to becoming a diplomat.'},
+{en:'in due course',jp:'そのうちに、やがて',cat:'熟語（高校範囲）',ex:'You will receive a reply in due course.'},
+{en:'at first glance',jp:'一見したところ',cat:'熟語（高校範囲）',ex:'At first glance, the problem looked easy.'},
+{en:'in the wake of',jp:'〜の結果として、〜に続いて',cat:'熟語（高校範囲）',ex:'Prices rose in the wake of the disaster.'},
+{en:'not to mention',jp:'〜は言うまでもなく',cat:'熟語（高校範囲）',ex:'She speaks French and Spanish, not to mention English.'},
+{en:'take it for granted that',jp:'〜を当然のことと思う',cat:'熟語（高校範囲）',ex:'We take it for granted that the sun rises every day.'},
+{en:'be to blame for',jp:'〜に責任がある',cat:'熟語（高校範囲）',ex:'Who is to blame for this mistake?'},
+{en:'in no time',jp:'すぐに、あっという間に',cat:'熟語（高校範囲）',ex:'The work was finished in no time.'},
+{en:'who / whom / whose',jp:'関係代名詞（人：主格・目的格・所有格）',cat:'文法語彙（高校範囲）',ex:'I have a friend who lives in Osaka.'},
+{en:'which / that',jp:'関係代名詞（物・人）',cat:'文法語彙（高校範囲）',ex:'This is the book which changed my life.'},
+{en:'where / when / why',jp:'関係副詞（場所・時・理由）',cat:'文法語彙（高校範囲）',ex:'This is the town where I was born.'},
+{en:'what',jp:'先行詞を含む関係代名詞（〜すること・もの）',cat:'文法語彙（高校範囲）',ex:'What he said was true.'},
+{en:'having + 過去分詞',jp:'完了の分詞構文（主節より前のこと）',cat:'文法語彙（高校範囲）',ex:'Having finished his homework, he went out to play.'},
+{en:'considering',jp:'〜を考慮すると（慣用的分詞構文）',cat:'文法語彙（高校範囲）',ex:'Considering his age, he did very well.'},
+{en:'judging from',jp:'〜から判断すると（慣用的分詞構文）',cat:'文法語彙（高校範囲）',ex:'Judging from his accent, he is from Kansai.'},
+{en:'with + O + 分詞',jp:'付帯状況（〜の状態で）',cat:'文法語彙（高校範囲）',ex:'He stood there, with his arms folded.'},
+{en:'were to / should（仮定法未来）',jp:'仮定法未来で使う表現',cat:'文法語彙（高校範囲）',ex:'If it should rain tomorrow, we would cancel the picnic.'},
+{en:'as if',jp:'まるで〜であるかのように',cat:'文法語彙（高校範囲）',ex:'He talks as if he knew everything.'},
+{en:'I wish',jp:'〜だったらいいのに（仮定法の願望）',cat:'文法語彙（高校範囲）',ex:'I wish I could fly like a bird.'},
+{en:'get + O + to 原形',jp:'説得して〜させる（使役）',cat:'文法語彙（高校範囲）',ex:'I finally got her to agree with my plan.'},
+{en:'be made to',jp:'〜させられる（makeの受動態）',cat:'文法語彙（高校範囲）',ex:'He was made to clean the room by his mother.'},
+{en:'have/get + O + 過去分詞',jp:'してもらう・される（使役受身）',cat:'文法語彙（高校範囲）',ex:'I had my hair cut yesterday.'},
+{en:'exclaim',jp:'（驚き・喜びで）思わず声をあげる',cat:'文法語彙（高校範囲）',ex:'She exclaimed what a beautiful sunset it was.'},
+{en:'the following day / the day before',jp:'翌日・前日（話法での時の変化）',cat:'文法語彙（高校範囲）',ex:'He said he would call me the following day.'},
+{en:'have been -ing',jp:'現在完了進行形（ずっと〜し続けている）',cat:'文法語彙（高校範囲）',ex:'I have been studying English for two hours.'},
+{en:'suggest -ing / suggest that',jp:'〜することを提案する',cat:'文法語彙（高校範囲）',ex:'He suggested going to the beach.'},
+{en:'It is + 形容詞 + for/of + 人 + to',jp:'不定詞の意味上の主語（for=一般/of=人の性質）',cat:'文法語彙（高校範囲）',ex:'It is kind of you to help me.'},
+{en:'be excited / be exciting',jp:'感情動詞のed(感じる)とing(与える)の違い',cat:'文法語彙（高校範囲）',ex:'The movie was exciting, so I was excited.'}
 ];
 
-var CATS=['all','be動詞','一般動詞','現在進行形','過去形','未来','助動詞','疑問詞','名詞・冠詞','比較','不定詞','動名詞','受動態','現在完了','代名詞','前置詞'];
+var PASSAGES=[
+{
+  id:1,level:'easy',title:'Why Reading in English Matters',
+  sentences:[
+    'Many people think learning new words is the most important part of studying English.',
+    'However, reading regularly may be just as valuable.',
+    'When you read an English article or story, you meet the same words again and again in different situations.',
+    'This repeated exposure helps you remember the words naturally, without forcing yourself to memorize long lists.',
+    'Reading also shows you how words are actually used in real sentences, not just their dictionary definitions.',
+    'For this reason, teachers often recommend reading a little every day, even if you do not understand every word.',
+    'Over time, this habit can improve both your vocabulary and your confidence in English.'
+  ],
+  jp:'多くの人は、新しい単語を覚えることが英語学習で最も重要だと考えている。しかし、定期的に読書をすることも同じくらい価値があるかもしれない。英語の記事や物語を読むと、同じ単語にさまざまな状況で何度も出会うことになる。この繰り返しの触れ合いが、無理に単語リストを暗記しなくても自然に単語を覚える助けになる。読書はまた、辞書の定義だけでなく、実際の文の中で単語がどう使われるかを示してくれる。そのため、教師はたとえすべての単語を理解できなくても、毎日少しずつ読むことを勧めることが多い。時間が経つにつれて、この習慣は語彙力と英語への自信の両方を向上させることができる。',
+  questions:[
+    {type:'main',q:'Which of the following best matches the passage?',choices:['Memorizing word lists is more effective than reading.','Reading regularly can help students learn vocabulary naturally.','Teachers recommend reading only difficult books.','Understanding every word is necessary before reading.'],answer:1,exp:'6〜7文目で「毎日少しずつ読む習慣が語彙力と自信を高める」と述べられている。'},
+    {type:'ref',q:"What does \"This repeated exposure\" in sentence 4 refer to?",choices:['Memorizing long word lists','Meeting the same words again and again while reading','Reading dictionary definitions','Studying with a teacher every day'],answer:1,exp:'直前の3文目「同じ単語にさまざまな状況で何度も出会う」ことを指している。'},
+    {type:'vocab',q:"In this passage, the word \"exposure\" is closest in meaning to:",choices:['誤解','（繰り返し）触れること・さらされること','記憶','発音'],answer:1,exp:'exposureは「さらされること・触れる機会」という意味。文脈から「同じ単語に繰り返し触れること」と分かる。'}
+  ]
+},
+{
+  id:2,level:'easy',title:'A Simple Sleep Study',
+  sentences:[
+    'Scientists recently studied how sleep affects memory in teenagers.',
+    'They divided students into two groups: one slept eight hours, and the other slept only five.',
+    'The next day, both groups took the same vocabulary test.',
+    'Students who slept eight hours remembered almost twenty percent more words than the other group.',
+    'Researchers believe that sleep helps the brain organize new information.',
+    'Without enough sleep, the brain may struggle to store what was learned during the day.',
+    'Based on this study, getting enough sleep before an exam might be just as important as studying the night before.'
+  ],
+  jp:'科学者たちは最近、睡眠が十代の若者の記憶にどう影響するかを調査した。彼らは生徒たちを2つのグループに分けた。一方は8時間眠り、もう一方は5時間しか眠らなかった。翌日、両方のグループが同じ単語テストを受けた。8時間眠ったグループは、もう一方のグループよりも約20パーセント多くの単語を覚えていた。研究者たちは、睡眠が脳が新しい情報を整理するのを助けると考えている。十分な睡眠がないと、脳はその日に学んだことをうまく記憶できないかもしれない。この研究に基づくと、試験前に十分な睡眠をとることは、前夜に勉強することと同じくらい重要かもしれない。',
+  questions:[
+    {type:'main',q:'What did the study find?',choices:['Sleep has no effect on memory.','Students who slept longer remembered more vocabulary.','Vocabulary tests are not related to sleep.','Five hours of sleep is ideal for teenagers.'],answer:1,exp:'8時間眠ったグループの方が約20%多く単語を覚えていた、という結果が述べられている。'},
+    {type:'ref',q:'What does "this study" in the last sentence refer to?',choices:["A test about teenagers' eating habits",'The research comparing sleep time and memory','A survey about students\' favorite subjects','An experiment on classroom lighting'],answer:1,exp:'この文章全体で説明されている「睡眠時間と記憶の関係を調べた研究」を指す。'},
+    {type:'vocab',q:'In this passage, "struggle" is closest in meaning to:',choices:['苦労する・うまくいかない','喜ぶ','記録する','質問する'],answer:0,exp:'struggleは「苦労する・悪戦苦闘する」という意味。'}
+  ]
+},
+{
+  id:3,level:'hard',title:'The Problem with Plastic',
+  sentences:[
+    'Plastic has become one of the most common materials in modern life, appearing in everything from packaging to clothing.',
+    'Its convenience is undeniable: it is light, cheap, and easy to shape into almost any form.',
+    'However, this same convenience has created a serious environmental problem.',
+    'Unlike paper or food waste, most plastic does not decompose naturally; instead, it breaks into smaller and smaller pieces over hundreds of years.',
+    'These tiny fragments, known as microplastics, have been found not only in oceans and rivers but also in the food we eat and even the air we breathe.',
+    'Scientists are still studying the long-term effects of microplastics on human health, but early research suggests they may be linked to various health problems.',
+    'Meanwhile, marine animals often mistake plastic waste for food, which can be fatal.',
+    'In response to these concerns, many countries have introduced bans on single-use plastic bags and straws.',
+    'Some companies have also begun developing biodegradable alternatives that break down much faster than traditional plastic.',
+    'Critics argue, however, that such alternatives are still too expensive to replace plastic on a large scale.',
+    'Ultimately, solving the plastic problem will likely require not just new materials, but also a fundamental change in how people think about disposable products.',
+    'Until that shift happens, the amount of plastic waste is expected to keep rising.'
+  ],
+  jp:'プラスチックは現代生活で最も一般的な素材の1つとなっており、包装から衣類まであらゆるものに使われている。その利便性は否定できない。軽くて安く、ほとんどどんな形にも成形しやすいからだ。しかしこの利便性こそが、深刻な環境問題を生み出している。紙や生ゴミと違い、ほとんどのプラスチックは自然に分解されず、何百年もかけてどんどん小さな破片になっていく。マイクロプラスチックと呼ばれるこの微小な破片は、海や川だけでなく、私たちが食べる食品や吸う空気の中からも見つかっている。科学者たちはマイクロプラスチックが人間の健康に与える長期的な影響について今も研究を続けているが、初期の研究では様々な健康問題と関連している可能性が示唆されている。一方で、海の生き物はプラスチックごみを食べ物と間違えることが多く、それが命取りになることもある。こうした懸念を受けて、多くの国が使い捨てのプラスチック袋やストローを禁止する規制を導入している。従来のプラスチックよりずっと早く分解される生分解性の代替素材を開発し始めた企業もある。しかし批判的な意見としては、こうした代替素材は大規模にプラスチックを置き換えるにはまだコストが高すぎるという指摘もある。結局のところ、プラスチック問題を解決するには、新しい素材だけでなく、使い捨て製品に対する人々の考え方そのものの根本的な変化が必要になるだろう。その変化が起こるまでは、プラスチックごみの量は増え続けると予想される。',
+  questions:[
+    {type:'main',q:'According to the passage, what is one reason plastic causes environmental problems?',choices:['It is too expensive to produce.','It does not break down naturally and can remain in the environment for a very long time.','It cannot be shaped into different forms.','It is heavier than most other materials.'],answer:1,exp:'4文目「ほとんどのプラスチックは自然に分解されず、何百年もかけて小さな破片になる」とある。'},
+    {type:'ref',q:'What does "these concerns" in sentence 8 refer to?',choices:['The high cost of biodegradable materials','The health problems and environmental damage caused by microplastics and plastic waste','The convenience of using plastic in packaging','The opinions of critics about alternative materials'],answer:1,exp:'直前の5〜7文で述べられているマイクロプラスチックによる健康・環境への悪影響を指す。'},
+    {type:'vocab',q:'"fatal" in this context is closest in meaning to:',choices:['致命的な・死に至る','一時的な','有益な','珍しい'],answer:0,exp:'fatalは「致命的な」という意味。海の生き物がプラスチックを食べて死んでしまうことを指している。'}
+  ]
+},
+{
+  id:4,level:'hard',title:'The Double-Edged Sword of Social Media',
+  sentences:[
+    'Social media has transformed the way people communicate, allowing friends and family to stay connected across great distances.',
+    'It has also given ordinary people a platform to share their opinions with a wider audience than ever before.',
+    'For many, this has been empowering, offering a sense of community and a place to express themselves freely.',
+    'At the same time, researchers have raised concerns about the effects of social media on mental health, particularly among young people.',
+    'Studies suggest that excessive use of social media is associated with increased feelings of anxiety and loneliness in some users.',
+    'One possible explanation is that people tend to compare their own lives to the carefully edited images others post online.',
+    'This comparison can create unrealistic expectations and a distorted sense of what a "normal" life looks like.',
+    "Furthermore, the design of many platforms encourages users to keep scrolling, checking notifications, and seeking approval through likes and comments.",
+    "Such features, while good for a company's business, may not always serve the best interests of the user.",
+    'In response, some experts recommend setting time limits on app usage or taking regular breaks from social media altogether.',
+    'Others argue that the solution lies not in avoiding social media entirely, but in using it more mindfully.',
+    'Ultimately, the challenge is to enjoy the benefits of connection without letting the platforms control how we think and feel about ourselves.',
+    'As with many technologies, the outcome depends less on the tool itself and more on how it is used.'
+  ],
+  jp:'ソーシャルメディアは人々のコミュニケーションのあり方を一変させ、友人や家族が遠く離れていてもつながり続けることを可能にした。また、一般の人々にもこれまで以上に幅広い読者に自分の意見を伝えるための場を与えてきた。多くの人にとって、これは力を与えてくれるものであり、コミュニティの感覚や自由に自己表現できる場を提供している。同時に、研究者たちはソーシャルメディアが特に若者のメンタルヘルスに与える影響について懸念を示している。研究によれば、ソーシャルメディアの過度な使用は、一部のユーザーにおいて不安感や孤独感の増加と関連しているという。1つの説明として、人々は自分の生活を、他人がネット上に投稿する入念に編集された画像と比較してしまう傾向があることが挙げられる。この比較は非現実的な期待や、「普通」の生活とは何かについての歪んだ感覚を生み出すことがある。さらに、多くのプラットフォームの設計は、ユーザーがスクロールを続け、通知を確認し、「いいね」やコメントを通じて承認を求め続けるように仕向けている。こうした機能は企業のビジネスにとっては都合が良い一方で、必ずしもユーザー自身の利益になるとは限らない。これを受けて、一部の専門家はアプリの利用時間に制限を設けたり、ソーシャルメディアから定期的に離れる時間を取ったりすることを勧めている。一方で、解決策はソーシャルメディアを完全に避けることではなく、より意識的に使うことにあると主張する人もいる。結局のところ、課題は、プラットフォームに自分の考え方や感じ方をコントロールされることなく、つながりの恩恵を享受することである。多くのテクノロジーと同様に、その結果を左右するのは道具そのものよりも、それがどう使われるかである。',
+  questions:[
+    {type:'main',q:'According to the passage, what is one concern researchers have about social media?',choices:['It makes communication with family more difficult.','It may be linked to increased anxiety and loneliness in some users.','It prevents people from sharing their opinions.','It has completely replaced face-to-face communication.'],answer:1,exp:'4〜5文目で、ソーシャルメディアの過度な使用が不安感や孤独感の増加と関連している可能性が述べられている。'},
+    {type:'ref',q:'What does "Such features" in sentence 9 refer to?',choices:['The time limits recommended by experts','The platform designs that encourage constant checking and seeking approval','The unrealistic expectations created by comparison','The benefits of staying connected with family'],answer:1,exp:'直前の8文目で述べられている「スクロールや通知確認、承認欲求を促すプラットフォームの設計」を指す。'},
+    {type:'vocab',q:'"mindfully" in this context is closest in meaning to:',choices:['意識的に・注意深く','無関心に','急いで','秘密裏に'],answer:0,exp:'mindfullyは「意識的に・注意深く」という意味。ソーシャルメディアを漫然と使うのではなく、意識して使うことを指す。'}
+  ]
+}
+];
+var CATS=['all','be動詞','一般動詞','現在進行形','過去形','未来','助動詞','疑問詞','名詞・冠詞','比較','不定詞','動名詞','受動態','現在完了','代名詞','前置詞','関係詞','分詞構文','仮定法','不定詞発展','完了進行形','使役・知覚動詞発展','話法','分詞の応用','比較発展','強調構文・倒置','接続詞発展','前置詞発展'];
+var HS_CATS=['関係詞','分詞構文','仮定法','不定詞発展','完了進行形','使役・知覚動詞発展','話法','分詞の応用','比較発展','強調構文・倒置','接続詞発展','前置詞発展'];
+function catLevel(cat){return HS_CATS.indexOf(cat)>=0?'高校':'中学';}
+function levelBadgeHTML(cat){
+  var lv=catLevel(cat);
+  var color=lv==='高校'?'#B85C6B':'#3E7A5C';
+  var bg=lv==='高校'?'rgba(184,92,107,.13)':'rgba(62,122,92,.13)';
+  var icon=lv==='高校'?'🎓':'📘';
+  return '<span style="display:inline-block;font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:10px;background:'+bg+';color:'+color+';margin-right:6px;">'+icon+' '+lv+'範囲</span>';
+}
 
 // ── 文型タグ音読 (read) 用データ ──
 var READ_PATTERNS=['SV','SVC','SVO','SVOO','SVOC'];
@@ -394,8 +733,8 @@ var READ=[
 ];
 
 // ── 高校入門レベル(複文)用データ ──
-var HS_GRAMMARS=['rel','part','that'];
-var GRAMMAR_JP={rel:'関係代名詞（後ろから名詞を修飾）',part:'分詞の後置修飾（-ing/-ed）',that:'that節（〜ということ）'};
+var HS_GRAMMARS=['rel','part','that','cond','passive2','reported','emphasis'];
+var GRAMMAR_JP={rel:'関係代名詞（後ろから名詞を修飾）',part:'分詞の後置修飾（-ing/-ed）',that:'that節（〜ということ）',cond:'仮定法（were/had/wish/as if等）',passive2:'使役受身・態の応用',reported:'話法（時制・語順の変化）',emphasis:'強調構文・倒置'};
 var READ_HS=[
 {id:101,grammar:'rel',jp:'隣に住んでいる男性は医者だ。',chunks:[{t:'The man who lives next door',r:'S',note:'※関係代名詞節が名詞を修飾'},{t:'is',r:'V'},{t:'a doctor.',r:'C'}]},
 {id:102,grammar:'rel',jp:'私はフランス語を話せる友人がいる。',chunks:[{t:'I',r:'S'},{t:'have',r:'V'},{t:'a friend who can speak French.',r:'O',note:'※関係代名詞節が名詞を修飾'}]},
@@ -415,6 +754,31 @@ var READ_HS=[
 {id:116,grammar:'that',jp:'私たちは電車が遅れていると聞いた。',chunks:[{t:'We',r:'S'},{t:'heard',r:'V'},{t:'that the train was delayed.',r:'O',note:'※that節がVの目的語'}]},
 {id:117,grammar:'that',jp:'彼は努力は報われると信じている。',chunks:[{t:'He',r:'S'},{t:'believes',r:'V'},{t:'that hard work pays off.',r:'O',note:'※that節がVの目的語'}]},
 {id:118,grammar:'that',jp:'彼らはこのレストランが人気だと言う。',chunks:[{t:'They',r:'S'},{t:'say',r:'V'},{t:'that this restaurant is popular.',r:'O',note:'※that節がVの目的語'}]}
+,
+{id:200,grammar:'cond',jp:'もし私が鳥だったら、あなたのところへ飛んでいけるのに。',chunks:[{t:'If I were a bird,',r:'M',note:'※仮定法過去の条件節'},{t:'I',r:'S'},{t:'could fly',r:'V'},{t:'to you.',r:'M'}]},
+{id:201,grammar:'cond',jp:'もし彼女がもっと熱心に勉強していたら、試験に合格していただろう。',chunks:[{t:'If she had studied harder,',r:'M',note:'※仮定法過去完了の条件節'},{t:'she',r:'S'},{t:'would have passed',r:'V'},{t:'the exam.',r:'O'}]},
+{id:202,grammar:'cond',jp:'英語を流暢に話せたらいいのに。',chunks:[{t:'I',r:'S'},{t:'wish',r:'V'},{t:'I could speak English fluently.',r:'O',note:'※仮定法のwish節'}]},
+{id:203,grammar:'cond',jp:'彼はまるで世界のすべてを知っているかのように話す。',chunks:[{t:'He',r:'S'},{t:'talks',r:'V'},{t:'as if he knew everything about the world.',r:'M',note:'※as if+仮定法過去'}]},
+{id:204,grammar:'cond',jp:'あなたの助けがなければ、私はこのプロジェクトを終えられなかっただろう。',chunks:[{t:'Without your help,',r:'M',note:'※ifを使わない仮定法(without)'},{t:'I',r:'S'},{t:'could not have finished',r:'V'},{t:'this project.',r:'O'}]},
+{id:205,grammar:'cond',jp:'もし真実を知っていたら、すぐにあなたに伝えていただろう。',chunks:[{t:'Had I known the truth,',r:'M',note:'※ifを省略した倒置(仮定法)'},{t:'I',r:'S'},{t:'would have told',r:'V'},{t:'you',r:'O1'},{t:'immediately.',r:'M'}]},
+{id:206,grammar:'passive2',jp:'私は昨日駅で自転車を盗まれました。',chunks:[{t:'I',r:'S'},{t:'had',r:'V'},{t:'my bike',r:'O'},{t:'stolen',r:'C',note:'※have+O+過去分詞（被害）'},{t:'at the station yesterday.',r:'M'}]},
+{id:207,grammar:'passive2',jp:'彼は上司に残業させられた。',chunks:[{t:'He',r:'S'},{t:'was made',r:'V'},{t:'to work overtime',r:'C',note:'※makeの受動態はtoが戻る'},{t:'by his boss.',r:'M'}]},
+{id:208,grammar:'passive2',jp:'面接の前に髪を切ってもらった。',chunks:[{t:'I',r:'S'},{t:'got',r:'V'},{t:'my hair',r:'O'},{t:'cut',r:'C',note:'※get+O+過去分詞'},{t:'before the interview.',r:'M'}]},
+{id:209,grammar:'passive2',jp:'この橋は100年以上前に建てられた。',chunks:[{t:'This bridge',r:'S'},{t:'was built',r:'V'},{t:'over one hundred years ago.',r:'M'}]},
+{id:210,grammar:'passive2',jp:'私はリストに自分の名前が書かれているのを見た。',chunks:[{t:'I',r:'S'},{t:'saw',r:'V'},{t:'my name',r:'O'},{t:'written',r:'C',note:'※知覚動詞+O+過去分詞(受動)'},{t:'on the list.',r:'M'}]},
+{id:211,grammar:'passive2',jp:'私はついに彼女を説得して私の計画に同意させた。',chunks:[{t:'I',r:'S'},{t:'finally',r:'M'},{t:'got',r:'V'},{t:'her',r:'O'},{t:'to agree with my plan.',r:'C',note:'※get+O+to原形(説得)'}]},
+{id:212,grammar:'reported',jp:'彼女は疲れていると言った。',chunks:[{t:'She',r:'S'},{t:'said',r:'V'},{t:'that she was tired.',r:'O',note:'※時制の一致(is→was)'}]},
+{id:213,grammar:'reported',jp:'彼は私がどこに住んでいるか尋ねた。',chunks:[{t:'He',r:'S'},{t:'asked',r:'V'},{t:'me',r:'O1'},{t:'where I lived.',r:'O2',note:'※疑問詞節、doを使わない語順'}]},
+{id:214,grammar:'reported',jp:'彼女は私にドアを閉めるように言った。',chunks:[{t:'She',r:'S'},{t:'told',r:'V'},{t:'me',r:'O1'},{t:'to close the door.',r:'O2',note:'※命令文の話法(tell+人+to)'}]},
+{id:215,grammar:'reported',jp:'彼は私がお腹が空いているかどうか尋ねた。',chunks:[{t:'He',r:'S'},{t:'asked',r:'V'},{t:'if I was hungry.',r:'O',note:'※Yes/No疑問文の話法(if)'}]},
+{id:216,grammar:'reported',jp:'先生は地球が太陽の周りを回っていると言った。',chunks:[{t:'The teacher',r:'S'},{t:'said',r:'V'},{t:'that the earth goes around the sun.',r:'O',note:'※不変の真理は時制の一致を受けない'}]},
+{id:217,grammar:'reported',jp:'彼は海に行くことを提案した。',chunks:[{t:'He',r:'S'},{t:'suggested',r:'V'},{t:'going to the beach.',r:'O',note:'※提案の話法(suggest -ing)'}]},
+{id:218,grammar:'emphasis',jp:'窓を割ったのはトムだった。',chunks:[{t:'It',r:'M',note:'※強調構文の目印'},{t:'was',r:'V'},{t:'Tom',r:'C',note:'※強調されている部分'},{t:'who broke the window.',r:'M'}]},
+{id:219,grammar:'emphasis',jp:'こんなに美しい夕日を見たことは一度もない。',chunks:[{t:'Never',r:'M',note:'※否定語が文頭→倒置'},{t:'have I seen',r:'V'},{t:'such a beautiful sunset.',r:'O'}]},
+{id:220,grammar:'emphasis',jp:'彼女は試験に合格しただけでなく、最高点も取った。',chunks:[{t:'Not only',r:'M',note:'※Not onlyが文頭→倒置'},{t:'did she pass',r:'V'},{t:'the exam,',r:'O'},{t:'but she also got the highest score.',r:'M'}]},
+{id:221,grammar:'emphasis',jp:'彼が嘘をついているとはほとんど知らなかった。',chunks:[{t:'Little',r:'M',note:'※Littleが文頭→倒置(決まり文句)'},{t:'did I know',r:'V'},{t:'that he was lying.',r:'O'}]},
+{id:222,grammar:'emphasis',jp:'ほら、バスが来た！',chunks:[{t:'Here',r:'M',note:'※場所の副詞が文頭→倒置'},{t:'comes',r:'V'},{t:'the bus!',r:'S'}]},
+{id:223,grammar:'emphasis',jp:'その騒音はとても大きかったので、私は眠れなかった。',chunks:[{t:'So loud',r:'C',note:'※So+形容詞が文頭→倒置'},{t:'was',r:'V'},{t:'the noise',r:'S'},{t:'that I could not sleep.',r:'M'}]}
 ];
 
 function loadStats(){try{return JSON.parse(localStorage.getItem('eng10_stats')||'{}');}catch(e){return{};}}
@@ -423,6 +787,38 @@ function loadMistakes(){try{return JSON.parse(localStorage.getItem('eng10_mistak
 function saveMistakes(m){try{localStorage.setItem('eng10_mistakes',JSON.stringify(m));}catch(e){}}
 function loadAttempted(){try{return JSON.parse(localStorage.getItem('eng10_attempted')||'[]');}catch(e){return[];}}
 function saveAttempted(a){try{localStorage.setItem('eng10_attempted',JSON.stringify(a));}catch(e){}}
+function loadDailyLog(){try{return JSON.parse(localStorage.getItem('eng10_dailylog')||'{}');}catch(e){return{};}}
+function saveDailyLog(l){try{localStorage.setItem('eng10_dailylog',JSON.stringify(l));}catch(e){}}
+function pad2(n){return n<10?'0'+n:''+n;}
+function dateKey(d){return d.getFullYear()+'-'+pad2(d.getMonth()+1)+'-'+pad2(d.getDate());}
+function recordDailyActivity(n){
+  n=n||1;
+  var key=dateKey(new Date());
+  state.dailyLog[key]=(state.dailyLog[key]||0)+n;
+  saveDailyLog(state.dailyLog);
+}
+// 単語チップ用：部分文字列一致だと"order"に"in"が誤マッチするなどの問題が起きるため、
+// VOCABのenフィールドをトークン分割して完全一致でのみマッチさせる
+function vocabTokens(en){
+  return en.toLowerCase().split(/[^a-z']+/).filter(function(t){return t.length>0;});
+}
+// 単独では意味を持たない機能語（前置詞toなど）はチップ表示すると誤マッチしやすいので対象外にする
+var VOCAB_STOPWORDS=['to'];
+function vocabExactMatch(w){
+  var target=w.toLowerCase().replace(/[.,]/g,'').trim();
+  if(VOCAB_STOPWORDS.indexOf(target)>=0) return null;
+  // 熟語（スペースを含む語句）はフレーズ単位で前方一致を試みる
+  if(target.indexOf(' ')>=0){
+    for(var j=0;j<VOCAB.length;j++){
+      if(VOCAB[j].en.toLowerCase().indexOf(target)===0) return VOCAB[j];
+    }
+  }
+  for(var i=0;i<VOCAB.length;i++){
+    var toks=vocabTokens(VOCAB[i].en);
+    if(toks.indexOf(target)>=0) return VOCAB[i];
+  }
+  return null;
+}
 var CAT_COLORS=['#8B7FD1','#5FAE82','#D98CA6','#D9A66C','#6E9FD6','#C97FBE','#7FBFAE','#D6875F','#9E8FE0','#5FBFD9','#D9C15F','#8FA6D6','#D9748C','#6FBF6F','#B98FD9'];
 
 var state={
@@ -437,6 +833,10 @@ var state={
   mistakes:loadMistakes(),
   attempted:loadAttempted(),
   startExpanded:false,
+  levelFilter:'all',
+  dailyLog:loadDailyLog(),
+  calYear:new Date().getFullYear(),
+  calMonth:new Date().getMonth(),
   vocabCat:'all'
 };
 
@@ -448,13 +848,55 @@ function shuffle(a){
   }
   return arr;
 }
+function weaknessWeight(q){
+  var w=1;
+  if(state.mistakes.indexOf(q.id)>=0) w+=6;
+  if(state.attempted.indexOf(q.id)<0){
+    w+=3;
+  } else {
+    var s=state.catStats[q.cat];
+    if(s&&s.total>0){
+      var pct=s.correct/s.total*100;
+      if(pct<60) w+=4;
+      else if(pct<80) w+=1;
+    }
+  }
+  return w;
+}
+function weightedSample(pool,n){
+  var arr=pool.slice();
+  var result=[];
+  for(var k=0;k<n&&arr.length>0;k++){
+    var weights=arr.map(weaknessWeight);
+    var total=weights.reduce(function(a,b){return a+b;},0);
+    var r=Math.random()*total;
+    var acc=0,idx=0;
+    for(;idx<weights.length;idx++){ acc+=weights[idx]; if(r<=acc)break; }
+    if(idx>=arr.length)idx=arr.length-1;
+    result.push(arr[idx]);
+    arr.splice(idx,1);
+  }
+  return result;
+}
 function buildQueue(cat,mode){
   var pool;
   if(mode==='retry'){
     pool=Q.filter(function(q){return state.mistakes.indexOf(q.id)>=0;});
+    var lv=state.levelFilter||'all';
+    if(lv!=='all'){
+      var filtered=pool.filter(function(q){return catLevel(q.cat)===lv;});
+      if(filtered.length>0)pool=filtered;
+    }
     if(pool.length===0)pool=Q;
+  } else if(cat==='all'){
+    var lv=state.levelFilter||'all';
+    pool=lv==='all'?Q:Q.filter(function(q){return catLevel(q.cat)===lv;});
+    // 「ランダム15問」は弱点（間違えた問題・未挑戦・正答率が低い分野）を優先的に出題する
+    var weak=weightedSample(pool,Math.min(15,pool.length));
+    state.lastQueueIds=weak.map(function(q){return q.id;});
+    return weak;
   } else {
-    pool=cat==='all'?Q:Q.filter(function(q){return q.cat===cat;});
+    pool=Q.filter(function(q){return q.cat===cat;});
   }
   var shuffled=shuffle(pool);
   // 直前のセッションと被りにくくするため、前回出た問題を後ろに回す
@@ -500,7 +942,22 @@ function catProgress(cat){
   var mastered=qs.filter(function(q){return state.attempted.indexOf(q.id)>=0&&state.mistakes.indexOf(q.id)<0;}).length;
   return {total:total,mastered:mastered,pct:total>0?Math.round(mastered/total*100):0};
 }
+function mistakesInLevel(lv){
+  if(!lv||lv==='all')return state.mistakes.length;
+  return state.mistakes.filter(function(id){
+    var q=Q.find(function(qq){return qq.id===id;});
+    return q&&catLevel(q.cat)===lv;
+  }).length;
+}
 
+var lrState={
+  screen:'list', // list | passage | result
+  mode:'reading', // reading | listening
+  level:'all',
+  passageId:null,
+  qIdx:0,answered:false,selected:-1,correct:0,
+  showJp:false,showScript:false
+};
 var app=document.getElementById('app');
 function render(){
   document.getElementById('streakBadge').textContent='🔥 '+state.streak+'日連続';
@@ -508,12 +965,13 @@ function render(){
   if(state.tab==='vocab'){renderVocab();return;}
   if(state.tab==='stats'){renderStatsTab();return;}
   if(state.tab==='read'){renderRead();return;}
+  if(state.tab==='longread'){renderLongReading();return;}
   if(state.screen==='start')renderStart();
   else if(state.screen==='quiz')renderQuiz();
   else renderResult();
 }
 function updateBBTabs(){
-  var tabs=['drill','vocab','stats','read'];
+  var tabs=['drill','vocab','stats','read','longread'];
   tabs.forEach(function(t,i){
     var el=document.getElementById('bb'+i);
     if(el)el.className='bb-btn'+(state.tab===t?' active':'');
@@ -522,9 +980,10 @@ function updateBBTabs(){
 function switchTab(tab){try{window.speechSynthesis.cancel();}catch(e){}state.tab=tab;if(tab==='drill'&&state.screen==='quiz'){renderQuiz();updateBBTabs();return;}render();}
 function goHome(){try{window.speechSynthesis.cancel();}catch(e){}clearInterval(state.timerHandle);state.tab='drill';state.screen='start';render();}
 
-function catSelectHTML(cats,current,onchange,showWeak){
+function catSelectHTML(cats,current,onchange,showWeak,showLevel){
   var opts=cats.map(function(c){
     var label=c==='all'?'すべて':c;
+    if(showLevel&&c!=='all'){label='['+catLevel(c)+'] '+label;}
     if(showWeak){
       var s=state.catStats[c];
       var pct=s&&s.total>0?Math.round(s.correct/s.total*100):-1;
@@ -536,29 +995,42 @@ function catSelectHTML(cats,current,onchange,showWeak){
 }
 
 function renderStart(){
-  var mc=state.mistakes.length;
+  var mc=mistakesInLevel(state.levelFilter);
   var bodyHTML;
   if(state.mode==='retry'){
     bodyHTML='<button class="start-btn" onclick="startQuiz()" '+(mc===0?'disabled style="opacity:.5;"':'')+'>間違い直しを始める（'+mc+'問） →</button>';
   } else {
-    bodyHTML=
-      '<div class="cat-random-row"><button class="cat-random-btn" onclick="startCategoryQuiz(\'all\')">🎲 全分野からランダム →</button></div>'+
-      renderCatCards();
+    bodyHTML=renderCatCards();
   }
+  var lv=state.levelFilter||'all';
+  var levelRow='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(lv==='all'?' active':'')+'" onclick="setLevelFilter(\'all\')">すべて</button>'+
+    '<button class="vocab-mode-btn'+(lv==='中学'?' active':'')+'" onclick="setLevelFilter(\'中学\')">📘 中学範囲</button>'+
+    '<button class="vocab-mode-btn'+(lv==='高校'?' active':'')+'" onclick="setLevelFilter(\'高校\')">🎓 高校範囲</button>'+
+  '</div>';
   app.innerHTML='<div class="start-wrap">'+
     '<div class="start-title">10min <span style="color:var(--accent);">English Lab</span></div>'+
-    '<div class="start-sub">中学英語 全118問。苦手分析・単語帳・間違い直しつき。</div>'+
+    '<div style="font-size:.83rem;color:var(--muted);margin-bottom:8px;text-align:left;">範囲を選ぶ</div>'+
+    levelRow+
     '<div style="font-size:.83rem;color:var(--muted);margin-bottom:8px;text-align:left;">モードを選ぶ</div>'+
     '<div class="mode-row">'+
-      '<button class="mode-btn'+(state.mode==='normal'?' selected':'')+'" onclick="setMode(\'normal\')">📝 通常モード<br><span style="font-size:.73rem;font-weight:400">ランダム15問</span></button>'+
-      '<button class="mode-btn'+(state.mode==='retry'?' selected':'')+'" onclick="setMode(\'retry\')">🔁 間違い直し<br><span style="font-size:.73rem;font-weight:400">'+mc+'問</span></button>'+
+      '<button class="mode-btn'+(state.mode==='normal'?' selected':'')+'" onclick="startRandomAll()">🎯 弱点優先15問<br><span style="font-size:.73rem;font-weight:400">今すぐ開始</span></button>'+
+      '<button class="mode-btn'+(state.mode==='retry'?' selected':'')+'" onclick="startRetryDirect()">🔁 間違い直し<br><span style="font-size:.73rem;font-weight:400">'+mc+'問</span></button>'+
     '</div>'+
     '<div style="font-size:.83rem;color:var(--muted);margin-bottom:8px;text-align:left;">分野を選んでタップで開始（履修率が低い順）</div>'+
     bodyHTML+
   '</div>';
 }
+function setLevelFilter(lv){state.levelFilter=lv;state.startExpanded=false;render();}
+function startRandomAll(){state.mode='normal';startCategoryQuiz('all');}
+function startRetryDirect(){
+  state.mode='retry';
+  if(mistakesInLevel(state.levelFilter)>0){startQuiz();}
+  else{render();}
+}
 function renderCatCards(){
-  var cats=CATS.filter(function(c){return c!=='all';});
+  var lv=state.levelFilter||'all';
+  var cats=CATS.filter(function(c){return c!=='all'&&(lv==='all'||catLevel(c)===lv);});
   var list=cats.map(function(c,i){
     var p=catProgress(c);
     return {cat:c,color:CAT_COLORS[i%CAT_COLORS.length],pct:p.pct,mastered:p.mastered,total:p.total};
@@ -572,7 +1044,7 @@ function renderCatCards(){
       '<div class="cat-num">'+numStr+'</div>'+
       '<div class="cat-dot" style="background:'+item.color+'"></div>'+
       '<div class="cat-card-main">'+
-        '<div class="cat-card-title">'+item.cat+'</div>'+
+        '<div class="cat-card-title">'+item.cat+' <span style="font-size:.65rem;font-weight:800;padding:1px 6px;border-radius:8px;'+(catLevel(item.cat)==='高校'?'background:rgba(184,92,107,.15);color:#B85C6B;':'background:rgba(62,122,92,.15);color:#3E7A5C;')+'">'+catLevel(item.cat)+'</span></div>'+
         '<div class="cat-card-bar-row">'+
           '<div class="cat-card-bar"><div class="cat-card-fill" style="width:'+item.pct+'%;background:'+item.color+'"></div></div>'+
           '<div class="cat-card-pct">'+item.pct+'%</div>'+
@@ -629,10 +1101,12 @@ function renderQuiz(){
 
   // ✅ ヒント行・ひっかけ表示は完全削除済み
   app.innerHTML=
-    catSelectHTML(CATS,state.category,'changeCat',true)+
+    '<div class="abort-row"><button class="abort-btn" onclick="abortDrillQuiz()">✕ 中断する</button></div>'+
+    catSelectHTML(CATS,state.category,'changeCat',true,true)+
     '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:'+pct+'%"></div></div><div class="progress-label">'+(state.idx+1)+'/'+total+'</div></div>'+
     '<div class="timer-row"><div class="'+tc+'" id="timerEl">⏱ '+fmt(state.timerSec)+'</div></div>'+
     '<div class="card">'+
+      '<div style="margin-bottom:8px;">'+levelBadgeHTML(q.cat)+'</div>'+
       '<div class="q-text">'+cleanText+'</div>'+
       qHTML+
     '</div>'+
@@ -658,14 +1132,15 @@ function renderFeedback(q){
     '<div class="fb-title">'+(isC?'✅ 正解！':'❌ 不正解')+'</div>'+
     '<div class="fb-body">'+
       (!isC&&q.type!=='choice'?'<div style="margin-bottom:6px;">正しい答え: <b style="color:var(--muted)">'+q.answer+'</b></div>':'')+
+      (q.jp?'<div style="margin-bottom:8px;color:var(--muted);font-size:.86rem;">🇯🇵 '+q.jp+'</div>':'')+
       q.exp+
       '<div class="grammar-box">📌 文法ポイント: '+q.gram+'</div>'+
     '</div></div>';
   var wb=document.getElementById('wbArea');
   if(wb&&q.words&&q.words.length>0){
     var chips=q.words.map(function(w){
-      var vs=VOCAB.filter(function(v){return v.en.toLowerCase().indexOf(w.toLowerCase())>=0;});
-      return '<span class="word-chip"><b>'+w+'</b>'+(vs.length>0?' = '+vs[0].jp:'')+'</span>';
+      var vs=vocabExactMatch(w);
+      return '<span class="word-chip"><b>'+w+'</b>'+(vs?' = '+vs.jp:'')+'</span>';
     }).join('');
     wb.innerHTML='<div class="word-box"><div class="word-label">📖 この問題のキーワード</div><div class="word-list">'+chips+'</div></div>';
   }
@@ -679,7 +1154,7 @@ function answerChoice(i){
   if(state.answered)return;
   var q=state.queue[state.idx];state.selected=i;state.answered=true;
   var ok=i===q.answer;if(ok)state.correct++;else state.wrong++;
-  state.results.push({q:q,correct:ok});updateCatStats(q.cat,ok);updateMistakes(q.id,ok);updateAttempted(q.id);renderQuiz();
+  state.results.push({q:q,correct:ok});updateCatStats(q.cat,ok);updateMistakes(q.id,ok);updateAttempted(q.id);recordDailyActivity();renderQuiz();
 }
 function answerInput(){
   if(state.answered)return;
@@ -688,7 +1163,7 @@ function answerInput(){
   var q=state.queue[state.idx];state.answered=true;
   var ok=state.inputVal.trim().toLowerCase()===q.answer.toLowerCase();
   if(ok)state.correct++;else state.wrong++;
-  state.results.push({q:q,correct:ok});updateCatStats(q.cat,ok);updateMistakes(q.id,ok);updateAttempted(q.id);renderQuiz();
+  state.results.push({q:q,correct:ok});updateCatStats(q.cat,ok);updateMistakes(q.id,ok);updateAttempted(q.id);recordDailyActivity();renderQuiz();
 }
 function nextQuestion(){state.idx++;state.answered=false;state.selected=null;state.inputVal='';renderQuiz();}
 function changeCat(c){
@@ -827,7 +1302,7 @@ function renderVocabList(list){
     else badge='<span class="vocab-badge unseen">未挑戦</span>';
     return '<div class="vocab-list-item">'+
       '<div>'+
-        '<div class="vocab-list-en">'+v.en+'</div>'+
+        '<div class="vocab-list-en">'+v.en+(v.ipa?' <span style="font-weight:400;color:var(--muted);font-size:.78rem;">'+v.ipa+'</span>':'')+'</div>'+
         '<div class="vocab-list-jp">'+v.jp+'</div>'+
         '<div style="font-size:.7rem;color:var(--accent2);margin-top:2px;">'+v.cat+'</div>'+
       '</div>'+badge+
@@ -909,7 +1384,7 @@ function renderVQuiz(mode){
     feedHTML='<div class="feedback '+(ok?'ok':'ng')+'">'+
       '<div class="fb-title">'+(ok?'✅ 正解！':'❌ 不正解')+'</div>'+
       '<div class="fb-body">'+
-        '<b>'+v.en+'</b> = '+v.jp+'<br>'+
+        '<b>'+v.en+'</b>'+(v.ipa?' <span style="color:var(--muted);font-weight:400;">'+v.ipa+'</span>':'')+' = '+v.jp+'<br>'+
         '<span style="font-size:.82rem;opacity:.85;">例: '+v.ex+'</span>'+
         (isMastered?'<div style="margin-top:8px;font-size:.82rem;color:var(--green);">🌟 マスター達成！</div>':'')+
       '</div>'+
@@ -918,7 +1393,8 @@ function renderVQuiz(mode){
   }
 
   var pBar=Math.round((qi/vState.quizList.length)*100);
-  return '<div style="margin-bottom:10px;">'+
+  return '<div class="abort-row"><button class="abort-btn" onclick="abortVQuiz()">✕ 中断する</button></div>'+
+    '<div style="margin-bottom:10px;">'+
       '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">'+
         '<div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;">'+
           '<div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div>'+
@@ -928,7 +1404,7 @@ function renderVQuiz(mode){
     '</div>'+
     '<div class="vquiz-card">'+
       '<div class="vquiz-q">次の英語・表現の意味は？'+statusBadge+'</div>'+
-      '<div class="vquiz-en">'+v.en+'</div>'+
+      '<div class="vquiz-en">'+v.en+(v.ipa?' <span style="font-size:.75rem;color:var(--muted);font-weight:400;">'+v.ipa+'</span>':'')+'</div>'+
       '<div class="vquiz-cat">'+v.cat+'</div>'+
       '<div class="choices">'+optHTML+'</div>'+
     '</div>'+feedHTML;
@@ -947,6 +1423,7 @@ function answerVQuiz(i){
   vState.vocabStats[v.en]=s;
   saveVocabStats(vState.vocabStats);
   if(ok)vState.quizCorrect++;
+  recordDailyActivity();
   renderVocab();
 }
 function nextVQuiz(){
@@ -956,32 +1433,73 @@ function nextVQuiz(){
   renderVocab();
 }
 function restartVQuiz(){vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
+function abortVQuiz(){vState.mode='list';vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
 function setVocabCat(c){vState.catFilter=c;vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
 function setVocabMode(m){vState.mode=m;vState.quizList=[];vState.quizDone=false;vState.currentOpts=null;vState.currentOptsIdx=-1;renderVocab();}
 
+function renderCalendar(){
+  var y=state.calYear,m=state.calMonth;
+  var firstDay=new Date(y,m,1).getDay();
+  var daysInMonth=new Date(y,m+1,0).getDate();
+  var todayKey=dateKey(new Date());
+  var cells='';
+  for(var i=0;i<firstDay;i++)cells+='<div class="cal-cell empty"></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var key=y+'-'+pad2(m+1)+'-'+pad2(d);
+    var count=state.dailyLog[key]||0;
+    var lvl=count===0?0:count<5?1:count<15?2:3;
+    var isToday=key===todayKey;
+    cells+='<div class="cal-cell'+(lvl>0?' lvl'+lvl:'')+(isToday?' today':'')+'">'+d+'</div>';
+  }
+  var monthLabel=y+'年'+(m+1)+'月';
+  var totalDays=Object.keys(state.dailyLog).length;
+  return '<div class="cal-wrap">'+
+    '<div class="cal-header">'+
+      '<button class="cal-nav-btn" onclick="changeCalMonth(-1)">‹</button>'+
+      '<div class="cal-month-label">📅 '+monthLabel+'</div>'+
+      '<button class="cal-nav-btn" onclick="changeCalMonth(1)">›</button>'+
+    '</div>'+
+    '<div class="cal-grid">'+['日','月','火','水','木','金','土'].map(function(d){return '<div class="cal-dow">'+d+'</div>';}).join('')+'</div>'+
+    '<div class="cal-grid">'+cells+'</div>'+
+    '<div class="cal-legend">少<span class="cal-legend-dot" style="background:var(--surface);border:1px solid var(--border);"></span><span class="cal-legend-dot lvl1" style="background:rgba(176,138,108,.28);"></span><span class="cal-legend-dot lvl2" style="background:rgba(176,138,108,.55);"></span><span class="cal-legend-dot lvl3" style="background:var(--accent);"></span>多　通算'+totalDays+'日学習</div>'+
+  '</div>';
+}
+function changeCalMonth(delta){
+  var d=new Date(state.calYear,state.calMonth+delta,1);
+  state.calYear=d.getFullYear();state.calMonth=d.getMonth();
+  render();
+}
 function renderStatsTab(){
-  var rows=CATS.filter(function(c){return c!=='all';}).map(function(c){
+  var lv=state.levelFilter||'all';
+  var rows=CATS.filter(function(c){return c!=='all'&&(lv==='all'||catLevel(c)===lv);}).map(function(c){
     var s=state.catStats[c];
-    if(!s||s.total===0)return '<div class="stat-row"><div class="stat-cat">'+c+'</div><div style="font-size:.78rem;color:var(--muted)">未挑戦</div></div>';
+    var badge=levelBadgeHTML(c);
+    if(!s||s.total===0)return '<div class="stat-row"><div class="stat-cat">'+badge+c+'</div><div style="font-size:.78rem;color:var(--muted)">未挑戦</div></div>';
     var pct=Math.round(s.correct/s.total*100);
     var color=pct>=80?'var(--green)':pct>=60?'var(--muted)':'var(--red)';
     return '<div class="stat-row">'+
-      '<div class="stat-cat">'+(pct<60?'⚠️ ':'')+c+'</div>'+
+      '<div class="stat-cat">'+badge+(pct<60?'⚠️ ':'')+c+'</div>'+
       '<div class="stat-right">'+
         '<div class="stat-pct-bar"><div class="stat-pct-fill" style="width:'+pct+'%;background:'+color+'"></div></div>'+
         '<div class="stat-pct-num" style="color:'+color+'">'+pct+'%</div>'+
         '<div style="font-size:.73rem;color:var(--muted)">'+s.total+'問</div>'+
       '</div></div>';
   }).join('');
-  var mc=state.mistakes.length;
-  app.innerHTML='<div class="stats-wrap">'+
+  var mc=mistakesInLevel(lv);
+  var levelRow='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(lv==='all'?' active':'')+'" onclick="setLevelFilter(\'all\')">すべて</button>'+
+    '<button class="vocab-mode-btn'+(lv==='中学'?' active':'')+'" onclick="setLevelFilter(\'中学\')">📘 中学範囲</button>'+
+    '<button class="vocab-mode-btn'+(lv==='高校'?' active':'')+'" onclick="setLevelFilter(\'高校\')">🎓 高校範囲</button>'+
+  '</div>';
+  app.innerHTML=renderCalendar()+'<div class="stats-wrap">'+
     '<div style="font-size:.97rem;font-weight:700;margin-bottom:4px;">📊 カテゴリ別 正答率</div>'+
-    '<div style="font-size:.78rem;color:var(--muted);margin-bottom:14px;">⚠️ = 正答率60%未満の苦手カテゴリ</div>'+
+    '<div style="font-size:.78rem;color:var(--muted);margin-bottom:10px;">⚠️ = 正答率60%未満の苦手カテゴリ</div>'+
+    levelRow+
     rows+
     '<div style="margin-top:18px;padding:13px;background:var(--surface);border:1px solid '+(mc>0?'var(--red)':'var(--border)')+';border-radius:12px;">'+
-      '<div style="font-size:.86rem;font-weight:700;margin-bottom:5px;">🔁 要復習リスト</div>'+
+      '<div style="font-size:.86rem;font-weight:700;margin-bottom:5px;">🔁 要復習リスト'+(lv!=='all'?'（'+lv+'範囲）':'')+'</div>'+
       '<div style="font-size:.83rem;color:var(--muted);">間違えた問題: <span style="color:var(--red);font-weight:700;">'+mc+'問</span></div>'+
-      (mc>0?'<button onclick="state.mode=\'retry\';state.tab=\'drill\';state.screen=\'start\';render();" style="margin-top:8px;padding:8px 16px;background:var(--red);border:none;border-radius:9px;color:#fff;font-size:.83rem;font-weight:700;cursor:pointer;">間違い直しを始める →</button>':'')+
+      (mc>0?'<button onclick="startRetryDirect();" style="margin-top:8px;padding:8px 16px;background:var(--red);border:none;border-radius:9px;color:#fff;font-size:.83rem;font-weight:700;cursor:pointer;">間違い直しを始める →</button>':'')+
     '</div>'+
     '<button onclick="if(confirm(\'統計をリセットしますか？\'))resetStats();" style="margin-top:10px;width:100%;padding:9px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--muted);font-size:.8rem;cursor:pointer;">統計をリセット</button>'+
   '</div>';
@@ -1004,6 +1522,7 @@ function startQuiz(){
   clearInterval(state.timerHandle);startTimer();render();
 }
 function restartQuiz(){clearInterval(state.timerHandle);state.screen='start';render();}
+function abortDrillQuiz(){clearInterval(state.timerHandle);state.screen='start';state.mode='normal';render();}
 function retryMistakes(){state.mode='retry';clearInterval(state.timerHandle);state.screen='start';render();}
 
 // ── 文型タグ音読 (read) ──
@@ -1015,6 +1534,7 @@ function saveHsStats(s){try{localStorage.setItem('eng10_hsstats',JSON.stringify(
 
 var rState={
   screen:'start',   // start | quiz | result
+  mode:'shadow',    // shadow(音読・シャドーイング) | dictation(ディクテーション)
   level:'basic',    // basic(中学/基本5文型) | hs(高校入門/複文)
   cat:'all',
   queue:[],idx:0,
@@ -1022,6 +1542,132 @@ var rState={
   patternStats:loadPatternStats(),
   hsStats:loadHsStats()
 };
+function setReadMode(m){rState.mode=m;render();}
+
+// ── ディクテーション(穴埋め書き取り・ワードバンク方式) ──
+var DICT_DISTRACT_BASIC=['go','went','make','made','have','has','play','plays','watch','watched','write','wrote','study','studies','eat','ate','see','saw','give','gave','take','took','read','build','built','call','called','sing','sang'];
+var DICT_DISTRACT_HS=['having','considering','judging','were','should','being','done','doing','asked','told','said','suggested','exclaimed','comes','was','did','have','had','stolen','made','cut','agree','know','knew','seen','written'];
+var dictState={queue:[],idx:0,filled:[],bank:[],checked:false,itemCorrect:false,correctCount:0};
+function buildDictationItem(item){
+  var words=item.chunks.map(function(c){return c.t;}).join(' ').split(' ');
+  var vChunk=item.chunks.filter(function(c){return c.r==='V';})[0];
+  if(!vChunk)return null;
+  var vWords=vChunk.t.replace(/[.,!]/g,'').split(' ').map(function(w){return w.toLowerCase();});
+  var wLower=words.map(function(w){return w.replace(/[.,!]/g,'').toLowerCase();});
+  var blankIdx=[];
+  for(var i=0;i<=wLower.length-vWords.length;i++){
+    var match=true;
+    for(var j=0;j<vWords.length;j++){ if(wLower[i+j]!==vWords[j]){match=false;break;} }
+    if(match){ for(var j=0;j<vWords.length;j++)blankIdx.push(i+j); break; }
+  }
+  if(blankIdx.length===0)return null;
+  return {words:words,blankIdx:blankIdx,correctWords:blankIdx.map(function(i){return wLower[i];}),jp:item.jp};
+}
+function buildDictQueue(){
+  var raw=buildReadQueue();
+  dictState.queue=raw.map(buildDictationItem).filter(function(x){return x;});
+  dictState.idx=0;dictState.correctCount=0;
+  initDictItem();
+}
+function initDictItem(){
+  var item=dictState.queue[dictState.idx];
+  if(!item)return;
+  dictState.filled=item.blankIdx.map(function(){return null;});
+  var correct=item.correctWords.slice();
+  var pool=rState.level==='hs'?DICT_DISTRACT_HS:DICT_DISTRACT_BASIC;
+  var distractors=shuffle(pool.filter(function(w){return correct.indexOf(w)<0;})).slice(0,Math.max(3,6-correct.length));
+  var bankWords=shuffle(correct.concat(distractors));
+  dictState.bank=bankWords.map(function(w){return {word:w,used:false};});
+  dictState.checked=false;
+}
+function tapBankTile(i){
+  if(dictState.checked)return;
+  var tile=dictState.bank[i];
+  if(tile.used)return;
+  var slot=dictState.filled.indexOf(null);
+  if(slot<0)return;
+  dictState.filled[slot]=i;tile.used=true;
+  render();
+}
+function tapFilledSlot(slotIdx){
+  if(dictState.checked)return;
+  var bankIdx=dictState.filled[slotIdx];
+  if(bankIdx==null)return;
+  dictState.bank[bankIdx].used=false;
+  dictState.filled[slotIdx]=null;
+  render();
+}
+function checkDictAnswer(){
+  if(dictState.filled.indexOf(null)>=0)return;
+  var item=dictState.queue[dictState.idx];
+  var allCorrect=true;
+  for(var i=0;i<dictState.filled.length;i++){
+    var word=dictState.bank[dictState.filled[i]].word;
+    if(word!==item.correctWords[i])allCorrect=false;
+  }
+  dictState.checked=true;dictState.itemCorrect=allCorrect;
+  if(allCorrect)dictState.correctCount++;
+  recordDailyActivity();
+  render();
+}
+function nextDictItem(){
+  if(dictState.idx>=dictState.queue.length-1){rState.screen='result';render();return;}
+  dictState.idx++;initDictItem();render();
+}
+function renderDictQuiz(){
+  var item=dictState.queue[dictState.idx];
+  if(!item){rState.screen='start';render();return;}
+  var total=dictState.queue.length;
+  var pBar=Math.round((dictState.idx/total)*100);
+  var sentenceHTML=item.words.map(function(w,i){
+    var blankPos=item.blankIdx.indexOf(i);
+    if(blankPos<0)return '<span style="margin:2px 4px;">'+w+'</span>';
+    var filledBankIdx=dictState.filled[blankPos];
+    if(filledBankIdx==null){
+      return '<span style="display:inline-block;min-width:60px;border-bottom:3px solid var(--accent);margin:2px 6px;color:transparent;">___</span>';
+    }
+    var word=dictState.bank[filledBankIdx].word;
+    var colorStyle='';
+    if(dictState.checked){colorStyle=word===item.correctWords[blankPos]?'color:var(--green);':'color:var(--red);text-decoration:line-through;';}
+    return '<span onclick="'+(dictState.checked?'':'tapFilledSlot('+blankPos+')')+'" style="display:inline-block;border-bottom:3px solid var(--accent);margin:2px 6px;font-weight:800;cursor:pointer;'+colorStyle+'">'+word+'</span>';
+  }).join('');
+  var bankHTML=dictState.bank.map(function(tile,i){
+    return '<button class="choice" style="display:inline-block;width:auto;padding:8px 16px;'+(tile.used?'opacity:.3;pointer-events:none;':'')+'" onclick="tapBankTile('+i+')">'+tile.word+'</button>';
+  }).join('');
+  var allFilled=dictState.filled.indexOf(null)<0;
+  var actionHTML;
+  if(!dictState.checked){
+    actionHTML='<div class="action-row"><button class="next-btn" '+(allFilled?'':'disabled style="opacity:.4;"')+' onclick="checkDictAnswer()">答え合わせ ✓</button></div>';
+  } else {
+    var isLast=dictState.idx>=total-1;
+    actionHTML='<div class="feedback '+(dictState.itemCorrect?'ok':'ng')+'"><div class="fb-title">'+(dictState.itemCorrect?'✅ 正解！':'❌ 不正解')+'</div><div class="fb-body">正しい語: <b>'+item.correctWords.join(' ')+'</b><br>'+item.jp+'</div></div>'+
+      '<div class="action-row"><button class="next-btn" onclick="nextDictItem()">'+(isLast?'結果を見る 🎉':'次の文へ →')+'</button></div>';
+  }
+  app.innerHTML=
+    '<div class="abort-row"><button class="abort-btn" onclick="abortReadSession()">✕ 中断する</button></div>'+
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div></div><div style="font-size:.78rem;color:var(--muted);white-space:nowrap;">'+(dictState.idx+1)+'/'+total+'</div></div>'+
+    '<div class="read-prompt">🎧 音声を聞いて、聞き取った単語を下のワードバンクからタップして空欄を埋めよう</div>'+
+    '<div class="vquiz-card">'+
+      '<button class="speak-btn" onclick="speakSentence(dictState.queue[dictState.idx].words.join(\' \'))">🔊 音声で聞く</button>'+
+      '<div class="read-sentence" style="line-height:2.4;">'+sentenceHTML+'</div>'+
+    '</div>'+
+    '<div class="vquiz-card"><div class="word-label" style="margin-bottom:8px;">ワードバンク（タップで空欄に入れる）</div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+bankHTML+'</div></div>'+
+    actionHTML;
+}
+function renderDictResult(){
+  var total=dictState.queue.length;
+  var pct=total>0?Math.round(dictState.correctCount/total*100):0;
+  var emoji=pct>=80?'🎉':pct>=60?'💪':'😤';
+  app.innerHTML='<div class="result-wrap" style="text-align:center;">'+
+    '<div class="result-emoji">'+emoji+'</div>'+
+    '<div class="result-title">'+dictState.correctCount+' / '+total+' 正解</div>'+
+    '<div class="result-sub">ディクテーション完了！</div>'+
+    '<div class="action-btns">'+
+      '<button class="restart-btn" onclick="startReadSession(rState.cat)">もう一度</button>'+
+      '<button class="retry-btn" style="border-color:var(--accent);color:var(--accent);" onclick="rState.screen=\'start\';render();">戻る</button>'+
+    '</div>'+
+  '</div>';
+}
 
 function buildReadQueue(){
   if(rState.level==='hs'){
@@ -1034,13 +1680,15 @@ function buildReadQueue(){
 function startReadSession(cat){
   try{window.speechSynthesis.cancel();}catch(e){}
   rState.cat=cat;
-  rState.queue=buildReadQueue();
   rState.idx=0;rState.revealed=false;rState.missThis=0;rState.showJp=false;
   rState.screen='quiz';
+  if(rState.mode==='dictation'){buildDictQueue();}
+  else{rState.queue=buildReadQueue();}
   render();
 }
 function setReadCat(c){rState.cat=c;renderReadStart();}
 function setReadLevel(lv){rState.level=lv;rState.cat='all';renderReadStart();}
+function abortReadSession(){try{window.speechSynthesis.cancel();}catch(e){}rState.screen='start';render();}
 
 var _readUtter=null; // Safari対策: utteranceがGCされると再生が止まることがあるのでグローバル保持
 function speakSentence(text){
@@ -1059,8 +1707,151 @@ function speakCurrentRead(){
   speakSentence(item.chunks.map(function(c){return c.t;}).join(' '));
 }
 
+// ── 長文リーディング ──
+function renderLongReading(){
+  if(lrState.screen==='list')renderLRList();
+  else if(lrState.screen==='passage')renderLRPassage();
+  else renderLRResult();
+}
+function setLRLevel(lv){lrState.level=lv;render();}
+function setLRMode(m){lrState.mode=m;render();}
+function renderLRList(){
+  var lv=lrState.level;
+  var list=PASSAGES.filter(function(p){return lv==='all'||p.level===lv;});
+  var modeRow='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(lrState.mode==='reading'?' active':'')+'" onclick="setLRMode(\'reading\')">📖 読解モード</button>'+
+    '<button class="vocab-mode-btn'+(lrState.mode==='listening'?' active':'')+'" onclick="setLRMode(\'listening\')">🎧 リスニングモード</button>'+
+  '</div>';
+  var levelRow='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(lv==='all'?' active':'')+'" onclick="setLRLevel(\'all\')">すべて</button>'+
+    '<button class="vocab-mode-btn'+(lv==='easy'?' active':'')+'" onclick="setLRLevel(\'easy\')">🌱 易しめ（英検2級)</button>'+
+    '<button class="vocab-mode-btn'+(lv==='hard'?' active':'')+'" onclick="setLRLevel(\'hard\')">🔥 発展（共通テスト〜地方国公立)</button>'+
+  '</div>';
+  var rows=list.map(function(p){
+    var badge=p.level==='hard'?'<span style="font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:8px;background:rgba(184,92,107,.15);color:#B85C6B;">発展</span>':'<span style="font-size:.65rem;font-weight:800;padding:1px 7px;border-radius:8px;background:rgba(62,122,92,.15);color:#3E7A5C;">易しめ</span>';
+    return '<div class="lr-passage-row" onclick="startPassage('+p.id+')">'+
+      '<div style="flex:1;">'+
+        '<div class="lr-passage-title">'+badge+' '+p.title+'</div>'+
+        '<div class="lr-passage-meta">'+p.sentences.length+'文 ・ 設問'+p.questions.length+'問</div>'+
+      '</div>'+
+      '<div style="color:var(--border);font-size:1.1rem;">›</div>'+
+    '</div>';
+  }).join('');
+  var subText=lrState.mode==='listening'?
+    '文章は表示せず、音声だけを聞いて内容一致・指示語・語彙推測の3問に答えます（何度でも再生OK）':
+    '内容一致・指示語・語彙推測の3問セットで読解力を鍛えよう';
+  app.innerHTML='<div class="start-wrap">'+
+    '<div class="start-title" style="font-size:1.5rem;">📚 長文リーディング</div>'+
+    '<div class="start-sub" style="margin-bottom:16px;">'+subText+'</div>'+
+    modeRow+
+    levelRow+
+    '<div class="cat-card-list">'+(rows||'<div style="padding:20px;text-align:center;color:var(--muted);">該当する長文がありません</div>')+'</div>'+
+  '</div>';
+}
+function startPassage(id){
+  lrState.passageId=id;lrState.screen='passage';
+  lrState.qIdx=0;lrState.answered=false;lrState.selected=-1;lrState.correct=0;lrState.showJp=false;lrState.showScript=false;
+  render();
+}
+function currentPassage(){return PASSAGES.find(function(p){return p.id===lrState.passageId;});}
+function abortLRPassage(){try{window.speechSynthesis.cancel();}catch(e){}lrState.screen='list';render();}
+function renderLRPassage(){
+  var p=currentPassage();
+  if(!p){lrState.screen='list';renderLRList();return;}
+  var isListening=lrState.mode==='listening';
+  var topHTML;
+  if(isListening){
+    topHTML='<div class="lr-text-card" style="text-align:center;">'+
+      '<div class="lr-title">🎧 '+p.title+'</div>'+
+      '<div style="font-size:.8rem;color:var(--muted);margin-bottom:14px;">文章は表示されません。音声をよく聞いて設問に答えましょう（何度でも再生できます）</div>'+
+      '<button class="speak-btn" onclick="speakSentence(currentPassage().sentences.join(\' \'))">🔊 音声を再生（全文）</button>'+
+    '</div>';
+  } else {
+    var textHTML=p.sentences.map(function(s,i){return '<span class="sent-num">'+(i+1)+'</span>'+s+' ';}).join('');
+    topHTML='<div class="lr-text-card"><div class="lr-title">'+p.title+'</div>'+textHTML+'</div>';
+  }
+  var q=p.questions[lrState.qIdx];
+  var labels=['A','B','C','D'];
+  var qTypeLabel={main:'📌 内容一致',ref:'🔍 指示語・下線部解釈',vocab:'📖 語彙の文脈推測'}[q.type];
+  var choicesHTML='<div class="choices">';
+  for(var i=0;i<q.choices.length;i++){
+    var cls='choice';
+    if(lrState.answered){
+      if(i===q.answer)cls+=' correct';
+      else if(i===lrState.selected)cls+=' wrong';
+    }
+    choicesHTML+='<button type="button" class="'+cls+'" '+(lrState.answered?'disabled':'')+' onclick="answerLR('+i+')"><span class="badge">'+labels[i]+'</span>'+q.choices[i]+'</button>';
+  }
+  choicesHTML+='</div>';
+  var feedHTML='';
+  if(lrState.answered){
+    var ok=lrState.selected===q.answer;
+    var isLast=lrState.qIdx>=p.questions.length-1;
+    feedHTML='<div class="feedback '+(ok?'ok':'ng')+'">'+
+      '<div class="fb-title">'+(ok?'✅ 正解！':'❌ 不正解')+'</div>'+
+      '<div class="fb-body">'+q.exp+'</div>'+
+    '</div>'+
+    '<div class="action-row"><button class="next-btn" onclick="'+(isLast?'finishLR()':'nextLRQuestion()')+'">'+(isLast?'結果を見る 🎉':'次の設問 →')+'</button></div>';
+  }
+  app.innerHTML=
+    '<div class="abort-row"><button class="abort-btn" onclick="abortLRPassage()">✕ 中断する</button></div>'+
+    topHTML+
+    '<div class="progress-wrap"><div class="progress-bar"><div class="progress-fill" style="width:'+Math.round((lrState.qIdx/p.questions.length)*100)+'%"></div></div><div class="progress-label">'+(lrState.qIdx+1)+'/'+p.questions.length+'</div></div>'+
+    '<div class="card">'+
+      (isListening?'<button class="speak-btn" style="margin-bottom:12px;" onclick="speakSentence(currentPassage().sentences.join(\' \'))">🔊 もう一度聞く</button>':'')+
+      '<div class="q-tag">'+qTypeLabel+'</div>'+
+      '<div class="q-text">'+q.q+'</div>'+
+      choicesHTML+
+    '</div>'+
+    feedHTML;
+}
+function answerLR(i){
+  if(lrState.answered)return;
+  var p=currentPassage();var q=p.questions[lrState.qIdx];
+  lrState.selected=i;lrState.answered=true;
+  if(i===q.answer)lrState.correct++;
+  recordDailyActivity();
+  renderLRPassage();
+}
+function nextLRQuestion(){lrState.qIdx++;lrState.answered=false;lrState.selected=-1;renderLRPassage();}
+function finishLR(){lrState.screen='result';render();}
+function toggleLRJp(){lrState.showJp=true;render();}
+function toggleLRScript(){lrState.showScript=true;render();}
+function renderLRResult(){
+  var p=currentPassage();
+  var total=p.questions.length;
+  var pct=Math.round(lrState.correct/total*100);
+  var emoji=pct>=80?'🎉':pct>=60?'💪':'😤';
+  var scriptHTML='';
+  if(lrState.mode==='listening'){
+    var textHTML=p.sentences.map(function(s,i){return '<span class="sent-num">'+(i+1)+'</span>'+s+' ';}).join('');
+    scriptHTML='<div class="lr-text-card" style="text-align:left;">'+
+      '<div class="lr-title">🎧 英文スクリプト</div>'+
+      (lrState.showScript?'<div>'+textHTML+'</div>':'<button class="jp-toggle-btn" onclick="toggleLRScript()">英文スクリプトを見る</button>')+
+    '</div>';
+  }
+  app.innerHTML='<div class="result-wrap" style="text-align:center;">'+
+    '<div class="result-emoji">'+emoji+'</div>'+
+    '<div class="result-title">'+lrState.correct+' / '+total+' 正解</div>'+
+    '<div class="result-sub">'+p.title+'</div>'+
+    scriptHTML+
+    '<div class="lr-text-card" style="text-align:left;">'+
+      '<div class="lr-title">📖 全文日本語訳</div>'+
+      (lrState.showJp?'<div style="line-height:1.9;font-size:.9rem;">'+p.jp+'</div>':'<button class="jp-toggle-btn" onclick="toggleLRJp()">日本語訳を見る</button>')+
+    '</div>'+
+    '<div class="action-btns">'+
+      '<button class="restart-btn" onclick="startPassage('+p.id+')">もう一度 🔄</button>'+
+      '<button class="retry-btn" style="border-color:var(--accent);color:var(--accent);" onclick="lrState.screen=\'list\';render();">他の長文を選ぶ</button>'+
+    '</div>'+
+  '</div>';
+}
+
 function renderRead(){
   if(rState.screen==='start')renderReadStart();
+  else if(rState.mode==='dictation'){
+    if(rState.screen==='quiz')renderDictQuiz();
+    else renderDictResult();
+  }
   else if(rState.screen==='quiz')renderReadQuiz();
   else renderReadResult();
 }
@@ -1068,15 +1859,23 @@ function renderRead(){
 function renderReadStart(){
   var cats=rState.level==='hs'?['all'].concat(HS_GRAMMARS):['all'].concat(READ_PATTERNS);
   var cbHTML=catSelectHTML(cats,rState.cat,'setReadCat',false);
+  var modeRow='<div class="vocab-mode-row">'+
+    '<button class="vocab-mode-btn'+(rState.mode!=='dictation'?' active':'')+'" onclick="setReadMode(\'shadow\')">🗣️ 音読・シャドーイング</button>'+
+    '<button class="vocab-mode-btn'+(rState.mode==='dictation'?' active':'')+'" onclick="setReadMode(\'dictation\')">✍️ ディクテーション</button>'+
+  '</div>';
   var levelHTML='<div class="vocab-mode-row">'+
     '<button class="vocab-mode-btn'+(rState.level==='basic'?' active':'')+'" onclick="setReadLevel(\'basic\')">📘 中学（基本5文型）</button>'+
     '<button class="vocab-mode-btn'+(rState.level==='hs'?' active':'')+'" onclick="setReadLevel(\'hs\')">📗 高校入門（複文）</button>'+
   '</div>';
+  var isDict=rState.mode==='dictation';
+  var titleText=isDict?'✍️ ディクテーション':'🗣️ 文型タグ音読';
+  var subText=isDict?'音声を聞いて、聞き取った単語をワードバンクからタップして空欄を埋めよう。入力は不要、全部タップだけでOK！':'動詞を見つけてタップ→S・O・Cが浮き上がる→声に出して読もう。採点もテストもなし、気楽にどうぞ。';
+  var btnText=isDict?'ディクテーション開始 →':'音読スタート →';
   app.innerHTML='<div class="start-wrap">'+
-    '<div class="start-title">🗣️ 文型タグ音読</div>'+
-    '<div class="start-sub">動詞を見つけてタップ→S・O・Cが浮き上がる→声に出して読もう。採点もテストもなし、気楽にどうぞ。</div>'+
-    levelHTML+cbHTML+
-    '<button class="start-btn" onclick="startReadSession(rState.cat)">音読スタート →</button>'+
+    '<div class="start-title">'+titleText+'</div>'+
+    '<div class="start-sub">'+subText+'</div>'+
+    modeRow+levelHTML+cbHTML+
+    '<button class="start-btn" onclick="startReadSession(rState.cat)">'+btnText+'</button>'+
   '</div>';
 }
 
@@ -1085,7 +1884,7 @@ function renderReadQuiz(){
   if(!item){rState.screen='start';renderReadStart();return;}
   var total=rState.queue.length;
   var pBar=Math.round((rState.idx/total)*100);
-  var progressHTML='<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'+
+  var progressHTML='<div class="abort-row"><button class="abort-btn" onclick="abortReadSession()">✕ 中断する</button></div><div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;">'+
       '<div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;">'+
         '<div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div>'+
       '</div>'+
@@ -1128,8 +1927,10 @@ function tapReadWord(i){
   if(rState.revealed)return;
   var words=item.chunks.map(function(c){return c.t;}).join(' ').split(' ');
   var w=words[i].replace(/[.,]/g,'').toLowerCase();
-  var verb=item.chunks.filter(function(c){return c.r==='V';})[0].t.toLowerCase();
-  if(w===verb){
+  var vChunk=item.chunks.filter(function(c){return c.r==='V';})[0];
+  if(!vChunk){ rState.revealed=true; render(); return; }
+  var vWords=vChunk.t.toLowerCase().replace(/[.,]/g,'').split(' ');
+  if(vWords.indexOf(w)>=0){
     rState.revealed=true;render();
   } else {
     rState.missThis++;
@@ -1160,6 +1961,7 @@ function nextReadItem(){
 
   if(rState.idx>=rState.queue.length-1){rState.screen='result';}
   else{rState.idx++;rState.revealed=false;rState.missThis=0;rState.showJp=false;}
+  recordDailyActivity();
   render();
 }
 
@@ -1189,6 +1991,7 @@ function renderReadResult(){
 }
 
 window.setCategory=setCategory;window.setMode=setMode;window.changeCat=changeCat;
+window.setLevelFilter=setLevelFilter;window.startRandomAll=startRandomAll;window.startRetryDirect=startRetryDirect;
 window.startCategoryQuiz=startCategoryQuiz;window.toggleStartExpand=toggleStartExpand;
 window.answerChoice=answerChoice;window.answerInput=answerInput;window.nextQuestion=nextQuestion;
 window.finishQuiz=finishQuiz;window.startQuiz=startQuiz;window.restartQuiz=restartQuiz;
@@ -1199,6 +2002,13 @@ window.resetStats=resetStats;
 window.setReadCat=setReadCat;window.startReadSession=startReadSession;window.tapReadWord=tapReadWord;
 window.toggleReadJp=toggleReadJp;window.nextReadItem=nextReadItem;window.setReadLevel=setReadLevel;
 window.speakCurrentRead=speakCurrentRead;
+window.setLRLevel=setLRLevel;window.startPassage=startPassage;window.answerLR=answerLR;
+window.nextLRQuestion=nextLRQuestion;window.finishLR=finishLR;window.toggleLRJp=toggleLRJp;
+window.setLRMode=setLRMode;window.toggleLRScript=toggleLRScript;
+window.setReadMode=setReadMode;window.tapBankTile=tapBankTile;window.tapFilledSlot=tapFilledSlot;
+window.checkDictAnswer=checkDictAnswer;window.nextDictItem=nextDictItem;
+window.abortDrillQuiz=abortDrillQuiz;window.abortVQuiz=abortVQuiz;
+window.abortReadSession=abortReadSession;window.abortLRPassage=abortLRPassage;
 render();
 </script>
 </body>
