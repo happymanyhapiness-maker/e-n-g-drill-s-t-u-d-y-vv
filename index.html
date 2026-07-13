@@ -1547,7 +1547,7 @@ function setReadMode(m){rState.mode=m;render();}
 // ── ディクテーション(穴埋め書き取り・ワードバンク方式) ──
 var DICT_DISTRACT_BASIC=['go','went','make','made','have','has','play','plays','watch','watched','write','wrote','study','studies','eat','ate','see','saw','give','gave','take','took','read','build','built','call','called','sing','sang'];
 var DICT_DISTRACT_HS=['having','considering','judging','were','should','being','done','doing','asked','told','said','suggested','exclaimed','comes','was','did','have','had','stolen','made','cut','agree','know','knew','seen','written'];
-var dictState={queue:[],idx:0,filled:[],bank:[],checked:false,itemCorrect:false,correctCount:0};
+var dictState={queue:[],idx:0,filled:[],bank:[],checked:false,itemCorrect:false,correctCount:0,bankRevealed:false};
 function buildDictationItem(item){
   var words=item.chunks.map(function(c){return c.t;}).join(' ').split(' ');
   var vChunk=item.chunks.filter(function(c){return c.r==='V';})[0];
@@ -1579,6 +1579,18 @@ function initDictItem(){
   var bankWords=shuffle(correct.concat(distractors));
   dictState.bank=bankWords.map(function(w){return {word:w,used:false};});
   dictState.checked=false;
+  dictState.bankRevealed=false;
+}
+function playDictAudio(){
+  var item=dictState.queue[dictState.idx];
+  if(!item)return;
+  var myIdx=dictState.idx;
+  speakSentence(item.words.join(' '),function(){
+    if(dictState.idx===myIdx&&rState.mode==='dictation'&&rState.screen==='quiz'){
+      dictState.bankRevealed=true;
+      render();
+    }
+  });
 }
 function tapBankTile(i){
   if(dictState.checked)return;
@@ -1634,6 +1646,9 @@ function renderDictQuiz(){
   var bankHTML=dictState.bank.map(function(tile,i){
     return '<button class="choice" style="display:inline-block;width:auto;padding:8px 16px;'+(tile.used?'opacity:.3;pointer-events:none;':'')+'" onclick="tapBankTile('+i+')">'+tile.word+'</button>';
   }).join('');
+  var bankSection=dictState.bankRevealed?
+    '<div class="vquiz-card"><div class="word-label" style="margin-bottom:8px;">ワードバンク（タップで空欄に入れる）</div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+bankHTML+'</div></div>':
+    '<div class="vquiz-card" style="text-align:center;color:var(--muted);font-size:.83rem;">🔊 音声が流れ終わると、ここに選択肢が表示されます</div>';
   var allFilled=dictState.filled.indexOf(null)<0;
   var actionHTML;
   if(!dictState.checked){
@@ -1648,10 +1663,10 @@ function renderDictQuiz(){
     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;"><div style="flex:1;height:5px;background:var(--surface);border-radius:3px;overflow:hidden;"><div style="height:100%;width:'+pBar+'%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:3px;"></div></div><div style="font-size:.78rem;color:var(--muted);white-space:nowrap;">'+(dictState.idx+1)+'/'+total+'</div></div>'+
     '<div class="read-prompt">🎧 音声を聞いて、聞き取った単語を下のワードバンクからタップして空欄を埋めよう</div>'+
     '<div class="vquiz-card">'+
-      '<button class="speak-btn" onclick="speakSentence(dictState.queue[dictState.idx].words.join(\' \'))">🔊 音声で聞く</button>'+
+      '<button class="speak-btn" onclick="playDictAudio()">🔊 '+(dictState.bankRevealed?'もう一度聞く':'音声で聞く')+'</button>'+
       '<div class="read-sentence" style="line-height:2.4;">'+sentenceHTML+'</div>'+
     '</div>'+
-    '<div class="vquiz-card"><div class="word-label" style="margin-bottom:8px;">ワードバンク（タップで空欄に入れる）</div><div style="display:flex;flex-wrap:wrap;gap:8px;">'+bankHTML+'</div></div>'+
+    bankSection+
     actionHTML;
 }
 function renderDictResult(){
@@ -1691,15 +1706,19 @@ function setReadLevel(lv){rState.level=lv;rState.cat='all';renderReadStart();}
 function abortReadSession(){try{window.speechSynthesis.cancel();}catch(e){}rState.screen='start';render();}
 
 var _readUtter=null; // Safari対策: utteranceがGCされると再生が止まることがあるのでグローバル保持
-function speakSentence(text){
+function speakSentence(text,onEndCb){
   try{
-    if(!('speechSynthesis' in window))return;
+    if(!('speechSynthesis' in window)){
+      if(onEndCb)onEndCb(); // 未対応ブラウザではフォールバックとして即座に選択肢を表示
+      return;
+    }
     window.speechSynthesis.cancel();
     _readUtter=new SpeechSynthesisUtterance(text);
     _readUtter.lang='en-US';
     _readUtter.rate=0.9;
+    if(onEndCb){_readUtter.onend=onEndCb;_readUtter.onerror=onEndCb;}
     window.speechSynthesis.speak(_readUtter);
-  }catch(e){}
+  }catch(e){if(onEndCb)onEndCb();}
 }
 function speakCurrentRead(){
   var item=rState.queue[rState.idx];
@@ -2006,7 +2025,7 @@ window.setLRLevel=setLRLevel;window.startPassage=startPassage;window.answerLR=an
 window.nextLRQuestion=nextLRQuestion;window.finishLR=finishLR;window.toggleLRJp=toggleLRJp;
 window.setLRMode=setLRMode;window.toggleLRScript=toggleLRScript;
 window.setReadMode=setReadMode;window.tapBankTile=tapBankTile;window.tapFilledSlot=tapFilledSlot;
-window.checkDictAnswer=checkDictAnswer;window.nextDictItem=nextDictItem;
+window.checkDictAnswer=checkDictAnswer;window.nextDictItem=nextDictItem;window.playDictAudio=playDictAudio;
 window.abortDrillQuiz=abortDrillQuiz;window.abortVQuiz=abortVQuiz;
 window.abortReadSession=abortReadSession;window.abortLRPassage=abortLRPassage;
 render();
